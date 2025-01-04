@@ -108,7 +108,7 @@ public class SwerveModule implements Sendable {
         .positionWrappingEnabled(false)
         .outputRange(Constants.Swerve.Module.DRIVING_MIN_OUTPUT, Constants.Swerve.Module.DRIVING_MAX_OUTPUT);
 
-    var configure_response = drivingSpark.configure(turningConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    var configure_response = drivingSpark.configure(drivingConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     return configure_response == REVLibError.kOk;
   }
 
