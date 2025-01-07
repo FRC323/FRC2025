@@ -53,10 +53,11 @@ public class ModuleIOSim implements ModuleIO {
     turnController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
-  public void setTurnOffset(String key) {
-    System.out.println("Simulated Offset Set!");
+  @Override
+  public void storeDrivetrainOffset(String key) {
     Elastic.sendNotification(
-        new Notification(NotificationLevel.INFO, "Drivetrain Offset", "Simulated Offset Set"));
+        new Notification(
+            NotificationLevel.INFO, "Drivetrain Offset", "Simulated Offset Stored: " + key));
   }
 
   @Override

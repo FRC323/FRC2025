@@ -35,6 +35,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Preferences;
+import frc.robot.util.Elastic;
+import frc.robot.util.Elastic.Notification;
+import frc.robot.util.Elastic.Notification.NotificationLevel;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
 
@@ -63,11 +66,6 @@ public class ModuleIOSpark implements ModuleIO {
   // Connection debouncers
   private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
   private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
-
-  public void setTurnOffset(String key) {
-    var encoder_position = turnEncoder.getPosition();
-    Preferences.setDouble(key, encoder_position);
-  }
 
   public ModuleIOSpark(int module) {
     // FL, FR, BL, BR
@@ -257,5 +255,11 @@ public class ModuleIOSpark implements ModuleIO {
         MathUtil.inputModulus(
             rotation.plus(zeroRotation).getRadians(), turnPIDMinInput, turnPIDMaxInput);
     turnController.setReference(setpoint, ControlType.kPosition);
+  }
+
+  @Override
+  public void storeDrivetrainOffset(String key) {
+    var encoder_position = turnEncoder.getPosition();
+    Preferences.setDouble(key, encoder_position);
   }
 }

@@ -20,9 +20,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import frc.robot.util.Elastic;
-import frc.robot.util.Elastic.Notification;
-import frc.robot.util.Elastic.Notification.NotificationLevel;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -92,12 +89,6 @@ public class Module {
     return inputs.turnPosition;
   }
 
-  public void setTurnOffset(String key) {
-    System.out.println("Simulated Offset Set!");
-    Elastic.sendNotification(
-        new Notification(NotificationLevel.INFO, "Drivetrain Offset", "Simulated Offset Set"));
-  }
-
   /** Returns the current drive position of the module in meters. */
   public double getPositionMeters() {
     return inputs.drivePositionRad * wheelRadiusMeters;
@@ -136,5 +127,9 @@ public class Module {
   /** Returns the module velocity in rad/sec. */
   public double getFFCharacterizationVelocity() {
     return inputs.driveVelocityRadPerSec;
+  }
+
+  public void storeDrivetrainOffset(String key) {
+    io.storeDrivetrainOffset(key);
   }
 }

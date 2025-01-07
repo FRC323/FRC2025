@@ -13,7 +13,7 @@ public class StoreDrivetrainOffsets extends Command {
 
   @Override
   public void execute() {
-    this.drive.setWheelOffsets();
+    this.drive.setDrivetrainOffsets();
   }
 
   @Override

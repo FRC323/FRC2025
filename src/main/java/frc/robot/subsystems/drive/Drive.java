@@ -331,10 +331,10 @@ public class Drive extends SubsystemBase {
     return maxSpeedMetersPerSec / driveBaseRadius;
   }
 
-  public void setWheelOffsets() {
-    modules[0].setTurnOffset(frontLeftTurnOffsetKey);
-    modules[1].setTurnOffset(frontRightTurnOffsetKey);
-    modules[2].setTurnOffset(backLeftTurnOffsetKey);
-    modules[3].setTurnOffset(backRightTurnOffsetKey);
+  public void setDrivetrainOffsets() {
+    modules[0].storeDrivetrainOffset(frontLeftTurnOffsetKey);
+    modules[1].storeDrivetrainOffset(frontRightTurnOffsetKey);
+    modules[2].storeDrivetrainOffset(backLeftTurnOffsetKey);
+    modules[3].storeDrivetrainOffset(backRightTurnOffsetKey);
   }
 }
