@@ -1,0 +1,65 @@
+{
+  "NetworkTables": {
+    "transitory": {
+      "AdvantageKit": {
+        "Drive": {
+          "Gyro": {
+            "Rotation2d##v_/AdvantageKit/Drive/Gyro/YawPosition": {
+              "open": true
+            },
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "types": {
+      "/AdvantageKit/RealOutputs/Alerts": "Alerts",
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Field/Field": "Field2d",
+      "/SmartDashboard/Alerts": "Alerts",
+      "/SmartDashboard/Auto Choices": "String Chooser",
+      "/SmartDashboard/Set Drivetrain Offsets": "Command"
+    },
+    "windows": {
+      "/Shuffleboard/Field/Field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Auto Choices": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Set Drivetrain Offsets": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "glass@1": {
+      "open": true
+    },
+    "visible": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "localhost"
+  }
+}
