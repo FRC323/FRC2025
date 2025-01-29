@@ -1,83 +1,107 @@
 package frc.robot.subsystems.elevator;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color8Bit;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOSim implements ElevatorIO {
-    private final DCMotor elevatorMotor = DCMotor.getNEO(2);
+  private final DCMotor elevatorMotor = DCMotor.getNEO(2);
 
-    private final ProfiledPIDController controller =
-        new ProfiledPIDController(
-            ElevatorConstants.kP,
-            ElevatorConstants.kI,
-            ElevatorConstants.kD,
-            new TrapezoidProfile.Constraints(
-                ElevatorConstants.maxVelocity, ElevatorConstants.maxAcceleration));
+  private final ProfiledPIDController controller =
+      new ProfiledPIDController(
+          ElevatorConstants.kP,
+          ElevatorConstants.kI,
+          ElevatorConstants.kD,
+          new TrapezoidProfile.Constraints(
+              ElevatorConstants.maxVelocity, ElevatorConstants.maxAcceleration));
 
-        ElevatorFeedforward m_feedforward =
-            new ElevatorFeedforward(
-                ElevatorConstants.kS, ElevatorConstants.kG, ElevatorConstants.kV, ElevatorConstants.kA);
+  private final ElevatorFeedforward feedforward =
+      new ElevatorFeedforward(
+          ElevatorConstants.kS, ElevatorConstants.kG, ElevatorConstants.kV, ElevatorConstants.kA);
 
-    private final Encoder encoder =
-        new Encoder(ElevatorConstants.elevatorPortLead);
-
-  private final ElevatorSim elevatorSim =
-      new ElevatorSim(
+  @SuppressWarnings("rawtypes")
+  private final LinearSystem elesys =
+      LinearSystemId.createElevatorSystem(
           elevatorMotor,
-          ElevatorConstants.gearRatio,
           ElevatorConstants.carriageMass,
           ElevatorConstants.drumRadius,
-          ElevatorConstants.minElevatorHeightMeters,
-          ElevatorConstants.maxElevatorHeightMeters,
-          true,
-          0,
-          0.01,
-          0.0);
+          ElevatorConstants.gearRatio);
 
-  // Create a Mechanism2d visualization of the elevator
-  private final Mechanism2d mech2d = new Mechanism2d(22.5, 60);
-  private final MechanismRoot2d mech2dRoot = mech2d.getRoot("Elevator Root", 10, 0);
-  private final MechanismLigament2d elevatorMech2d =
-      mech2dRoot.append(new MechanismLigament2d("Elevator", elevatorSim.getPositionMeters(), 90));
+  @SuppressWarnings("unchecked")
+  private final ElevatorSim elevatorSim =
+      new ElevatorSim(
+          elesys,
+          elevatorMotor,
+          Units.inchesToMeters(ElevatorConstants.minElevatorHeightInches),
+          Units.inchesToMeters(ElevatorConstants.maxElevatorHeightInches),
+          true,
+          0);
+
+  private final Mechanism2d mech2d;
+  private final MechanismRoot2d simRobotBase;
+  private final MechanismLigament2d elevator;
 
   private double targetHeightInches = 0.0;
 
-    public ElevatorIOSim() {
-        SmartDashboard.putData("Elevator Sim", mech2d);
-    }
+  public ElevatorIOSim() {
+    mech2d = new Mechanism2d(22.5, 60);
+    simRobotBase = mech2d.getRoot("SimRobotBase", 0, 0);
 
-    @Override
-    public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.leadSparkConnected = true;
-        inputs.followerSparkConnected = true;
+    MechanismLigament2d base =
+        simRobotBase.append(new MechanismLigament2d("Base", 22.5, 0, 40, new Color8Bit(0, 0, 255)));
+    elevator =
+        base.append(new MechanismLigament2d("Elevator", 0, 90, 10, new Color8Bit(255, 0, 0)));
 
-        double controlEffort = controller.calculate(inputs.ElevatorHeightInches, targetHeightInches);
-        elevatorSim.setInput(controlEffort);
+    SmartDashboard.putData("Elevator Mechanism", mech2d);
+  }
 
-        elevatorSim.update(ElevatorConstants.kDt);
+  @Override
+  public void updateInputs(ElevatorIOInputs inputs) {
+    // System.out.println(
+    // "velocity: "
+    // + this.controller.getSetpoint().velocity
+    // + " | position: "
+    // + this.controller.getSetpoint().position);
 
-        Logger.recordOutput("Eelevator/controlEffort", controlEffort);
-        Logger.recordOutput("Elevator/actual controller kp", controller.getP());
+    double currentHeightInches = Units.metersToInches(elevatorSim.getPositionMeters());
 
-        inputs.ElevatorHeightInches = Units.metersToInches(elevatorSim.getPositionMeters());
-        inputs.ElevatorTargetHeightInches = targetHeightInches;
+    double controlEffort = controller.calculate(currentHeightInches, targetHeightInches);
+    // + feedforward.calculate(this.controller.getSetpoint().velocity);
 
-        elevatorMech2d.setLength(encoder.getDistance());
-    }
+    // System.out.println(
+    // "currentHeightInches: "
+    // + currentHeightInches
+    // + " | targetHeightInches: "
+    // + targetHeightInches);
 
-    @Override
-    public void setHeightInches(double targetHeightInches) {
-        this.targetHeightInches = targetHeightInches;
-    }
+    elevatorSim.setInput(controlEffort);
+    elevatorSim.update(ElevatorConstants.kDt);
+    elevator.setLength(currentHeightInches);
+
+    inputs.leadSparkConnected = true;
+    inputs.followerSparkConnected = true;
+    inputs.ElevatorHeightInches = currentHeightInches;
+    inputs.ElevatorTargetHeightInches = targetHeightInches;
+
+    Logger.recordOutput("Elevator/ControlEffort", controlEffort);
+    Logger.recordOutput("Elevator/CurrentHeightInches", currentHeightInches);
+    Logger.recordOutput("Elevator/TargetHeightInches", this.targetHeightInches);
+  }
+
+  @Override
+  public void setHeightInches(double targetHeightInches) {
+    this.targetHeightInches = targetHeightInches;
+    this.controller.setGoal(targetHeightInches);
+  }
 }

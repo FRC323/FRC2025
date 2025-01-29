@@ -18,6 +18,9 @@ public class ElevatorIOSpark implements ElevatorIO {
 
   private final AbsoluteEncoder encoder;
 
+  private static final double ticks2inches =
+      2.0 * ElevatorConstants.gearRatio * ElevatorConstants.drumCircumference / 2048.0;
+
   private final TrapezoidProfile.Constraints constraints =
       new TrapezoidProfile.Constraints(
           ElevatorConstants.maxVelocity, ElevatorConstants.maxAcceleration);
@@ -33,6 +36,8 @@ public class ElevatorIOSpark implements ElevatorIO {
   public double getHeightInInches() {
     return 0.0;
   }
+
+  public void setHeightInches(double heightInches) {}
 
   public ElevatorIOSpark() {
     leadSpark = new SparkMax(ElevatorConstants.elevatorPortLead, MotorType.kBrushless);

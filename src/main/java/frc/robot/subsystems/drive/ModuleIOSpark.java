@@ -65,11 +65,26 @@ public class ModuleIOSpark implements ModuleIO {
 
   public ModuleIOSpark(int module) {
     // FL, FR, BL, BR
-    var fl_offset = new Rotation2d(Preferences.getDouble(DriveConstants.frontLeftTurnOffsetKey, 0));
+    var fl_offset =
+        new Rotation2d(
+            Preferences.getDouble(
+                DriveConstants.frontLeftTurnOffsetKey,
+                DriveConstants.frontLeftZeroRotation.getRadians()));
     var fr_offset =
-        new Rotation2d(Preferences.getDouble(DriveConstants.frontRightTurnOffsetKey, 0));
-    var bl_offset = new Rotation2d(Preferences.getDouble(DriveConstants.backLeftTurnOffsetKey, 0));
-    var br_offset = new Rotation2d(Preferences.getDouble(DriveConstants.backRightTurnOffsetKey, 0));
+        new Rotation2d(
+            Preferences.getDouble(
+                DriveConstants.frontRightTurnOffsetKey,
+                DriveConstants.frontRightZeroRotation.getRadians()));
+    var bl_offset =
+        new Rotation2d(
+            Preferences.getDouble(
+                DriveConstants.backLeftTurnOffsetKey,
+                DriveConstants.backLeftZeroRotation.getRadians()));
+    var br_offset =
+        new Rotation2d(
+            Preferences.getDouble(
+                DriveConstants.backRightTurnOffsetKey,
+                DriveConstants.backRightZeroRotation.getRadians()));
 
     zeroRotation =
         switch (module) {
@@ -79,6 +94,9 @@ public class ModuleIOSpark implements ModuleIO {
           case 3 -> br_offset;
           default -> new Rotation2d();
         };
+
+    System.out.println(
+        "ModuleIOSpark.ctor Module: " + module + "| Offset: " + zeroRotation.getRadians());
     driveSpark =
         new SparkMax(
             switch (module) {
@@ -254,8 +272,9 @@ public class ModuleIOSpark implements ModuleIO {
   }
 
   @Override
-  public void storeDrivetrainOffset(String key) {
+  public void storeOffset(String key) {
     var encoder_position = turnEncoder.getPosition();
     Preferences.setDouble(key, encoder_position);
+    System.out.println("Set " + key + ": " + encoder_position);
   }
 }

@@ -129,7 +129,7 @@ public class Module {
     return inputs.driveVelocityRadPerSec;
   }
 
-  public void storeDrivetrainOffset(String key) {
-    io.storeDrivetrainOffset(key);
+  public void storeOffset(String key) {
+    io.storeOffset(key);
   }
 }

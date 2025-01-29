@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.elevator.ElevatorCommands;
 import frc.robot.commands.initialization.OffsetCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -30,6 +31,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants.ReefLevel;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOSpark;
@@ -138,6 +140,16 @@ public class RobotContainer {
             () -> -driveJoystick.getY(),
             () -> -driveJoystick.getX(),
             () -> -steerJoystick.getX()));
+
+    SmartDashboard.putData("Move Elevator Home", ElevatorCommands.moveElevatorToHome(elevator));
+    SmartDashboard.putData(
+        "Move Elevator L1", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level1));
+    SmartDashboard.putData(
+        "Move Elevator L2", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level2));
+    SmartDashboard.putData(
+        "Move Elevator L3", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level3));
+    SmartDashboard.putData(
+        "Move Elevator L4", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level4));
 
     // ROBOT INITIALIZE COMMANDS
     SmartDashboard.putData("Set Drivetrain Offsets", OffsetCommands.storeDrivetrainOffsets(drive));

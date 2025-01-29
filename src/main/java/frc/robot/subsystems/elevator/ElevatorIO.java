@@ -10,7 +10,6 @@ public interface ElevatorIO {
 
     public double ElevatorHeightInches = 0.0;
     public double ElevatorTargetHeightInches = 0.0;
-    public double ElevatorSetpointInches = 0.0;
   }
 
   public default void updateInputs(ElevatorIOInputs inputs) {}

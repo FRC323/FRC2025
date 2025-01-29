@@ -15,6 +15,7 @@ package frc.robot.subsystems.drive;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -23,7 +24,7 @@ public class DriveConstants {
   public static final int DRIVE_STICK_PORT = 0;
   public static final int STEER_STICK_PORT = 1;
 
-  public static final double maxSpeedMetersPerSec = 4.8;
+  public static final double maxSpeedMetersPerSec = 5.66;
   public static final double odometryFrequency = 100.0; // Hz
   public static final double trackWidth = Units.inchesToMeters(22.5);
   public static final double wheelBase = Units.inchesToMeters(22.5);
@@ -37,17 +38,16 @@ public class DriveConstants {
       };
 
   // Zeroed rotation values for each module, see setup instructions
-  //   public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.0);
-  //   public static final Rotation2d frontRightZeroRotation = new Rotation2d(0.0);
-  //   public static final Rotation2d backLeftZeroRotation = new Rotation2d(0.0);
-  //   public static final Rotation2d backRightZeroRotation = new Rotation2d(0.0);
+  public static final Rotation2d frontLeftZeroRotation = new Rotation2d(-0.526);
+  public static final Rotation2d frontRightZeroRotation = new Rotation2d(2.237);
+  public static final Rotation2d backLeftZeroRotation = new Rotation2d(2.090);
+  public static final Rotation2d backRightZeroRotation = new Rotation2d(-0.716);
   public static final String frontLeftTurnOffsetKey = "FL_Offset";
   public static final String frontRightTurnOffsetKey = "FR_Offset";
   public static final String backLeftTurnOffsetKey = "RL_Offset";
   public static final String backRightTurnOffsetKey = "RR_Offset";
 
   // Device CAN IDs
-
   public static final int frontLeftDriveCanId = 11;
   public static final int backLeftDriveCanId = 14;
   public static final int frontRightDriveCanId = 12;
@@ -59,18 +59,21 @@ public class DriveConstants {
   public static final int backRightTurnCanId = 23;
 
   // Drive motor configuration
-  public static final int driveMotorCurrentLimit = 50;
+  public static final int driveMotorCurrentLimit = 40;
   public static final double wheelRadiusMeters = Units.inchesToMeters(1.5);
   public static final double driveMotorReduction =
-      (45.0 * 22.0) / (14.0 * 15.0); // MAXSwerve with 14 pinion teeth and 22 spur teeth
-
+      (45.0 * 20.0)
+          / (15.0 * 15.0); // MAXSwerve with 15 pinion teeth and 20 spur teeth (upgrade kit)
   public static final DCMotor driveGearbox = DCMotor.getNEO(1);
 
   // Drive encoder configuration
   public static final double driveEncoderPositionFactor =
-      2 * Math.PI / driveMotorReduction; // Rotor Rotations -> Wheel Radians
+      2 * Math.PI / driveMotorReduction; // Rotor Rotations ->
+  // Wheel Radians
   public static final double driveEncoderVelocityFactor =
-      (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM -> Wheel Rad/Secc
+      (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM ->
+  // Wheel
+  // Rad/Secc
 
   // Drive PID configuration
   public static final double driveKp = 0.0;
@@ -94,14 +97,14 @@ public class DriveConstants {
   public static final double turnEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
 
   // Turn PID configuration
-  public static final double turnKp = 2.0;
-  public static final double turnKd = 0.0;
+  public static final double turnKp = 0.8; // 2.0
+  public static final double turnKd = 0.1; // 0.0
   public static final double turnSimP = 8.0;
   public static final double turnSimD = 0.0;
   public static final double turnPIDMinInput = 0; // Radians
   public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
-  // PathPlanner configuration
+  // PathPlanner configuration TODO: UPDATE VALUES
   public static final double robotMassKg = 74.088;
   public static final double robotMOI = 6.883;
   public static final double wheelCOF = 1.2;

@@ -21,9 +21,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import frc.robot.util.Elastic;
-import frc.robot.util.Elastic.Notification;
-import frc.robot.util.Elastic.Notification.NotificationLevel;
 
 /** Physics sim implementation of module IO. */
 public class ModuleIOSim implements ModuleIO {
@@ -51,13 +48,6 @@ public class ModuleIOSim implements ModuleIO {
 
     // Enable wrapping for turn PID
     turnController.enableContinuousInput(-Math.PI, Math.PI);
-  }
-
-  @Override
-  public void storeDrivetrainOffset(String key) {
-    Elastic.sendNotification(
-        new Notification(
-            NotificationLevel.INFO, "Drivetrain Offset", "Simulated Offset Stored: " + key));
   }
 
   @Override
@@ -96,7 +86,8 @@ public class ModuleIOSim implements ModuleIO {
     inputs.turnCurrentAmps = Math.abs(turnSim.getCurrentDrawAmps());
     inputs.turnOffset = new Rotation2d();
 
-    // Update odometry inputs (50Hz because high-frequency odometry in sim doesn't matter)
+    // Update odometry inputs (50Hz because high-frequency odometry in sim doesn't
+    // matter)
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
     inputs.odometryDrivePositionsRad = new double[] {inputs.drivePositionRad};
     inputs.odometryTurnPositions = new Rotation2d[] {inputs.turnPosition};
@@ -125,5 +116,10 @@ public class ModuleIOSim implements ModuleIO {
   public void setTurnPosition(Rotation2d rotation) {
     turnClosedLoop = true;
     turnController.setSetpoint(rotation.getRadians());
+  }
+
+  @Override
+  public void storeOffset(String key) {
+    // Do nothing
   }
 }

@@ -45,6 +45,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.util.Elastic;
+import frc.robot.util.Elastic.Notification;
+import frc.robot.util.Elastic.Notification.NotificationLevel;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -79,7 +82,10 @@ public class Drive extends SubsystemBase {
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
       ModuleIO brModuleIO) {
+
     this.gyroIO = gyroIO;
+    this.gyroIO.zeroGyro(0);
+
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
@@ -332,9 +338,13 @@ public class Drive extends SubsystemBase {
   }
 
   public void setDrivetrainOffsets() {
-    modules[0].storeDrivetrainOffset(frontLeftTurnOffsetKey);
-    modules[1].storeDrivetrainOffset(frontRightTurnOffsetKey);
-    modules[2].storeDrivetrainOffset(backLeftTurnOffsetKey);
-    modules[3].storeDrivetrainOffset(backRightTurnOffsetKey);
+    modules[0].storeOffset(frontLeftTurnOffsetKey);
+    modules[1].storeOffset(frontRightTurnOffsetKey);
+    modules[2].storeOffset(backLeftTurnOffsetKey);
+    modules[3].storeOffset(backRightTurnOffsetKey);
+
+    Elastic.sendNotification(
+        new Notification(
+            NotificationLevel.INFO, "Drivetrain Offset", "Offsets Stored. Please reboot roborio."));
   }
 }
