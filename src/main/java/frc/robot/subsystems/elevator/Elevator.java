@@ -49,10 +49,6 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean reachedDesiredPosition() {
-    // System.out.println("Elevator Target Height: " +
-    // ioInputs.ElevatorTargetHeightInches);
-    // System.out.println("Elevator Current Height: " +
-    // ioInputs.ElevatorHeightInches);
     return Math.abs(ioInputs.ElevatorTargetHeightInches - ioInputs.ElevatorHeightInches) < 0.2;
   }
 

@@ -21,8 +21,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.arm.ArmCommands;
 import frc.robot.commands.elevator.ElevatorCommands;
 import frc.robot.commands.initialization.OffsetCommands;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.GyroIO;
@@ -47,6 +51,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Elevator elevator;
+  private final Arm arm;
 
   private final CommandJoystick driveJoystick =
       new CommandJoystick(DriveConstants.DRIVE_STICK_PORT);
@@ -70,6 +75,7 @@ public class RobotContainer {
                 new ModuleIOSpark(3));
 
         elevator = new Elevator(new ElevatorIOSpark());
+        arm = new Arm(new ArmIO() {}); // fix this
 
         break;
 
@@ -84,6 +90,7 @@ public class RobotContainer {
                 new ModuleIOSim());
 
         elevator = new Elevator(new ElevatorIOSim());
+        arm = new Arm(new ArmIOSim());
 
         SmartDashboard.putData("Field", drive.getField());
         break;
@@ -99,6 +106,7 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         elevator = new Elevator(new ElevatorIO() {});
+        arm = new Arm(new ArmIO() {});
 
         SmartDashboard.putData("Field", drive.getField());
         break;
@@ -140,6 +148,9 @@ public class RobotContainer {
             () -> -driveJoystick.getY(),
             () -> -driveJoystick.getX(),
             () -> -steerJoystick.getX()));
+
+    SmartDashboard.putData("Move Arm 45 F", ArmCommands.moveArm45F(arm));
+    SmartDashboard.putData("Move Arm 45 R", ArmCommands.moveArm45R(arm));
 
     SmartDashboard.putData("Move Elevator Home", ElevatorCommands.moveElevatorToHome(elevator));
     SmartDashboard.putData(
