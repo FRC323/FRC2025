@@ -12,7 +12,7 @@ public class Elevator extends SubsystemBase {
   private final Alert followerDisconnectedAlert;
 
   private final ElevatorIO io;
-  private final ElevatorIOInputsAutoLogged ioInputs = new ElevatorIOInputsAutoLogged();
+  private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   public Elevator(ElevatorIO io) {
     this.io = io;
@@ -21,54 +21,60 @@ public class Elevator extends SubsystemBase {
         new Alert("Disconnected follower motor on elevator.", AlertType.kError);
   }
 
-  public void setHeight(double targetHeightInches) {
-    targetHeightInches =
-        MathUtil.clamp(
-            targetHeightInches,
-            ElevatorConstants.minElevatorHeightInches,
-            ElevatorConstants.maxElevatorHeightInches);
+  public boolean isAtBottom() {
+    return inputs.isAtBottom;
+  }
 
-    io.setHeightInches(targetHeightInches);
+  public void runPercentOutput(double percent) {
+    percent = MathUtil.clamp(percent, -1, 1);
+    io.setPercent(percent);
+  }
+
+  public void runVoltageOutput(double voltage) {
+    voltage = MathUtil.clamp(voltage, -12, 12);
+    io.setVoltage(voltage);
+  }
+
+  public double getHeightInches() {
+    return inputs.currentHeightPosition;
+  }
+
+  public void setHeight(double targetHeightPosition) {
+    var position =
+        MathUtil.clamp(
+            targetHeightPosition,
+            ElevatorConstants.minElevatorHeight,
+            ElevatorConstants.maxElevatorHeight);
+
+    io.setTargetHeight(position);
   }
 
   public void setHeight(ReefLevel reefLevel) {
     switch (reefLevel) {
       case Level1:
-        setHeight(ElevatorConstants.Level1Inches);
+        setHeight(ElevatorConstants.Level1Position);
         break;
       case Level2:
-        setHeight(ElevatorConstants.Level2Inches);
+        setHeight(ElevatorConstants.Level2Position);
         break;
       case Level3:
-        setHeight(ElevatorConstants.Level3Inches);
+        setHeight(ElevatorConstants.Level3Position);
         break;
       case Level4:
-        setHeight(ElevatorConstants.Level4Inches);
+        setHeight(ElevatorConstants.Level4Position);
         break;
     }
   }
 
   public boolean reachedDesiredPosition() {
-    // System.out.println("Elevator Target Height: " +
-    // ioInputs.ElevatorTargetHeightInches);
-    // System.out.println("Elevator Current Height: " +
-    // ioInputs.ElevatorHeightInches);
-    return Math.abs(ioInputs.ElevatorTargetHeightInches - ioInputs.ElevatorHeightInches) < 0.2;
-  }
-
-  public double getHeightInInches() {
-    return ioInputs.ElevatorHeightInches;
-  }
-
-  public double getTargetHeightInInches() {
-    return ioInputs.ElevatorTargetHeightInches;
+    return Math.abs(inputs.targetHeightPosition - inputs.currentHeightPosition) < 0.1;
   }
 
   public void periodic() {
-    io.updateInputs(ioInputs);
-    Logger.processInputs("Elevator", ioInputs);
+    io.updateInputs(inputs);
+    Logger.processInputs("Elevator", inputs);
 
-    leadDisconnectedAlert.set(!ioInputs.leadSparkConnected);
-    followerDisconnectedAlert.set(!ioInputs.followerSparkConnected);
+    leadDisconnectedAlert.set(!inputs.leadSparkConnected);
+    followerDisconnectedAlert.set(!inputs.followerSparkConnected);
   }
 }

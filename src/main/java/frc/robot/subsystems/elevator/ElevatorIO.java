@@ -8,11 +8,21 @@ public interface ElevatorIO {
     public boolean leadSparkConnected = false;
     public boolean followerSparkConnected = false;
 
-    public double ElevatorHeightInches = 0.0;
-    public double ElevatorTargetHeightInches = 0.0;
+    public boolean homed = false;
+    public boolean isAtBottom = false;
+
+    public double currentHeightPosition = 0.0;
+    public double targetHeightPosition = 0.0;
+
+    public double leadEncoderPosition = 0.0;
+    public double followerEncoderPosition = 0.0;
   }
+
+  public default void setPercent(double percent) {}
+
+  public default void setVoltage(double voltage) {}
 
   public default void updateInputs(ElevatorIOInputs inputs) {}
 
-  public default void setHeightInches(double targetHeightInches) {}
+  public default void setTargetHeight(double targetHeightInches) {}
 }

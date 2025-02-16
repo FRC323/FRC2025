@@ -49,14 +49,14 @@ public class DriveConstants {
 
   // Device CAN IDs
   public static final int frontLeftDriveCanId = 11;
-  public static final int backLeftDriveCanId = 14;
-  public static final int frontRightDriveCanId = 12;
-  public static final int backRightDriveCanId = 13;
+  public static final int backLeftDriveCanId = 12;
+  public static final int frontRightDriveCanId = 13;
+  public static final int backRightDriveCanId = 14;
 
   public static final int frontLeftTurnCanId = 21;
-  public static final int backLeftTurnCanId = 24;
-  public static final int frontRightTurnCanId = 22;
-  public static final int backRightTurnCanId = 23;
+  public static final int backLeftTurnCanId = 22;
+  public static final int frontRightTurnCanId = 23;
+  public static final int backRightTurnCanId = 24;
 
   // Drive motor configuration
   public static final int driveMotorCurrentLimit = 40;
@@ -120,4 +120,22 @@ public class DriveConstants {
               driveMotorCurrentLimit,
               1),
           moduleTranslations);
+
+  public static class DriveStick {
+    public static final int LEFT_SIDE_BUTTON = 2;
+    public static final int TOP_BIG_BUTTON = 3;
+    public static final int BACK_SIDE_BUTTON = 4;
+    public static final int UP_DIRECTIONAL = 5;
+    public static final int RIGHT_DIRECTIONAL = 6;
+    public static final int DOWN_DIRECTIONAL = 7;
+    public static final int LEFT_DIRECTIONAL = 8;
+    public static final int RIGHT_SIDE_BUTTON = 9;
+    public static final int SMALL_TOP_BUTTON = 10;
+  }
+
+  public static class SteerStick {
+    public static final int LEFT = 2;
+    public static final int RIGHT = 3;
+    public static final int MIDDLE = 4;
+  }
 }

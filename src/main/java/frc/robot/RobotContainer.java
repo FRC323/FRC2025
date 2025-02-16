@@ -139,7 +139,10 @@ public class RobotContainer {
             drive,
             () -> -driveJoystick.getY(),
             () -> -driveJoystick.getX(),
-            () -> -steerJoystick.getX()));
+            () -> steerJoystick.getX()));
+
+    steerJoystick.trigger().whileTrue(ElevatorCommands.ManualElevatorControl(elevator, () -> 0.3));
+    steerJoystick.trigger().whileFalse(ElevatorCommands.ManualElevatorControl(elevator, () -> 0.0));
 
     SmartDashboard.putData("Move Elevator Home", ElevatorCommands.moveElevatorToHome(elevator));
     SmartDashboard.putData(
