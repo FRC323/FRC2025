@@ -24,8 +24,8 @@ public class ElevatorIOSpark implements ElevatorIO {
   private final Debouncer leadConnectedDebounce = new Debouncer(0.5);
   private final Debouncer followerConnectedDebounce = new Debouncer(0.5);
 
-  private final PIDController controller =
-      new PIDController(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD);
+  private final PIDController controller = new PIDController(ElevatorConstants.kP, ElevatorConstants.kI,
+      ElevatorConstants.kD);
 
   private boolean closedLoop = false;
   private double openLoopVoltage = 0.0;
@@ -50,9 +50,8 @@ public class ElevatorIOSpark implements ElevatorIO {
     tryUntilOk(
         leadSpark,
         5,
-        () ->
-            leadSpark.configure(
-                leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+        () -> leadSpark.configure(
+            leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
     tryUntilOk(leadSpark, 5, () -> leadEncoder.setPosition(0.0));
 
     // follower set up
@@ -67,10 +66,49 @@ public class ElevatorIOSpark implements ElevatorIO {
     tryUntilOk(
         followerSpark,
         5,
-        () ->
-            followerSpark.configure(
-                followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+        () -> followerSpark.configure(
+            followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
     tryUntilOk(followerSpark, 5, () -> followerEncoder.setPosition(0.0));
+  }
+
+  private void updateEncoderValues(ElevatorIOInputs inputs) {
+    var leadEncoderValue = -leadEncoder.getPosition();
+    var followerEncoderValue = -followerSpark.getEncoder().getPosition();
+    currentHeightPosition = leadEncoderValue;
+
+    inputs.leadEncoderPosition = leadEncoderValue;
+    inputs.followerEncoderPosition = followerEncoderValue;
+  }
+
+  private void updateLimitSwitches(ElevatorIOInputs inputs) {
+    if (leadSpark.getReverseLimitSwitch().isPressed()) {
+      inputs.homed = true;
+      inputs.isAtBottom = true;
+      inputs.currentHeightPosition = 0;
+      leadEncoder.setPosition(0);
+    } else {
+      inputs.isAtBottom = false;
+    }
+  }
+  
+  private double calculateOutput(ElevatorIOInputs inputs) {
+    if (!inputs.leadSparkConnected)
+      return 0.0;
+
+    double output = 0;
+    if (closedLoop) {
+      if (inputs.homed) {
+        output = controller.calculate(currentHeightPosition, targetHeightPosition);
+      }
+    } else {
+      output = this.openLoopVoltage;
+    }
+    return output;
+  }
+
+  private void updateLogging(double output) {
+    Logger.recordOutput("Elevator/CurrentHeightInches", currentHeightPosition);
+    Logger.recordOutput("Elevator/ControlEffort", output);
   }
 
   @Override
@@ -79,44 +117,18 @@ public class ElevatorIOSpark implements ElevatorIO {
     inputs.leadSparkConnected = leadConnectedDebounce.calculate(!sparkStickyFault);
     inputs.followerSparkConnected = followerConnectedDebounce.calculate(!sparkStickyFault);
 
-    var leadEncoderValue = -leadEncoder.getPosition();
-    var followerEncoderValue = -followerSpark.getEncoder().getPosition();
-
-    currentHeightPosition = leadEncoderValue;
-
     controller.setPID(p.get(), i.get(), d.get());
 
-    if (leadSpark.getReverseLimitSwitch().isPressed() && controller.atSetpoint()) {
-      inputs.homed = true;
-      inputs.isAtBottom = true;
-      inputs.currentHeightPosition = 0;
-      leadEncoder.setPosition(0);
-    } else {
-      inputs.isAtBottom = false;
-    }
+    updateEncoderValues(inputs);
+    updateLimitSwitches(inputs);
 
-    if (inputs.leadSparkConnected) {
-      double output = 0;
-      if (closedLoop) {
-        if (inputs.homed) {
-          output = controller.calculate(currentHeightPosition, targetHeightPosition);
-          leadSpark.setVoltage(output);
-        }
-      } else {
-        output = this.openLoopVoltage;
-        System.out.println("ElevatorIOSpark.OpenLoop effort: {" + output + "}");
-        leadSpark.setVoltage(output);
-      }
+    double output = calculateOutput(inputs);
+    leadSpark.setVoltage(output);
 
-      Logger.recordOutput("Elevator/CurrentHeightInches", currentHeightPosition);
+    inputs.currentHeightPosition = currentHeightPosition;
+    inputs.targetHeightPosition = targetHeightPosition;
 
-      inputs.currentHeightPosition = currentHeightPosition;
-      inputs.targetHeightPosition = targetHeightPosition;
-      inputs.leadEncoderPosition = leadEncoderValue;
-      inputs.followerEncoderPosition = followerEncoderValue;
-
-      Logger.recordOutput("Elevator/ControlEffort", output);
-    }
+    updateLogging(output);
   }
 
   @Override
