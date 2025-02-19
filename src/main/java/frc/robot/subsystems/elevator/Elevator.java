@@ -4,7 +4,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefLevel;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
@@ -19,6 +18,25 @@ public class Elevator extends SubsystemBase {
     leadDisconnectedAlert = new Alert("Disconnected lead motor on elevator.", AlertType.kError);
     followerDisconnectedAlert =
         new Alert("Disconnected follower motor on elevator.", AlertType.kError);
+  }
+
+  public enum ElevatorPosition {
+    Home(0.0),
+    REEF_LEVEL_1_CORAL(ElevatorConstants.ReefLevel1CoralPosition),
+    REEF_LEVEL_2_CORAL(ElevatorConstants.ReefLevel2CoralPosition),
+    REEF_LEVEL_3_CORAL(ElevatorConstants.ReefLevel3CoralPosition),
+    REEF_LEVEL_4_CORAL(ElevatorConstants.ReefLevel4CoralPosition),
+    HUMAN_PLAYER(ElevatorConstants.HumanPlayerPosition),
+    REEF_LEVEL_1_ALGAE(ElevatorConstants.ReefLevel1AlgaePosition),
+    REEF_LEVEL_2_ALGAE(ElevatorConstants.ReefLevel2AlgaePosition),
+    ALGAE_BARGE(ElevatorConstants.BargePosition),
+    ALGAE_PROCESSOR(ElevatorConstants.ProcessorPosition);
+
+    public final double val;
+
+    ElevatorPosition(double val) {
+      this.val = val;
+    }
   }
 
   public boolean isAtBottom() {
@@ -49,19 +67,37 @@ public class Elevator extends SubsystemBase {
     io.setTargetHeight(position);
   }
 
-  public void setHeight(ReefLevel reefLevel) {
-    switch (reefLevel) {
-      case Level1:
-        setHeight(ElevatorConstants.Level1Position);
+  public void setHeight(ElevatorPosition position) {
+    switch (position) {
+      case Home:
+        setHeight(ElevatorConstants.HomePosition);
         break;
-      case Level2:
-        setHeight(ElevatorConstants.Level2Position);
+      case REEF_LEVEL_1_CORAL:
+        setHeight(ElevatorConstants.ReefLevel1CoralPosition);
         break;
-      case Level3:
-        setHeight(ElevatorConstants.Level3Position);
+      case REEF_LEVEL_2_CORAL:
+        setHeight(ElevatorConstants.ReefLevel2CoralPosition);
         break;
-      case Level4:
-        setHeight(ElevatorConstants.Level4Position);
+      case REEF_LEVEL_3_CORAL:
+        setHeight(ElevatorConstants.ReefLevel3CoralPosition);
+        break;
+      case REEF_LEVEL_4_CORAL:
+        setHeight(ElevatorConstants.ReefLevel4CoralPosition);
+        break;
+      case HUMAN_PLAYER:
+        setHeight(ElevatorConstants.HumanPlayerPosition);
+        break;
+      case REEF_LEVEL_1_ALGAE:
+        setHeight(ElevatorConstants.ReefLevel1AlgaePosition);
+        break;
+      case REEF_LEVEL_2_ALGAE:
+        setHeight(ElevatorConstants.ReefLevel2AlgaePosition);
+        break;
+      case ALGAE_BARGE:
+        setHeight(ElevatorConstants.BargePosition);
+        break;
+      case ALGAE_PROCESSOR:
+        setHeight(ElevatorConstants.ProcessorPosition);
         break;
     }
   }

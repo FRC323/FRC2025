@@ -2,7 +2,7 @@ package frc.robot.commands.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefLevel;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import java.util.function.DoubleSupplier;
 
 public class ElevatorCommands {
@@ -10,11 +10,11 @@ public class ElevatorCommands {
     return new MoveElevatorToHome(elevator);
   }
 
-  public static Command MoveElevatorToReefLevel(Elevator elevator, ReefLevel reefLevel) {
-    return new MoveElevatorToReefLevel(elevator, reefLevel);
+  public static Command moveElevatorToPosition(Elevator elevator, ElevatorPosition position) {
+    return new MoveElevatorToPosition(elevator, position);
   }
 
-  public static Command ManualElevatorControl(Elevator elevator, DoubleSupplier percentSupplier) {
+  public static Command manualElevatorControl(Elevator elevator, DoubleSupplier percentSupplier) {
     return new ManualElevatorControl(elevator, percentSupplier);
   }
 }

@@ -55,28 +55,24 @@ public class ElevatorIOSim implements ElevatorIO {
 
     LinearSystem<N2, N1, N2> elevatorSystem =
         LinearSystemId.createElevatorSystem(
-          motor,
-          ElevatorConstants.carriageMass,
-          ElevatorConstants.drumRadius,
-          ElevatorConstants.gearRatio);
+            motor,
+            ElevatorConstants.carriageMass,
+            ElevatorConstants.drumRadius,
+            ElevatorConstants.gearRatio);
 
     elevatorSim =
         new ElevatorSim(
-          elevatorSystem,
-          motor,
-          Units.inchesToMeters(ElevatorConstants.minElevatorHeight),
-          Units.inchesToMeters(ElevatorConstants.maxElevatorHeight),
-          false,
-          0);
+            elevatorSystem,
+            motor,
+            Units.inchesToMeters(ElevatorConstants.minElevatorHeight),
+            Units.inchesToMeters(ElevatorConstants.maxElevatorHeight),
+            false,
+            0);
 
     leadSpark =
-        new SparkMaxSim(
-            new SparkMax(ElevatorConstants.leadCanId, MotorType.kBrushless),
-            motor);
+        new SparkMaxSim(new SparkMax(ElevatorConstants.leadCanId, MotorType.kBrushless), motor);
     followerSpark =
-        new SparkMaxSim(
-            new SparkMax(ElevatorConstants.followerCanId, MotorType.kBrushless),
-            motor);
+        new SparkMaxSim(new SparkMax(ElevatorConstants.followerCanId, MotorType.kBrushless), motor);
 
     leadEncoder = leadSpark.getRelativeEncoderSim();
     // TrapezoidProfile.Constraints constraints =

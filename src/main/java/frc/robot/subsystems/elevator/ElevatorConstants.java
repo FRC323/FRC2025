@@ -6,7 +6,7 @@ public class ElevatorConstants {
   public static int leadCanId = 41;
   public static int followerCanId = 42;
 
-  public static boolean leadInverted = false;
+  public static boolean leadInverted = true;
   public static boolean followerInverted = true;
 
   public static double kP = 1.0;
@@ -15,19 +15,20 @@ public class ElevatorConstants {
 
   public static double HomePosition = 0.0;
   // reef levels
-  public static double Level1Position = 10;
-  public static double Level2Position = 20;
-  public static double Level3Position = 30;
-  public static double Level4Position = 40;
+  public static double ReefLevel1CoralPosition = 10;
+  public static double ReefLevel2CoralPosition = 20;
+  public static double ReefLevel3CoralPosition = 30;
+  public static double ReefLevel4CoralPosition = 40;
+
+  public static double ReefLevel1AlgaePosition = 15;
+  public static double ReefLevel2AlgaePosition = 25;
+
+  public static double HumanPlayerPosition = 0.0;
+
+  public static double BargePosition = 60;
+  public static double ProcessorPosition = 0.0;
 
   public static int currentLimit = 40;
-
-  public static enum ReefLevel {
-    Level1,
-    Level2,
-    Level3,
-    Level4
-  }
 
   // https://www.reca.lc/linear
   public static double kS = 0.0;

@@ -21,8 +21,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.arm.ArmCommands;
 import frc.robot.commands.elevator.ElevatorCommands;
 import frc.robot.commands.initialization.OffsetCommands;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.Arm.ArmPosition;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.arm.ArmIOSpark;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.GyroIO;
@@ -31,7 +37,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefLevel;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOSpark;
@@ -47,6 +53,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Elevator elevator;
+  private final Arm arm;
 
   private final CommandJoystick driveJoystick =
       new CommandJoystick(DriveConstants.DRIVE_STICK_PORT);
@@ -70,6 +77,7 @@ public class RobotContainer {
                 new ModuleIOSpark(3));
 
         elevator = new Elevator(new ElevatorIOSpark());
+        arm = new Arm(new ArmIOSpark());
 
         break;
 
@@ -84,6 +92,7 @@ public class RobotContainer {
                 new ModuleIOSim());
 
         elevator = new Elevator(new ElevatorIOSim());
+        arm = new Arm(new ArmIOSim());
 
         SmartDashboard.putData("Field", drive.getField());
         break;
@@ -99,6 +108,7 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         elevator = new Elevator(new ElevatorIO() {});
+        arm = new Arm(new ArmIO() {});
 
         SmartDashboard.putData("Field", drive.getField());
         break;
@@ -141,21 +151,64 @@ public class RobotContainer {
             () -> -driveJoystick.getX(),
             () -> steerJoystick.getX()));
 
-    steerJoystick.trigger().whileTrue(ElevatorCommands.ManualElevatorControl(elevator, () -> 0.3));
-    steerJoystick.trigger().whileFalse(ElevatorCommands.ManualElevatorControl(elevator, () -> 0.0));
+    // steerJoystick.trigger().whileTrue(ElevatorCommands.manualElevatorControl(elevator, () ->
+    // 0.3));
+    // steerJoystick.trigger().whileFalse(ElevatorCommands.manualElevatorControl(elevator, () ->
+    // 0.0));
 
+    // driveJoystick.button(2).whileTrue(ElevatorCommands.manualElevatorControl(elevator, () ->
+    // 0.3));
+    // driveJoystick.button(2).whileFalse(ElevatorCommands.manualElevatorControl(elevator, () ->
+    // 0.0));
+
+    // driveJoystick.button(2).whileTrue(ArmCommands.manualArmControl(arm, () -> 0.3));
+    // driveJoystick.button(2).whileFalse(ArmCommands.manualArmControl(arm, () -> 0.0));
+
+    // Arm test commands
+    SmartDashboard.putData("Move Arm Home", ArmCommands.moveArmToPosition(arm, ArmPosition.HOME));
+    SmartDashboard.putData(
+        "Move Arm L1 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_1_CORAL));
+    SmartDashboard.putData(
+        "Move Arm L2 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_2_CORAL));
+    SmartDashboard.putData(
+        "Move Arm L3 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_3_CORAL));
+    SmartDashboard.putData(
+        "Move Arm L4 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_4_CORAL));
+
+    SmartDashboard.putData(
+        "Move Arm L1 Algae", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_1_ALGAE));
+    SmartDashboard.putData(
+        "Move Arm L2 Algae", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_2_ALGAE));
+
+    SmartDashboard.putData(
+        "Move Arm Processor", ArmCommands.moveArmToPosition(arm, ArmPosition.ALGAE_PROCESSOR));
+    SmartDashboard.putData(
+        "Move Arm Human Player", ArmCommands.moveArmToPosition(arm, ArmPosition.HUMAN_PLAYER));
+    SmartDashboard.putData(
+        "Move Arm Barge", ArmCommands.moveArmToPosition(arm, ArmPosition.ALGAE_BARGE));
+
+    // Elevator test commands
     SmartDashboard.putData("Move Elevator Home", ElevatorCommands.moveElevatorToHome(elevator));
     SmartDashboard.putData(
-        "Move Elevator L1", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level1));
+        "Move Elevator L1",
+        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_1_CORAL));
     SmartDashboard.putData(
-        "Move Elevator L2", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level2));
+        "Move Elevator L2",
+        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_2_CORAL));
     SmartDashboard.putData(
-        "Move Elevator L3", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level3));
+        "Move Elevator L3",
+        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_3_CORAL));
     SmartDashboard.putData(
-        "Move Elevator L4", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level4));
+        "Move Elevator L4",
+        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_4_CORAL));
+
+    SmartDashboard.putData(
+        "Move Elevator Barge",
+        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.ALGAE_BARGE));
 
     // ROBOT INITIALIZE COMMANDS
     SmartDashboard.putData("Set Drivetrain Offsets", OffsetCommands.storeDrivetrainOffsets(drive));
+    SmartDashboard.putData("Set Arm Offsets", OffsetCommands.storeArmOffsets(arm));
   }
 
   /**

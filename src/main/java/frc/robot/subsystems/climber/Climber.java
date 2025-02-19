@@ -1,0 +1,16 @@
+package frc.robot.subsystems.climber;
+
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class Climber extends SubsystemBase {
+  private final ClimberIO io;
+  private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
+
+  private final Alert leadDisconnectedAlert;
+
+  public Climber(ClimberIO io) {
+    this.io = io;
+    leadDisconnectedAlert = new Alert("Disconnected lead motor on climber.", Alert.AlertType.kError);
+  }
+}
