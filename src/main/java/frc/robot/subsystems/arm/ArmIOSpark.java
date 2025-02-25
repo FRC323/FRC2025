@@ -52,7 +52,6 @@ public class ArmIOSpark implements ArmIO {
     leadConfig
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(ArmConstants.currentLimit)
-        .voltageCompensation(12.0)
         .inverted(ArmConstants.leadInverted);
 
     tryUntilOk(
@@ -107,7 +106,7 @@ public class ArmIOSpark implements ArmIO {
         "Arm/EncoderDriftExceedsLimit", encoderDrift > ArmConstants.maxEncoderDrift);
 
     double output = calculateOutput(inputs);
-    leadSpark.set(output);
+    leadSpark.setVoltage(output);
 
     Logger.recordOutput(
         "Arm/CurrentAbsolutePositionRadians", inputs.currentAbsolutePositionRadians);
@@ -133,6 +132,7 @@ public class ArmIOSpark implements ArmIO {
   public void setAngleRadians(double positionRadians) {
     targetPositionRadians =
         MathUtil.clamp(positionRadians, ArmConstants.minAngleRadians, ArmConstants.maxAngleRadians);
+    this.controller.setGoal(targetPositionRadians);
     closedLoop = true;
   }
 

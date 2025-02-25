@@ -9,9 +9,9 @@ public class ElevatorConstants {
   public static boolean leadInverted = true;
   public static boolean followerInverted = true;
 
-  public static double kP = 0.085;
-  public static double kI = 0.0;
-  public static double kD = 0.0;
+  public static double kP = 0.14;
+  public static double kI = 0.0045;
+  public static double kD = 0.002;
 
   public static double HomePosition = 0.0;
   // reef levels

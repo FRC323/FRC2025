@@ -42,7 +42,6 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
     config2
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(CoralIntakeConstants.currentLimit)
-        .voltageCompensation(12.0)
         .inverted(CoralIntakeConstants.spark2Inverted);
 
     tryUntilOk(

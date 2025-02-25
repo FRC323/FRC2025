@@ -26,7 +26,6 @@ public class AlgaeIntakeIOReal implements AlgaeIntakeIO {
     config1
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(AlgaeIntakeConstants.currentLimit)
-        .voltageCompensation(12.0)
         .inverted(AlgaeIntakeConstants.spark1Inverted);
 
     tryUntilOk(
