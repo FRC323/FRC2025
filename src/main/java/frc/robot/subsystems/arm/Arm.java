@@ -100,7 +100,8 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean reachedDesiredPosition() {
-    return Math.abs(inputs.targetPositionRadians - inputs.currentAbsolutePositionRadians) <= 0.2;
+    return Math.abs(inputs.targetPositionRadians - inputs.currentRelativePositionRadians)
+        <= ArmConstants.SetpointTolerance;
   }
 
   public void storeOffset() {

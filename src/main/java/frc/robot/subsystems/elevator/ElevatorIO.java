@@ -11,11 +11,11 @@ public interface ElevatorIO {
     public boolean homed = false;
     public boolean isAtBottom = false;
 
-    public double currentHeightPosition = 0.0;
-    public double targetHeightPosition = 0.0;
-
     public double leadEncoderPosition = 0.0;
     public double followerEncoderPosition = 0.0;
+
+    public double leadEncoderVelocity = 0.0;
+    public double followerEncoderVelocity = 0.0;
   }
 
   public default void setPercent(double percent) {}
@@ -24,5 +24,5 @@ public interface ElevatorIO {
 
   public default void updateInputs(ElevatorIOInputs inputs) {}
 
-  public default void setTargetHeight(double targetHeightInches) {}
+  public default void setPosition(double targetPosition) {}
 }

@@ -9,7 +9,7 @@ public class ElevatorConstants {
   public static boolean leadInverted = true;
   public static boolean followerInverted = true;
 
-  public static double kP = 1.0;
+  public static double kP = 0.085;
   public static double kI = 0.0;
   public static double kD = 0.0;
 
@@ -31,20 +31,23 @@ public class ElevatorConstants {
   public static int currentLimit = 40;
 
   // https://www.reca.lc/linear
-  public static double kS = 0.0;
-  public static double kG = 0.9;
-  public static double kV = 9.21;
-  public static double kA = 0.01;
+  // public static double kS = 0.0;
+  // public static double kG = 0.26;
+  // public static double kV = 9.21;
+  // public static double kA = 0.03;
 
   public static double kDt = 0.02;
-  // public static double maxVelocity = 1.30; // m/s;
-  //  public static double maxAcceleration = 2.60; // m/s^2;
+  // public static final double TUNING_MODE_MULTIPLIER = 1;
+  // public static double maxVelocity = 140 * TUNING_MODE_MULTIPLIER; // 140.93 m/s;
+  // public static double maxAcceleration = 95 * TUNING_MODE_MULTIPLIER; // 211.39 m/s^2;
 
   public static double gearRatio = 12;
-  public static double carriageMass = Units.lbsToKilograms(5);
-  public static double drumRadiusInches = 2;
+  public static double carriageMass = Units.lbsToKilograms(15);
   public static double drumRadius = Units.inchesToMeters(2);
   public static double drumCircumference = Math.PI * drumRadius;
   public static double minElevatorHeight = 0; // unit = encoder position
   public static double maxElevatorHeight = 60; // unit = encoder position
+
+  public static double minRotations = 0;
+  public static double maxRotations = 0;
 }

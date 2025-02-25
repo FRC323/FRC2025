@@ -1,5 +1,6 @@
 package frc.robot.subsystems.arm;
 
+import static frc.robot.util.SparkUtil.ifOk;
 import static frc.robot.util.SparkUtil.sparkStickyFault;
 import static frc.robot.util.SparkUtil.tryUntilOk;
 
@@ -35,13 +36,8 @@ public class ArmIOSpark implements ArmIO {
 
   private boolean closedLoop = false;
   private double openLoopVoltage = 0.0;
+  private double armOffset = 0.0;
   private double targetPositionRadians = 0.0;
-
-  private boolean useAbsoluteEncoder = true;
-  private double initialPosition = 0.0;
-
-  private double currentAbsolutePositionRadians = 0.0;
-  private double currentRelativePositionRadians = 0.0;
 
   private final LoggedNetworkNumber p = new LoggedNetworkNumber("armP", ArmConstants.kP);
   private final LoggedNetworkNumber i = new LoggedNetworkNumber("armI", ArmConstants.kI);
@@ -65,21 +61,12 @@ public class ArmIOSpark implements ArmIO {
         () ->
             leadSpark.configure(
                 leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
-    double absolutePosition =
-        Preferences.getDouble(ArmConstants.ArmOffsetKey, leadAbsoluteEncoder.getPosition());
 
-    if (Math.abs(leadAbsoluteEncoder.getPosition() - absolutePosition) > .05) {
-      Logger.recordOutput("Arm/EncoderMismatch", true);
-    }
-    tryUntilOk(leadSpark, 5, () -> leadRelativeEncoder.setPosition(absolutePosition));
-  }
+    armOffset = Preferences.getDouble(ArmConstants.ArmOffsetKey, 0.0);
+    double currentAbsolutePosition = leadAbsoluteEncoder.getPosition();
+    double initialPosition = currentAbsolutePosition - armOffset;
 
-  private void updateEncoderValues(ArmIOInputs inputs) {
-    currentRelativePositionRadians = Units.rotationsToRadians(leadRelativeEncoder.getPosition());
-    currentAbsolutePositionRadians = Units.rotationsToRadians(leadAbsoluteEncoder.getPosition());
-
-    inputs.currentAbsolutePositionRadians = currentAbsolutePositionRadians;
-    inputs.currentRelativePositionRadians = currentRelativePositionRadians;
+    tryUntilOk(leadSpark, 5, () -> leadRelativeEncoder.setPosition(initialPosition));
   }
 
   private double calculateOutput(ArmIOInputs inputs) {
@@ -87,7 +74,7 @@ public class ArmIOSpark implements ArmIO {
 
     double output = 0;
     if (closedLoop) {
-      output = controller.calculate(currentRelativePositionRadians, targetPositionRadians);
+      output = controller.calculate(inputs.currentRelativePositionRadians, targetPositionRadians);
     } else {
       output = this.openLoopVoltage;
     }
@@ -96,25 +83,31 @@ public class ArmIOSpark implements ArmIO {
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    sparkStickyFault = false;
-    inputs.leadSparkConnected = leadConnectedDebounce.calculate(!sparkStickyFault);
-
     controller.setPID(p.get(), i.get(), d.get());
 
-    if (useAbsoluteEncoder) {
-      initialPosition = Units.rotationsToRadians(leadAbsoluteEncoder.getPosition());
-      currentAbsolutePositionRadians = initialPosition;
-      currentRelativePositionRadians = initialPosition;
-      useAbsoluteEncoder = false;
-    } else {
-      updateEncoderValues(inputs);
-    }
+    sparkStickyFault = false;
+    ifOk(
+        leadSpark,
+        leadRelativeEncoder::getPosition,
+        (value) -> inputs.currentRelativePositionRadians = Units.rotationsToRadians(value));
+    ifOk(
+        leadSpark,
+        leadAbsoluteEncoder::getPosition,
+        (value) -> inputs.currentAbsolutePositionRadians = Units.rotationsToRadians(value));
+    ifOk(leadSpark, leadRelativeEncoder::getVelocity, (value) -> inputs.currentVelocity = value);
+    inputs.leadSparkConnected = leadConnectedDebounce.calculate(!sparkStickyFault);
+    inputs.armOffset = armOffset;
+
+    double encoderDrift =
+        Math.abs(
+            inputs.currentAbsolutePositionRadians
+                - (inputs.currentRelativePositionRadians + armOffset));
+    Logger.recordOutput("Arm/EncoderDrift", encoderDrift);
+    Logger.recordOutput(
+        "Arm/EncoderDriftExceedsLimit", encoderDrift > ArmConstants.maxEncoderDrift);
 
     double output = calculateOutput(inputs);
     leadSpark.set(output);
-
-    inputs.currentAbsolutePositionRadians = currentAbsolutePositionRadians;
-    inputs.currentRelativePositionRadians = currentRelativePositionRadians;
 
     Logger.recordOutput(
         "Arm/CurrentAbsolutePositionRadians", inputs.currentAbsolutePositionRadians);
@@ -138,7 +131,8 @@ public class ArmIOSpark implements ArmIO {
 
   @Override
   public void setAngleRadians(double positionRadians) {
-    targetPositionRadians = positionRadians;
+    targetPositionRadians =
+        MathUtil.clamp(positionRadians, ArmConstants.minAngleRadians, ArmConstants.maxAngleRadians);
     closedLoop = true;
   }
 

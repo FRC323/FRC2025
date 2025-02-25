@@ -9,8 +9,10 @@ public interface ArmIO {
 
     public double currentAbsolutePositionRadians = 0.0;
     public double currentRelativePositionRadians = 0.0;
+    public double currentVelocity = 0.0;
     public double targetPositionRadians = 0.0;
     public boolean reachedDesiredPosition = false;
+    public double armOffset = 0.0;
   }
 
   public default void updateInputs(ArmIOInputs inputs) {}

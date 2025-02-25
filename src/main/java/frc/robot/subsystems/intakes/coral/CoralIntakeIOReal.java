@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intakes.algae;
+package frc.robot.subsystems.intakes.coral;
 
 import static frc.robot.util.SparkUtil.*;
 
@@ -12,22 +12,22 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import org.littletonrobotics.junction.Logger;
 
-public class AlgaeIntakeIOReal implements AlgaeIntakeIO {
+public class CoralIntakeIOReal implements CoralIntakeIO {
   public final SparkMax spark1;
   public final SparkMax spark2;
 
   private final Debouncer spark1ConnectedDebounce = new Debouncer(0.5);
   private final Debouncer spark2ConnectedDebounce = new Debouncer(0.5);
 
-  public AlgaeIntakeIOReal() {
-    spark1 = new SparkMax(AlgaeIntakeConstants.spark1CanId, MotorType.kBrushed);
+  public CoralIntakeIOReal() {
+    spark1 = new SparkMax(CoralIntakeConstants.spark1CanId, MotorType.kBrushed);
 
     var config1 = new SparkMaxConfig();
     config1
         .idleMode(IdleMode.kCoast)
-        .smartCurrentLimit(AlgaeIntakeConstants.currentLimit)
+        .smartCurrentLimit(CoralIntakeConstants.currentLimit)
         .voltageCompensation(12.0)
-        .inverted(AlgaeIntakeConstants.spark1Inverted);
+        .inverted(CoralIntakeConstants.spark1Inverted);
 
     tryUntilOk(
         spark1,
@@ -36,14 +36,14 @@ public class AlgaeIntakeIOReal implements AlgaeIntakeIO {
             spark1.configure(
                 config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
-    spark2 = new SparkMax(AlgaeIntakeConstants.spark2CanId, MotorType.kBrushed);
+    spark2 = new SparkMax(CoralIntakeConstants.spark2CanId, MotorType.kBrushed);
 
     var config2 = new SparkMaxConfig();
     config2
         .idleMode(IdleMode.kCoast)
-        .smartCurrentLimit(AlgaeIntakeConstants.currentLimit)
+        .smartCurrentLimit(CoralIntakeConstants.currentLimit)
         .voltageCompensation(12.0)
-        .inverted(AlgaeIntakeConstants.spark2Inverted);
+        .inverted(CoralIntakeConstants.spark2Inverted);
 
     tryUntilOk(
         spark1,
@@ -54,7 +54,7 @@ public class AlgaeIntakeIOReal implements AlgaeIntakeIO {
   }
 
   @Override
-  public void updateInputs(AlgaeIntakeIOInputs inputs) {
+  public void updateInputs(CoralIntakeIOInputs inputs) {
     sparkStickyFault = false;
     inputs.spark1SparkConnected = spark1ConnectedDebounce.calculate(!sparkStickyFault);
     inputs.spark2SparkConnected = spark2ConnectedDebounce.calculate(!sparkStickyFault);
@@ -68,15 +68,15 @@ public class AlgaeIntakeIOReal implements AlgaeIntakeIO {
     inputs.spark1Engaged = spark1.get() != 0;
     inputs.spark2Engaged = spark2.get() != 0;
 
-    Logger.recordOutput("AlgaeIntake/Spark1/Connected", inputs.spark1SparkConnected);
-    Logger.recordOutput("AlgaeIntake/Spark1/Engaged", inputs.spark1Engaged);
-    Logger.recordOutput("AlgaeIntake/Spark1/SpeedPercent", inputs.spark1SpeedPercent);
-    Logger.recordOutput("AlgaeIntake/Spark1/Current", inputs.spark1OutputCurrent);
+    Logger.recordOutput("CoralIntake/Spark1/Connected", inputs.spark1SparkConnected);
+    Logger.recordOutput("CoralIntake/Spark1/Engaged", inputs.spark1Engaged);
+    Logger.recordOutput("CoralIntake/Spark1/SpeedPercent", inputs.spark1SpeedPercent);
+    Logger.recordOutput("CoralIntake/Spark1/Current", inputs.spark1OutputCurrent);
 
-    Logger.recordOutput("AlgaeIntake/Spark2/Connected", inputs.spark2SparkConnected);
-    Logger.recordOutput("AlgaeIntake/Spark2/Engaged", inputs.spark2Engaged);
-    Logger.recordOutput("AlgaeIntake/Spark2/SpeedPercent", inputs.spark2SpeedPercent);
-    Logger.recordOutput("AlgaeIntake/Spark2/Current", inputs.spark2OutputCurrent);
+    Logger.recordOutput("CoralIntake/Spark2/Connected", inputs.spark2SparkConnected);
+    Logger.recordOutput("CoralIntake/Spark2/Engaged", inputs.spark2Engaged);
+    Logger.recordOutput("CoralIntake/Spark2/SpeedPercent", inputs.spark2SpeedPercent);
+    Logger.recordOutput("CoralIntake/Spark2/Current", inputs.spark2OutputCurrent);
   }
 
   @Override

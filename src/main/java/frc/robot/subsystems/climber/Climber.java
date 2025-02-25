@@ -11,6 +11,25 @@ public class Climber extends SubsystemBase {
 
   public Climber(ClimberIO io) {
     this.io = io;
-    leadDisconnectedAlert = new Alert("Disconnected lead motor on climber.", Alert.AlertType.kError);
+    leadDisconnectedAlert =
+        new Alert("Disconnected lead motor on climber.", Alert.AlertType.kError);
+  }
+
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+    leadDisconnectedAlert.set(!inputs.leadSparkConnected);
+  }
+
+  private void deploy() {
+    inputs.currentState = ClimberState.DEPLOYED;
+  }
+
+  private void climb() {
+    inputs.currentState = ClimberState.CLIMBED;
+  }
+
+  public void stow() {
+    inputs.currentState = ClimberState.STOWED;
   }
 }

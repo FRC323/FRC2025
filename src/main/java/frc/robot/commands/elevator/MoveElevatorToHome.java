@@ -13,7 +13,7 @@ public class MoveElevatorToHome extends Command {
 
   @Override
   public void initialize() {
-    this.elevator.setHeight(0);
+    this.elevator.setPosition(0);
   }
 
   @Override

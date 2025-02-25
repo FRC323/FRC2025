@@ -1,10 +1,10 @@
-package frc.robot.subsystems.intakes.algae;
+package frc.robot.subsystems.intakes.coral;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface AlgaeIntakeIO {
+public interface CoralIntakeIO {
   @AutoLog
-  public static class AlgaeIntakeIOInputs {
+  public static class CoralIntakeIOInputs {
     public boolean spark1SparkConnected = false;
     public boolean spark2SparkConnected = false;
 
@@ -20,5 +20,5 @@ public interface AlgaeIntakeIO {
 
   public default void setPercent(double percent) {}
 
-  public default void updateInputs(AlgaeIntakeIOInputs inputs) {}
+  public default void updateInputs(CoralIntakeIOInputs inputs) {}
 }

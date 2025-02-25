@@ -16,7 +16,7 @@ public class MoveElevatorToPosition extends Command {
 
   @Override
   public void initialize() {
-    this.elevator.setHeight(position);
+    this.elevator.setPosition(position);
   }
 
   @Override

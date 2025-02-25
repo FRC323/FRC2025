@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +25,8 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.arm.ArmCommands;
 import frc.robot.commands.elevator.ElevatorCommands;
 import frc.robot.commands.initialization.OffsetCommands;
+import frc.robot.commands.intake.IntakeCommands;
+import frc.robot.commands.scoring.ScoreCommands;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.Arm.ArmPosition;
 import frc.robot.subsystems.arm.ArmIO;
@@ -41,6 +44,10 @@ import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOSpark;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -54,6 +61,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Elevator elevator;
   private final Arm arm;
+  private final Vision vision;
 
   private final CommandJoystick driveJoystick =
       new CommandJoystick(DriveConstants.DRIVE_STICK_PORT);
@@ -65,6 +73,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -78,6 +87,7 @@ public class RobotContainer {
 
         elevator = new Elevator(new ElevatorIOSpark());
         arm = new Arm(new ArmIOSpark());
+        vision = null;
 
         break;
 
@@ -93,6 +103,17 @@ public class RobotContainer {
 
         elevator = new Elevator(new ElevatorIOSim());
         arm = new Arm(new ArmIOSim());
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.frontRightCameraName,
+                    VisionConstants.frontRightCameraToRobotTransform,
+                    drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.rearRightCameraName,
+                    VisionConstants.rearRightCameraToRobotTransform,
+                    drive::getPose));
 
         SmartDashboard.putData("Field", drive.getField());
         break;
@@ -109,10 +130,14 @@ public class RobotContainer {
 
         elevator = new Elevator(new ElevatorIO() {});
         arm = new Arm(new ArmIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
 
         SmartDashboard.putData("Field", drive.getField());
         break;
     }
+
+    // Register named commands
+    registerNamedCommmands();
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -164,6 +189,15 @@ public class RobotContainer {
     // driveJoystick.button(2).whileTrue(ArmCommands.manualArmControl(arm, () -> 0.3));
     // driveJoystick.button(2).whileFalse(ArmCommands.manualArmControl(arm, () -> 0.0));
 
+    steerJoystick
+        .trigger()
+        .onTrue(
+            ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_1_CORAL));
+
+    // Combined Command tests
+    SmartDashboard.putData("L4 Score", ScoreCommands.ScoreCoralL4(elevator, arm));
+    SmartDashboard.putData("L3 Score", ScoreCommands.ScoreCoralL3(elevator, arm));
+
     // Arm test commands
     SmartDashboard.putData("Move Arm Home", ArmCommands.moveArmToPosition(arm, ArmPosition.HOME));
     SmartDashboard.putData(
@@ -211,6 +245,12 @@ public class RobotContainer {
     SmartDashboard.putData("Set Arm Offsets", OffsetCommands.storeArmOffsets(arm));
   }
 
+  private void registerNamedCommmands() {
+    NamedCommands.registerCommand("L4 Score", ScoreCommands.ScoreCoralL4(elevator, arm));
+    NamedCommands.registerCommand("L3 Score", ScoreCommands.ScoreCoralL3(elevator, arm));
+    NamedCommands.registerCommand("HP Intake", IntakeCommands.HPIntake(elevator, arm));
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -218,5 +258,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void stopAllSubsystems() {
+    elevator.stop();
   }
 }

@@ -30,7 +30,7 @@ public class ArmConstants {
   public static double BargePosition = -0.71;
   public static double ProcessorPosition = 0.76;
 
-  public static int currentLimit = 40;
+  public static int currentLimit = 20;
 
   public static final double kS = 0.0;
   public static final double kG = 0.66;
@@ -42,5 +42,11 @@ public class ArmConstants {
   public static final double maxVelocity = 10.0;
   public static final double maxAcceleration = 20.0;
 
-  public static final double gearRatio = 50.0;
+  public static final double gearRatio = 125.0;
+
+  public static final double maxEncoderDrift = .05;
+  public static final double minAngleRadians = Units.degreesToRadians(0);
+  public static final double maxAngleRadians = Units.degreesToRadians(270);
+
+  public static final double SetpointTolerance = 0.05;
 }

@@ -13,6 +13,8 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
+  private double targetPosition = 0.0;
+
   public Elevator(ElevatorIO io) {
     this.io = io;
     leadDisconnectedAlert = new Alert("Disconnected lead motor on elevator.", AlertType.kError);
@@ -39,6 +41,11 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  public void stop() {
+    this.targetPosition = 0.0;
+    io.setPercent(0);
+  }
+
   public boolean isAtBottom() {
     return inputs.isAtBottom;
   }
@@ -53,59 +60,62 @@ public class Elevator extends SubsystemBase {
     io.setVoltage(voltage);
   }
 
-  public double getHeightInches() {
-    return inputs.currentHeightPosition;
+  public double getPosition() {
+    return inputs.leadEncoderPosition;
   }
 
-  public void setHeight(double targetHeightPosition) {
-    var position =
+  public void setPosition(double targetPosition) {
+    var target =
         MathUtil.clamp(
-            targetHeightPosition,
+            targetPosition,
             ElevatorConstants.minElevatorHeight,
             ElevatorConstants.maxElevatorHeight);
 
-    io.setTargetHeight(position);
+    this.targetPosition = target;
+    Logger.recordOutput("Elevator/TargetPosition", target);
+    io.setPosition(target);
   }
 
-  public void setHeight(ElevatorPosition position) {
+  public void setPosition(ElevatorPosition position) {
     switch (position) {
       case Home:
-        setHeight(ElevatorConstants.HomePosition);
+        setPosition(ElevatorConstants.HomePosition);
         break;
       case REEF_LEVEL_1_CORAL:
-        setHeight(ElevatorConstants.ReefLevel1CoralPosition);
+        setPosition(ElevatorConstants.ReefLevel1CoralPosition);
         break;
       case REEF_LEVEL_2_CORAL:
-        setHeight(ElevatorConstants.ReefLevel2CoralPosition);
+        setPosition(ElevatorConstants.ReefLevel2CoralPosition);
         break;
       case REEF_LEVEL_3_CORAL:
-        setHeight(ElevatorConstants.ReefLevel3CoralPosition);
+        setPosition(ElevatorConstants.ReefLevel3CoralPosition);
         break;
       case REEF_LEVEL_4_CORAL:
-        setHeight(ElevatorConstants.ReefLevel4CoralPosition);
+        setPosition(ElevatorConstants.ReefLevel4CoralPosition);
         break;
       case HUMAN_PLAYER:
-        setHeight(ElevatorConstants.HumanPlayerPosition);
+        setPosition(ElevatorConstants.HumanPlayerPosition);
         break;
       case REEF_LEVEL_1_ALGAE:
-        setHeight(ElevatorConstants.ReefLevel1AlgaePosition);
+        setPosition(ElevatorConstants.ReefLevel1AlgaePosition);
         break;
       case REEF_LEVEL_2_ALGAE:
-        setHeight(ElevatorConstants.ReefLevel2AlgaePosition);
+        setPosition(ElevatorConstants.ReefLevel2AlgaePosition);
         break;
       case ALGAE_BARGE:
-        setHeight(ElevatorConstants.BargePosition);
+        setPosition(ElevatorConstants.BargePosition);
         break;
       case ALGAE_PROCESSOR:
-        setHeight(ElevatorConstants.ProcessorPosition);
+        setPosition(ElevatorConstants.ProcessorPosition);
         break;
     }
   }
 
   public boolean reachedDesiredPosition() {
-    return Math.abs(inputs.targetHeightPosition - inputs.currentHeightPosition) < 0.1;
+    return Math.abs(this.targetPosition - inputs.leadEncoderPosition) < 0.05;
   }
 
+  @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
