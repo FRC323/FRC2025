@@ -3,7 +3,7 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.util.Units;
 
 public class ArmConstants {
-  public static final int leadCanId = 51;
+  public static final int leadCanId = 31;
 
   public static final boolean leadInverted = false;
 

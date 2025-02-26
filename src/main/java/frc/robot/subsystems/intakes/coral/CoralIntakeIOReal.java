@@ -26,7 +26,6 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
     config1
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(CoralIntakeConstants.currentLimit)
-        .voltageCompensation(12.0)
         .inverted(CoralIntakeConstants.spark1Inverted);
 
     tryUntilOk(
@@ -66,6 +65,8 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
 
     inputs.spark1Engaged = spark1.get() != 0;
     inputs.spark2Engaged = spark2.get() != 0;
+
+    inputs.totalOutputCurrent = spark1.getOutputCurrent() + spark2.getOutputCurrent();
 
     Logger.recordOutput("CoralIntake/Spark1/Connected", inputs.spark1SparkConnected);
     Logger.recordOutput("CoralIntake/Spark1/Engaged", inputs.spark1Engaged);

@@ -44,6 +44,11 @@ import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOSpark;
+import frc.robot.subsystems.intakes.algae.AlgaeIntake;
+import frc.robot.subsystems.intakes.algae.AlgaeIntakeIOReal;
+import frc.robot.subsystems.intakes.coral.CoralIntake;
+import frc.robot.subsystems.intakes.coral.CoralIntakeIO;
+import frc.robot.subsystems.intakes.coral.CoralIntakeIOReal;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -62,6 +67,8 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Arm arm;
   private final Vision vision;
+  private final CoralIntake coralIntake;
+  private final AlgaeIntake algaeIntake;
 
   private final CommandJoystick driveJoystick =
       new CommandJoystick(DriveConstants.DRIVE_STICK_PORT);
@@ -87,6 +94,8 @@ public class RobotContainer {
 
         elevator = new Elevator(new ElevatorIOSpark());
         arm = new Arm(new ArmIOSpark());
+        coralIntake = new CoralIntake(new CoralIntakeIOReal());
+        algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal());
         vision = null;
 
         break;
@@ -115,6 +124,9 @@ public class RobotContainer {
                     VisionConstants.rearRightCameraToRobotTransform,
                     drive::getPose));
 
+        coralIntake = null;
+        algaeIntake = null;
+
         SmartDashboard.putData("Field", drive.getField());
         break;
 
@@ -131,6 +143,8 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIO() {});
         arm = new Arm(new ArmIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        coralIntake = new CoralIntake(new CoralIntakeIO() {});
+        algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal() {});
 
         SmartDashboard.putData("Field", drive.getField());
         break;
@@ -176,6 +190,15 @@ public class RobotContainer {
             () -> -driveJoystick.getX(),
             () -> steerJoystick.getX()));
 
+    coralIntake.setDefaultCommand(
+        IntakeCommands.ManualCoralIntakeControl(coralIntake, () -> steerJoystick.getY()));
+
+    algaeIntake.setDefaultCommand(
+        IntakeCommands.ManualAlgaeIntakeControl(algaeIntake, () -> steerJoystick.getY()));
+    SmartDashboard.putData(
+        "Run Intakes", IntakeCommands.ManualIntakeControl(coralIntake, algaeIntake, () -> 1));
+
+    //JUNK COMMANDS - leaving here for now for reference
     // steerJoystick.trigger().whileTrue(ElevatorCommands.manualElevatorControl(elevator, () ->
     // 0.3));
     // steerJoystick.trigger().whileFalse(ElevatorCommands.manualElevatorControl(elevator, () ->
@@ -189,10 +212,11 @@ public class RobotContainer {
     // driveJoystick.button(2).whileTrue(ArmCommands.manualArmControl(arm, () -> 0.3));
     // driveJoystick.button(2).whileFalse(ArmCommands.manualArmControl(arm, () -> 0.0));
 
-    steerJoystick
-        .trigger()
-        .onTrue(
-            ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_1_CORAL));
+    // steerJoystick
+    //     .trigger()
+    //     .onTrue(
+    //         ElevatorCommands.moveElevatorToPosition(elevator,
+    // ElevatorPosition.REEF_LEVEL_1_CORAL));
 
     // Combined Command tests
     SmartDashboard.putData("L4 Score", ScoreCommands.ScoreCoralL4(elevator, arm));

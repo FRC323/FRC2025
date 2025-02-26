@@ -2,6 +2,8 @@ package frc.robot.subsystems.intakes.coral;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import frc.robot.subsystems.intakes.coral.CoralIntake.IntakeMode;
+
 public interface CoralIntakeIO {
   @AutoLog
   public static class CoralIntakeIOInputs {
@@ -16,6 +18,12 @@ public interface CoralIntakeIO {
 
     public boolean spark1Engaged = false;
     public boolean spark2Engaged = false;
+
+    public double totalOutputCurrent = 0.0;
+
+    public boolean occupied = false;
+
+    public IntakeMode intakeMode = IntakeMode.None;
   }
 
   public default void setPercent(double percent) {}

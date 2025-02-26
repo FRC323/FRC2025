@@ -12,6 +12,11 @@ public class IntakeCommands {
     return new HPIntake(elevator, arm);
   }
 
+  public static Command ManualIntakeControl(
+      CoralIntake coralIntake, AlgaeIntake algaeIntake, DoubleSupplier percentSupplier) {
+    return new ManualIntakeControl(algaeIntake, coralIntake, percentSupplier);
+  }
+
   public static Command ManualCoralIntakeControl(
       CoralIntake coralIntake, DoubleSupplier percentSupplier) {
     return new ManualCoralIntakeControl(coralIntake, percentSupplier);

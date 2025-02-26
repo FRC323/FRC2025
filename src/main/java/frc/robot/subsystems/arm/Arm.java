@@ -100,7 +100,9 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean reachedDesiredPosition() {
-    return MathUtil.isNear(inputs.targetPositionRadians, inputs.currentRelativePositionRadians,
+    return MathUtil.isNear(
+        inputs.targetPositionRadians,
+        inputs.currentRelativePositionRadians,
         ArmConstants.SetpointTolerance);
   }
 

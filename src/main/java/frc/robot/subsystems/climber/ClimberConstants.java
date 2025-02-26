@@ -1,7 +1,7 @@
 package frc.robot.subsystems.climber;
 
 public class ClimberConstants {
-  public static final int leadCanId = 51;
+  public static final int leadCanId = 91;
   public static final boolean leadInverted = false;
 
   public static final double gearRatio = 400;
