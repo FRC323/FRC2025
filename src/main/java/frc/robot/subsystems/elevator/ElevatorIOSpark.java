@@ -19,18 +19,19 @@ public class ElevatorIOSpark implements ElevatorIO {
   private final SparkMax leadSpark;
   private final SparkMax followerSpark;
 
-  private final RelativeEncoder leadEncoder;
-
   private final Debouncer leadConnectedDebounce = new Debouncer(0.5);
   private final Debouncer followerConnectedDebounce = new Debouncer(0.5);
+  private final Debouncer bottomLimitSwitchDebounce = new Debouncer(0.2);
 
-  private final PIDController controller = new PIDController(ElevatorConstants.kP, ElevatorConstants.kI,
-      ElevatorConstants.kD);
+  private final RelativeEncoder leadEncoder;
+  private final RelativeEncoder followerEncoder;
+
+  private final PIDController controller =
+      new PIDController(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD);
 
   private boolean closedLoop = false;
   private double openLoopVoltage = 0.0;
-  private double targetHeightPosition = 0.0;
-  private double currentHeightPosition = 0.0;
+  private double targetPosition = 0.0;
 
   private final LoggedNetworkNumber p = new LoggedNetworkNumber("elevatorP", ElevatorConstants.kP);
   private final LoggedNetworkNumber i = new LoggedNetworkNumber("elevatorI", ElevatorConstants.kI);
@@ -42,97 +43,84 @@ public class ElevatorIOSpark implements ElevatorIO {
     leadEncoder = leadSpark.getEncoder();
     var leadConfig = new SparkMaxConfig();
     leadConfig
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ElevatorConstants.currentLimit)
         .voltageCompensation(12.0)
-        .inverted(true);
+        .inverted(ElevatorConstants.leadInverted);
 
     tryUntilOk(
         leadSpark,
         5,
-        () -> leadSpark.configure(
-            leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+        () ->
+            leadSpark.configure(
+                leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
     tryUntilOk(leadSpark, 5, () -> leadEncoder.setPosition(0.0));
 
     // follower set up
     followerSpark = new SparkMax(ElevatorConstants.followerCanId, MotorType.kBrushless);
-    var followerEncoder = followerSpark.getEncoder();
+    followerEncoder = followerSpark.getEncoder();
     var followerConfig = new SparkMaxConfig();
     followerConfig
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ElevatorConstants.currentLimit)
         .follow(ElevatorConstants.leadCanId, ElevatorConstants.followerInverted);
 
     tryUntilOk(
         followerSpark,
         5,
-        () -> followerSpark.configure(
-            followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+        () ->
+            followerSpark.configure(
+                followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
     tryUntilOk(followerSpark, 5, () -> followerEncoder.setPosition(0.0));
-  }
-
-  private void updateEncoderValues(ElevatorIOInputs inputs) {
-    var leadEncoderValue = -leadEncoder.getPosition();
-    var followerEncoderValue = -followerSpark.getEncoder().getPosition();
-    currentHeightPosition = leadEncoderValue;
-
-    inputs.leadEncoderPosition = leadEncoderValue;
-    inputs.followerEncoderPosition = followerEncoderValue;
-  }
-
-  private void updateLimitSwitches(ElevatorIOInputs inputs) {
-    if (leadSpark.getReverseLimitSwitch().isPressed()) {
-      inputs.homed = true;
-      inputs.isAtBottom = true;
-      inputs.currentHeightPosition = 0;
-      leadEncoder.setPosition(0);
-    } else {
-      inputs.isAtBottom = false;
-    }
-  }
-  
-  private double calculateOutput(ElevatorIOInputs inputs) {
-    if (!inputs.leadSparkConnected)
-      return 0.0;
-
-    double output = 0;
-    if (closedLoop) {
-      if (inputs.homed) {
-        output = controller.calculate(currentHeightPosition, targetHeightPosition);
-      }
-    } else {
-      output = this.openLoopVoltage;
-    }
-    return output;
-  }
-
-  private void updateLogging(double output) {
-    Logger.recordOutput("Elevator/CurrentHeightInches", currentHeightPosition);
-    Logger.recordOutput("Elevator/ControlEffort", output);
   }
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    sparkStickyFault = false;
-    inputs.leadSparkConnected = leadConnectedDebounce.calculate(!sparkStickyFault);
-    inputs.followerSparkConnected = followerConnectedDebounce.calculate(!sparkStickyFault);
-
     controller.setPID(p.get(), i.get(), d.get());
 
-    updateEncoderValues(inputs);
-    updateLimitSwitches(inputs);
+    sparkStickyFault = false;
+    ifOk(leadSpark, leadEncoder::getPosition, (value) -> inputs.leadEncoderPosition = value);
+    ifOk(leadSpark, leadEncoder::getVelocity, (value) -> inputs.leadEncoderVelocity = value);
+    inputs.leadSparkConnected = leadConnectedDebounce.calculate(!sparkStickyFault);
 
-    double output = calculateOutput(inputs);
-    leadSpark.setVoltage(output);
+    sparkStickyFault = false;
+    ifOk(
+        followerSpark,
+        followerEncoder::getPosition,
+        (value) -> inputs.followerEncoderPosition = -value);
+    ifOk(
+        followerSpark,
+        leadEncoder::getVelocity,
+        (value) -> inputs.followerEncoderVelocity = -value);
+    inputs.followerSparkConnected = followerConnectedDebounce.calculate(!sparkStickyFault);
 
-    inputs.currentHeightPosition = currentHeightPosition;
-    inputs.targetHeightPosition = targetHeightPosition;
+    var bottomLimitSwitchPressed =
+        bottomLimitSwitchDebounce.calculate(leadSpark.getReverseLimitSwitch().isPressed());
+    if (bottomLimitSwitchPressed) {
+      inputs.homed = true;
+      inputs.isAtBottom = true;
+      leadEncoder.setPosition(0);
+    } else {
+      inputs.isAtBottom = false;
+    }
 
-    updateLogging(output);
+    double output = 0;
+    if (closedLoop) {
+      if (inputs.homed) {
+        double pidOutput = controller.calculate(inputs.leadEncoderPosition, this.targetPosition);
+        output = pidOutput;
+      }
+    } else {
+      output = this.openLoopVoltage;
+    }
+    leadSpark.set(output);
+
+    Logger.recordOutput("Elevator/ControlOutput", output);
   }
 
   @Override
   public void setPercent(double percent) {
+    closedLoop = false;
     var clamped = MathUtil.clamp(percent, -1.0, 1.0);
     setVoltage(clamped * 12);
   }
@@ -141,12 +129,12 @@ public class ElevatorIOSpark implements ElevatorIO {
   public void setVoltage(double voltage) {
     closedLoop = false;
     var clamped = MathUtil.clamp(voltage, -12, 12);
-    openLoopVoltage = clamped;
+    leadSpark.setVoltage(clamped);
   }
 
   @Override
-  public void setTargetHeight(double targetHeightPosition) {
-    closedLoop = true;
-    this.targetHeightPosition = targetHeightPosition;
+  public void setPosition(double targetPosition) {
+    this.closedLoop = true;
+    this.targetPosition = targetPosition;
   }
 }

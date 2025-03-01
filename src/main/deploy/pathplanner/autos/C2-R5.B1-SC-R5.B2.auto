@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "C2-R5.B1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4 Score"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R5.B2-SC"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "HP Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SC-R5.B2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4 Score"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

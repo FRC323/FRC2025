@@ -1,0 +1,74 @@
+// JUNK COMMANDS - leaving here for now for reference
+    // steerJoystick.trigger().whileTrue(ElevatorCommands.manualElevatorControl(elevator, () ->
+    // 0.3));
+    // steerJoystick.trigger().whileFalse(ElevatorCommands.manualElevatorControl(elevator, () ->
+    // 0.0));
+
+    // driveJoystick.button(2).whileTrue(ElevatorCommands.manualElevatorControl(elevator, () ->
+    // 0.3));
+    // driveJoystick.button(2).whileFalse(ElevatorCommands.manualElevatorControl(elevator, () ->
+    // 0.0));
+
+    // driveJoystick.button(2).whileTrue(ArmCommands.manualArmControl(arm, () -> 0.3));
+    // driveJoystick.button(2).whileFalse(ArmCommands.manualArmControl(arm, () -> 0.0));
+
+    // steerJoystick
+    //     .trigger()
+    //     .onTrue(
+    //         ElevatorCommands.moveElevatorToPosition(elevator,
+    // ElevatorPosition.REEF_LEVEL_1_CORAL));
+
+    // Combined Command tests
+    //SmartDashboard.putData("HP Intake", IntakeCommands.HPIntake(elevator, arm));
+    // SmartDashboard.putData("L4 Score", ScoreCommands.ScoreCoralL4(elevator, arm));
+    // SmartDashboard.putData("L3 Score", ScoreCommands.ScoreCoralL3(elevator, arm));
+
+  //   // Arm test commands
+  //   SmartDashboard.putData("Move Arm Home", ArmCommands.moveArmToPosition(arm, ArmPosition.HOME));
+  //   SmartDashboard.putData(
+  //       "Move Arm L1 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_1_CORAL));
+  //   SmartDashboard.putData(
+  //       "Move Arm L2 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_2_CORAL));
+  //   SmartDashboard.putData(
+  //       "Move Arm L3 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_3_CORAL));
+  //   SmartDashboard.putData(
+  //       "Move Arm L4 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_4_CORAL));
+
+  //   SmartDashboard.putData(
+  //       "Move Arm L1 Algae", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_1_ALGAE));
+  //   SmartDashboard.putData(
+  //       "Move Arm L2 Algae", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_2_ALGAE));
+
+  //   SmartDashboard.putData(
+  //       "Move Arm Processor", ArmCommands.moveArmToPosition(arm, ArmPosition.ALGAE_PROCESSOR));
+  //   SmartDashboard.putData(
+  //       "Move Arm Human Player", ArmCommands.moveArmToPosition(arm, ArmPosition.HUMAN_PLAYER));
+  //   SmartDashboard.putData(
+  //       "Move Arm Barge", ArmCommands.moveArmToPosition(arm, ArmPosition.ALGAE_BARGE));
+
+  //   // Elevator test commands
+  //  // SmartDashboard.putData("Move Elevator Home", ElevatorCommands.moveElevatorToHome(elevator));
+  //   SmartDashboard.putData(
+  //       "Move Elevator L1",
+  //       ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_1_CORAL));
+  //   SmartDashboard.putData(
+  //       "Move Elevator L2",
+  //       ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_2_CORAL));
+  //   SmartDashboard.putData(
+  //       "Move Elevator L3",
+  //       ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_3_CORAL));
+  //   SmartDashboard.putData(
+  //       "Move Elevator L4",
+  //       ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_4_CORAL));
+
+  //   SmartDashboard.putData(
+  //       "Move Elevator Barge",
+  //       ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.ALGAE_BARGE));
+
+      coralIntake.setDefaultCommand(
+        IntakeCommands.ManualCoralIntakeControl(coralIntake, () -> steerJoystick.getY()));
+
+    algaeIntake.setDefaultCommand(
+        IntakeCommands.ManualAlgaeIntakeControl(algaeIntake, () -> steerJoystick.getY()));
+    SmartDashboard.putData(
+        "Run Intakes", IntakeCommands.ManualIntakeControl(coralIntake, algaeIntake, () -> 1));   

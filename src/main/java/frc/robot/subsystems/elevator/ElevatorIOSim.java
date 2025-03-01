@@ -24,6 +24,9 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ElevatorIOSim implements ElevatorIO {
   private final ElevatorSim elevatorSim;
+  // private final TrapezoidProfile.Constraints constraints =
+  //     new TrapezoidProfile.Constraints(
+  //         ElevatorConstants.maxVelocity, ElevatorConstants.maxAcceleration);
   private final PIDController controller;
   private final SparkMaxSim leadSpark;
   private final SparkMaxSim followerSpark;
@@ -40,62 +43,50 @@ public class ElevatorIOSim implements ElevatorIO {
   // SparkLimitSwitchSim - did not work for me at all
   private final DIOSim bottomLimitSwitch;
   private final Debouncer limitSwitchDebouncer = new Debouncer(0.1);
-  // private final SparkLimitSwitchSim bottomLimitSwitch;
-  private boolean closedLoop = false;
+
+  private double targetPosition = 0.0;
   private double openLoopVoltage = 0.0;
-  private double targetHeightInches = 0.0;
-  private double currentHeightInches = 0.0;
+  private boolean closedLoop = false;
 
   private final LoggedNetworkNumber p = new LoggedNetworkNumber("elevatorP", ElevatorConstants.kP);
   private final LoggedNetworkNumber i = new LoggedNetworkNumber("elevatorI", ElevatorConstants.kI);
   private final LoggedNetworkNumber d = new LoggedNetworkNumber("elevatorD", ElevatorConstants.kD);
+
+  // private final ElevatorFeedforward feedforward =
+  //     new ElevatorFeedforward(
+  //         ElevatorConstants.kS, ElevatorConstants.kG, ElevatorConstants.kV,
+  // ElevatorConstants.kA);
 
   public ElevatorIOSim() {
     bottomLimitSwitch = new DIOSim(0);
 
     LinearSystem<N2, N1, N2> elevatorSystem =
         LinearSystemId.createElevatorSystem(
-          motor,
-          ElevatorConstants.carriageMass,
-          ElevatorConstants.drumRadius,
-          ElevatorConstants.gearRatio);
+            motor,
+            ElevatorConstants.carriageMass,
+            ElevatorConstants.drumRadius,
+            ElevatorConstants.gearRatio);
 
     elevatorSim =
         new ElevatorSim(
-          elevatorSystem,
-          motor,
-          Units.inchesToMeters(ElevatorConstants.minElevatorHeight),
-          Units.inchesToMeters(ElevatorConstants.maxElevatorHeight),
-          false,
-          0);
+            elevatorSystem,
+            motor,
+            Units.inchesToMeters(ElevatorConstants.minElevatorHeight),
+            Units.inchesToMeters(ElevatorConstants.maxElevatorHeight),
+            true,
+            0);
 
     leadSpark =
-        new SparkMaxSim(
-            new SparkMax(ElevatorConstants.leadCanId, MotorType.kBrushless),
-            motor);
+        new SparkMaxSim(new SparkMax(ElevatorConstants.leadCanId, MotorType.kBrushless), motor);
     followerSpark =
-        new SparkMaxSim(
-            new SparkMax(ElevatorConstants.followerCanId, MotorType.kBrushless),
-            motor);
+        new SparkMaxSim(new SparkMax(ElevatorConstants.followerCanId, MotorType.kBrushless), motor);
 
     leadEncoder = leadSpark.getRelativeEncoderSim();
-    // TrapezoidProfile.Constraints constraints =
-    //    new TrapezoidProfile.Constraints(
-    //        ElevatorConstants.maxVelocity, ElevatorConstants.maxAcceleration);
     controller = new PIDController(p.get(), i.get(), d.get());
-    // feedforward =
-    //    new ElevatorFeedforward(
-    //        ElevatorConstants.kS, ElevatorConstants.kG, ElevatorConstants.kV,
-    // ElevatorConstants.kA);
 
-    // Setup Mechanism2d visualization
     mechanism2d = new Mechanism2d(40, ElevatorConstants.maxElevatorHeight);
     elevatorRoot = mechanism2d.getRoot("Elevator", 20, 0);
     elevatorCarriage = elevatorRoot.append(new MechanismLigament2d("Carriage", 0, 90));
-
-    // bottomLimitSwitch =
-    //    new SparkLimitSwitchSim(
-    //       new SparkMax(ElevatorConstants.leadCanId, MotorType.kBrushless), false);
 
     SmartDashboard.putData("Elevator Simulation", mechanism2d);
   }
@@ -108,21 +99,20 @@ public class ElevatorIOSim implements ElevatorIO {
 
     elevatorSim.update(ElevatorConstants.kDt);
 
-    currentHeightInches = Units.metersToInches(elevatorSim.getPositionMeters());
+    var currentPosition = Units.metersToInches(elevatorSim.getPositionMeters());
 
-    leadEncoder.setPosition(currentHeightInches);
+    leadEncoder.setPosition(currentPosition);
 
-    // bottomLimitSwitch.setValue(this.currentHeightInches <= 0);
-    boolean isAtBottom = limitSwitchDebouncer.calculate(currentHeightInches <= 0);
+    inputs.leadEncoderPosition = currentPosition;
+
+    boolean isAtBottom = limitSwitchDebouncer.calculate(currentPosition <= 0);
     bottomLimitSwitch.setValue(isAtBottom);
 
-    // if (bottomLimitSwitch.getValue()) {
     if (bottomLimitSwitch.getValue()) {
       elevatorSim.setInput(0);
       elevatorSim.setState(0, 0);
       inputs.homed = true;
       inputs.isAtBottom = true;
-      inputs.currentHeightPosition = 0;
     } else {
       inputs.isAtBottom = false;
     }
@@ -130,9 +120,7 @@ public class ElevatorIOSim implements ElevatorIO {
     double output = 0;
     if (closedLoop) {
       if (inputs.homed) {
-        double pidOutput =
-            controller.calculate(
-                Units.metersToInches(elevatorSim.getPositionMeters()), inputs.targetHeightPosition);
+        double pidOutput = controller.calculate(currentPosition, this.targetPosition);
         // double ffOutput = feedforward.calculate(controller.getSetpoint().velocity);
         output = pidOutput; // + ffOutput;
 
@@ -143,32 +131,31 @@ public class ElevatorIOSim implements ElevatorIO {
       elevatorSim.setInput(output);
     }
 
-    inputs.currentHeightPosition = this.currentHeightInches;
-    inputs.targetHeightPosition = this.targetHeightInches;
+    elevatorCarriage.setLength(currentPosition);
 
-    elevatorCarriage.setLength(inputs.currentHeightPosition);
-
+    Logger.recordOutput("Elevator/ControlOutput", output);
     Logger.recordOutput("Elevator/BottomLimitSwitchPressed", bottomLimitSwitch.getValue());
     Logger.recordOutput("Elevator/LeadEncoderPosition", leadEncoder.getPosition());
-    Logger.recordOutput("Elevator/ControlEffort", output);
+    Logger.recordOutput("Elevator/CurrentPosition", leadEncoder.getPosition());
   }
 
   @Override
   public void setPercent(double percent) {
+    this.closedLoop = false;
     var clamped = MathUtil.clamp(percent, -1.0, 1.0);
     setVoltage(clamped * 12);
   }
 
   @Override
   public void setVoltage(double voltage) {
-    closedLoop = false;
+    this.closedLoop = false;
     var clamped = MathUtil.clamp(voltage, -12, 12);
     openLoopVoltage = clamped;
   }
 
   @Override
-  public void setTargetHeight(double targetHeightInches) {
-    closedLoop = true;
-    this.targetHeightInches = targetHeightInches;
+  public void setPosition(double position) {
+    this.closedLoop = true;
+    this.targetPosition = position;
   }
 }

@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,8 +22,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.elevator.ElevatorCommands;
+import frc.robot.commands.arm.ArmCommands;
+import frc.robot.commands.common.CommonCommands;
 import frc.robot.commands.initialization.OffsetCommands;
+import frc.robot.commands.intake.IntakeCommands;
+import frc.robot.commands.scoring.ScoreCommands;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.Arm.ArmPosition;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.arm.ArmIOSpark;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.GyroIO;
@@ -31,10 +40,21 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefLevel;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOSpark;
+import frc.robot.subsystems.intakes.algae.AlgaeIntake;
+import frc.robot.subsystems.intakes.algae.AlgaeIntakeIOReal;
+import frc.robot.subsystems.intakes.algae.AlgaeIntakeIOSim;
+import frc.robot.subsystems.intakes.coral.CoralIntake;
+import frc.robot.subsystems.intakes.coral.CoralIntakeIO;
+import frc.robot.subsystems.intakes.coral.CoralIntakeIOReal;
+import frc.robot.subsystems.intakes.coral.CoralIntakeIOSim;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -47,6 +67,10 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Elevator elevator;
+  private final Arm arm;
+  private final Vision vision;
+  private final CoralIntake coralIntake;
+  private final AlgaeIntake algaeIntake;
 
   private final CommandJoystick driveJoystick =
       new CommandJoystick(DriveConstants.DRIVE_STICK_PORT);
@@ -58,6 +82,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -70,6 +95,10 @@ public class RobotContainer {
                 new ModuleIOSpark(3));
 
         elevator = new Elevator(new ElevatorIOSpark());
+        arm = new Arm(new ArmIOSpark());
+        coralIntake = new CoralIntake(new CoralIntakeIOReal());
+        algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal());
+        vision = null;
 
         break;
 
@@ -84,6 +113,21 @@ public class RobotContainer {
                 new ModuleIOSim());
 
         elevator = new Elevator(new ElevatorIOSim());
+        arm = new Arm(new ArmIOSim());
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.frontRightCameraName,
+                    VisionConstants.frontRightCameraToRobotTransform,
+                    drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.rearRightCameraName,
+                    VisionConstants.rearRightCameraToRobotTransform,
+                    drive::getPose));
+
+        coralIntake = new CoralIntake(new CoralIntakeIOSim());
+        algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSim());
 
         SmartDashboard.putData("Field", drive.getField());
         break;
@@ -99,13 +143,64 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         elevator = new Elevator(new ElevatorIO() {});
+        arm = new Arm(new ArmIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        coralIntake = new CoralIntake(new CoralIntakeIO() {});
+        algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal() {});
 
         SmartDashboard.putData("Field", drive.getField());
         break;
     }
 
+    // Register named commands
+    registerNamedCommmands();
+
+    // arm test
+    SmartDashboard.putData(
+        "Move Arm Human Player", ArmCommands.moveArmToPosition(arm, ArmPosition.HUMAN_PLAYER));
+    SmartDashboard.putData(
+        "Move Arm Coral 1", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_1_CORAL));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+    // intaking
+    SmartDashboard.putData("Coral Intake", IntakeCommands.CoralIntake(elevator, arm, coralIntake));
+    SmartDashboard.putData(
+        "Aglae Intake L1",
+        IntakeCommands.AlgaeIntake(
+            elevator,
+            ElevatorPosition.REEF_LEVEL_1_ALGAE,
+            arm,
+            ArmPosition.REEF_LEVEL_1_ALGAE,
+            algaeIntake));
+    SmartDashboard.putData(
+        "Aglae Intake L2",
+        IntakeCommands.AlgaeIntake(
+            elevator,
+            ElevatorPosition.REEF_LEVEL_2_ALGAE,
+            arm,
+            ArmPosition.REEF_LEVEL_2_ALGAE,
+            algaeIntake));
+
+    // coral scoring
+    SmartDashboard.putData(
+        "Coral Score L2",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_2_CORAL, arm, ArmPosition.REEF_LEVEL_2_CORAL));
+    SmartDashboard.putData(
+        "Coral Score L3",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_3_CORAL, arm, ArmPosition.REEF_LEVEL_3_CORAL));
+    SmartDashboard.putData(
+        "Coral Score L4",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_4_CORAL, arm, ArmPosition.REEF_LEVEL_4_CORAL));
+
+    // common
+    SmartDashboard.putData(
+        "Travel Position",
+        CommonCommands.moveToTravelPosition(elevator, arm, coralIntake, algaeIntake));
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -141,21 +236,35 @@ public class RobotContainer {
             () -> -driveJoystick.getX(),
             () -> steerJoystick.getX()));
 
-    steerJoystick.trigger().whileTrue(ElevatorCommands.ManualElevatorControl(elevator, () -> 0.3));
-    steerJoystick.trigger().whileFalse(ElevatorCommands.ManualElevatorControl(elevator, () -> 0.0));
+    coralIntake.setDefaultCommand(
+        IntakeCommands.ManualCoralIntakeControl(coralIntake, () -> steerJoystick.getY()));
 
-    SmartDashboard.putData("Move Elevator Home", ElevatorCommands.moveElevatorToHome(elevator));
-    SmartDashboard.putData(
-        "Move Elevator L1", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level1));
-    SmartDashboard.putData(
-        "Move Elevator L2", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level2));
-    SmartDashboard.putData(
-        "Move Elevator L3", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level3));
-    SmartDashboard.putData(
-        "Move Elevator L4", ElevatorCommands.MoveElevatorToReefLevel(elevator, ReefLevel.Level4));
+    algaeIntake.setDefaultCommand(
+        IntakeCommands.ManualAlgaeIntakeControl(algaeIntake, () -> steerJoystick.getY()));
 
     // ROBOT INITIALIZE COMMANDS
     SmartDashboard.putData("Set Drivetrain Offsets", OffsetCommands.storeDrivetrainOffsets(drive));
+  }
+
+  private void registerNamedCommmands() {
+    NamedCommands.registerCommand(
+        "Coral L1 Score",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_2_CORAL, arm, ArmPosition.REEF_LEVEL_2_CORAL));
+    NamedCommands.registerCommand(
+        "Coral L2 Score",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_2_CORAL, arm, ArmPosition.REEF_LEVEL_2_CORAL));
+    NamedCommands.registerCommand(
+        "Coral L3 Score",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_3_CORAL, arm, ArmPosition.REEF_LEVEL_3_CORAL));
+    NamedCommands.registerCommand(
+        "Coral L4 Score",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_4_CORAL, arm, ArmPosition.REEF_LEVEL_4_CORAL));
+    NamedCommands.registerCommand(
+        "Coral HP Intake", IntakeCommands.CoralIntake(elevator, arm, coralIntake));
   }
 
   /**
@@ -165,5 +274,10 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void stopAllSubsystems() {
+    elevator.stop();
+    arm.stop();
   }
 }

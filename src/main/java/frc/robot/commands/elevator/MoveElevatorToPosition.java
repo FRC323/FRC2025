@@ -2,21 +2,21 @@ package frc.robot.commands.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefLevel;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 
-public class MoveElevatorToReefLevel extends Command {
+public class MoveElevatorToPosition extends Command {
   private Elevator elevator;
-  private ReefLevel reefLevel;
+  private ElevatorPosition position;
 
-  public MoveElevatorToReefLevel(Elevator elevator, ReefLevel reefLevel) {
+  public MoveElevatorToPosition(Elevator elevator, ElevatorPosition position) {
     addRequirements(elevator);
     this.elevator = elevator;
-    this.reefLevel = reefLevel;
+    this.position = position;
   }
 
   @Override
   public void initialize() {
-    this.elevator.setHeight(this.reefLevel);
+    this.elevator.setPosition(position);
   }
 
   @Override
