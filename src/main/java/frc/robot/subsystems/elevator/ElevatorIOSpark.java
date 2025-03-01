@@ -43,7 +43,7 @@ public class ElevatorIOSpark implements ElevatorIO {
     leadEncoder = leadSpark.getEncoder();
     var leadConfig = new SparkMaxConfig();
     leadConfig
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ElevatorConstants.currentLimit)
         .voltageCompensation(12.0)
         .inverted(ElevatorConstants.leadInverted);
@@ -61,7 +61,7 @@ public class ElevatorIOSpark implements ElevatorIO {
     followerEncoder = followerSpark.getEncoder();
     var followerConfig = new SparkMaxConfig();
     followerConfig
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ElevatorConstants.currentLimit)
         .follow(ElevatorConstants.leadCanId, ElevatorConstants.followerInverted);
 

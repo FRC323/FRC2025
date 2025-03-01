@@ -2,9 +2,8 @@ package frc.robot.subsystems.intakes.coral;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.elevator.ElevatorConstants;
-
 import org.littletonrobotics.junction.Logger;
 
 public class CoralIntake extends SubsystemBase {
@@ -14,20 +13,21 @@ public class CoralIntake extends SubsystemBase {
   private final CoralIntakeIO io;
   private final CoralIntakeIOInputsAutoLogged inputs = new CoralIntakeIOInputsAutoLogged();
 
+  public enum IntakeState {
+    IDLE,
+    INTAKING,
+    HOLDING_PIECE,
+    OUTTAKING
+  }
+
+  private final Timer currentSpikeTimer = new Timer();
+
   public CoralIntake(CoralIntakeIO io) {
     this.io = io;
     spark1DisconnectedAlert =
         new Alert("Disconnected motor 1 on coral intake.", Alert.AlertType.kError);
     spark2DisconnectedAlert =
         new Alert("Disconnected motor 2 on coral intake.", Alert.AlertType.kError);
-
-    inputs.intakeMode = IntakeMode.None;
-  }
-
-  public enum IntakeMode {
-    None,
-    Intake,
-    Outtake
   }
 
   public void runPercentOutput(double percent) {
@@ -36,13 +36,18 @@ public class CoralIntake extends SubsystemBase {
   }
 
   public void intake() {
-    inputs.intakeMode = IntakeMode.Intake;
-    runPercentOutput(1);
+    inputs.state = IntakeState.INTAKING;
+    runPercentOutput(CoralIntakeConstants.normalOutput);
   }
 
   public void outtake() {
-    inputs.intakeMode = IntakeMode.Outtake;
-    runPercentOutput(-1);
+    inputs.state = IntakeState.OUTTAKING;
+    runPercentOutput(-CoralIntakeConstants.normalOutput);
+  }
+
+  public void stop() {
+    inputs.state = IntakeState.IDLE;
+    runPercentOutput(0);
   }
 
   @Override
@@ -53,10 +58,36 @@ public class CoralIntake extends SubsystemBase {
     spark1DisconnectedAlert.set(!inputs.spark1SparkConnected);
     spark2DisconnectedAlert.set(!inputs.spark2SparkConnected);
 
-    //TODO: cancel captured current when spitting the game piece out
-    if (inputs.totalOutputCurrent >= CoralIntakeConstants.capturingPieceCurrent) {
-      io.setPercent(CoralIntakeConstants.capturedCurrentOutput);
-    }
-    
+    // switch (inputs.state) {
+    //   case IDLE:
+    //     currentSpikeTimer.stop();
+    //     runPercentOutput(0);
+    //     break;
+
+    //   case INTAKING:
+    //     if (inputs.totalOutputCurrent >= CoralIntakeConstants.capturingPieceCurrent) {
+    //       if (!currentSpikeTimer.isRunning()) {
+    //         currentSpikeTimer.restart();
+    //       }
+    //       if (currentSpikeTimer.hasElapsed(CoralIntakeConstants.currentSpikeDuration)) {
+    //         inputs.state = IntakeState.HOLDING_PIECE;
+    //       }
+    //     } else {
+    //       currentSpikeTimer.stop();
+    //     }
+    //     runPercentOutput(CoralIntakeConstants.normalOutput);
+    //     break;
+
+    //   case HOLDING_PIECE:
+    //     runPercentOutput(CoralIntakeConstants.capturedCurrentOutput);
+    //     break;
+
+    //   case OUTTAKING:
+    //     runPercentOutput(-CoralIntakeConstants.normalOutput);
+    //     break;
+    // }
+
+    Logger.recordOutput("CoralIntake/State", inputs.state.toString());
+    Logger.recordOutput("CoralIntake/CurrentTimer", currentSpikeTimer.get());
   }
 }

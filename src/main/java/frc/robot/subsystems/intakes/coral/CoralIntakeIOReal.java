@@ -66,7 +66,7 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
     inputs.spark1Engaged = spark1.get() != 0;
     inputs.spark2Engaged = spark2.get() != 0;
 
-    inputs.totalOutputCurrent = spark1.getOutputCurrent() + spark2.getOutputCurrent();
+    // inputs.totalOutputCurrent = spark1.getOutputCurrent() + spark2.getOutputCurrent();
 
     Logger.recordOutput("CoralIntake/Spark1/Connected", inputs.spark1SparkConnected);
     Logger.recordOutput("CoralIntake/Spark1/Engaged", inputs.spark1Engaged);
@@ -83,6 +83,6 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
   public void setPercent(double percent) {
     var clamped = MathUtil.clamp(percent, -1.0, 1.0);
     spark1.set(clamped);
-    spark2.set(clamped);
+    spark2.set(-clamped);
   }
 }

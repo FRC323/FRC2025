@@ -7,12 +7,12 @@ public interface ArmIO {
   public static class ArmIOInputs {
     public boolean leadSparkConnected = false;
 
-    public double currentAbsolutePositionRadians = 0.0;
-    public double currentRelativePositionRadians = 0.0;
+    public double currentAbsolutePosition = 0.0;
+    public double currentRelativePosition = 0.0;
     public double currentVelocity = 0.0;
-    public double targetPositionRadians = 0.0;
+    public double targetPosition = 0.0;
     public boolean reachedDesiredPosition = false;
-    public double armOffset = 0.0;
+    public double home = 0.0;
   }
 
   public default void updateInputs(ArmIOInputs inputs) {}
@@ -21,7 +21,5 @@ public interface ArmIO {
 
   public default void setVoltage(double voltage) {}
 
-  public default void setAngleRadians(double targetAngleRadians) {}
-
-  public default void storeOffset() {}
+  public default void setAngleRadians(double targetAngle) {}
 }

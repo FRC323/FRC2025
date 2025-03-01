@@ -90,8 +90,8 @@ public class ArmIOSim implements ArmIO {
 
     double output = 0.0;
     if (closedLoop) {
-      output = controller.calculate(armSim.getAngleRads(), inputs.targetPositionRadians);
-      var ff = feedforward.calculate(inputs.targetPositionRadians, 0);
+      output = controller.calculate(armSim.getAngleRads(), inputs.targetPosition);
+      var ff = feedforward.calculate(inputs.targetPosition, 0);
       output += ff;
       armSim.setInput(output);
 
@@ -103,12 +103,11 @@ public class ArmIOSim implements ArmIO {
     }
 
     // same for sim - do i care?
-    inputs.currentAbsolutePositionRadians = armSim.getAngleRads();
-    inputs.currentRelativePositionRadians = armSim.getAngleRads();
-    inputs.targetPositionRadians = this.targetPostionRadians;
+    inputs.currentAbsolutePosition = armSim.getAngleRads();
+    inputs.currentRelativePosition = armSim.getAngleRads();
+    inputs.targetPosition = this.targetPostionRadians;
 
-    if (reachedDesiredPosition(
-        inputs.targetPositionRadians, inputs.currentAbsolutePositionRadians)) {
+    if (reachedDesiredPosition(inputs.targetPosition, inputs.currentAbsolutePosition)) {
       inputs.reachedDesiredPosition = true;
       armSim.setInput(0);
     } else {

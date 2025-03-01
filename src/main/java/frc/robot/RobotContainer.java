@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.arm.ArmCommands;
-import frc.robot.commands.elevator.ElevatorCommands;
+import frc.robot.commands.common.CommonCommands;
 import frc.robot.commands.initialization.OffsetCommands;
 import frc.robot.commands.intake.IntakeCommands;
 import frc.robot.commands.scoring.ScoreCommands;
@@ -46,9 +46,11 @@ import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOSpark;
 import frc.robot.subsystems.intakes.algae.AlgaeIntake;
 import frc.robot.subsystems.intakes.algae.AlgaeIntakeIOReal;
+import frc.robot.subsystems.intakes.algae.AlgaeIntakeIOSim;
 import frc.robot.subsystems.intakes.coral.CoralIntake;
 import frc.robot.subsystems.intakes.coral.CoralIntakeIO;
 import frc.robot.subsystems.intakes.coral.CoralIntakeIOReal;
+import frc.robot.subsystems.intakes.coral.CoralIntakeIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -124,8 +126,8 @@ public class RobotContainer {
                     VisionConstants.rearRightCameraToRobotTransform,
                     drive::getPose));
 
-        coralIntake = null;
-        algaeIntake = null;
+        coralIntake = new CoralIntake(new CoralIntakeIOSim());
+        algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSim());
 
         SmartDashboard.putData("Field", drive.getField());
         break;
@@ -153,8 +155,52 @@ public class RobotContainer {
     // Register named commands
     registerNamedCommmands();
 
+    // arm test
+    SmartDashboard.putData(
+        "Move Arm Human Player", ArmCommands.moveArmToPosition(arm, ArmPosition.HUMAN_PLAYER));
+    SmartDashboard.putData(
+        "Move Arm Coral 1", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_1_CORAL));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+    // intaking
+    SmartDashboard.putData("Coral Intake", IntakeCommands.CoralIntake(elevator, arm, coralIntake));
+    SmartDashboard.putData(
+        "Aglae Intake L1",
+        IntakeCommands.AlgaeIntake(
+            elevator,
+            ElevatorPosition.REEF_LEVEL_1_ALGAE,
+            arm,
+            ArmPosition.REEF_LEVEL_1_ALGAE,
+            algaeIntake));
+    SmartDashboard.putData(
+        "Aglae Intake L2",
+        IntakeCommands.AlgaeIntake(
+            elevator,
+            ElevatorPosition.REEF_LEVEL_2_ALGAE,
+            arm,
+            ArmPosition.REEF_LEVEL_2_ALGAE,
+            algaeIntake));
+
+    // coral scoring
+    SmartDashboard.putData(
+        "Coral Score L2",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_2_CORAL, arm, ArmPosition.REEF_LEVEL_2_CORAL));
+    SmartDashboard.putData(
+        "Coral Score L3",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_3_CORAL, arm, ArmPosition.REEF_LEVEL_3_CORAL));
+    SmartDashboard.putData(
+        "Coral Score L4",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_4_CORAL, arm, ArmPosition.REEF_LEVEL_4_CORAL));
+
+    // common
+    SmartDashboard.putData(
+        "Travel Position",
+        CommonCommands.moveToTravelPosition(elevator, arm, coralIntake, algaeIntake));
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -195,84 +241,30 @@ public class RobotContainer {
 
     algaeIntake.setDefaultCommand(
         IntakeCommands.ManualAlgaeIntakeControl(algaeIntake, () -> steerJoystick.getY()));
-    SmartDashboard.putData(
-        "Run Intakes", IntakeCommands.ManualIntakeControl(coralIntake, algaeIntake, () -> 1));
-
-    //JUNK COMMANDS - leaving here for now for reference
-    // steerJoystick.trigger().whileTrue(ElevatorCommands.manualElevatorControl(elevator, () ->
-    // 0.3));
-    // steerJoystick.trigger().whileFalse(ElevatorCommands.manualElevatorControl(elevator, () ->
-    // 0.0));
-
-    // driveJoystick.button(2).whileTrue(ElevatorCommands.manualElevatorControl(elevator, () ->
-    // 0.3));
-    // driveJoystick.button(2).whileFalse(ElevatorCommands.manualElevatorControl(elevator, () ->
-    // 0.0));
-
-    // driveJoystick.button(2).whileTrue(ArmCommands.manualArmControl(arm, () -> 0.3));
-    // driveJoystick.button(2).whileFalse(ArmCommands.manualArmControl(arm, () -> 0.0));
-
-    // steerJoystick
-    //     .trigger()
-    //     .onTrue(
-    //         ElevatorCommands.moveElevatorToPosition(elevator,
-    // ElevatorPosition.REEF_LEVEL_1_CORAL));
-
-    // Combined Command tests
-    SmartDashboard.putData("L4 Score", ScoreCommands.ScoreCoralL4(elevator, arm));
-    SmartDashboard.putData("L3 Score", ScoreCommands.ScoreCoralL3(elevator, arm));
-
-    // Arm test commands
-    SmartDashboard.putData("Move Arm Home", ArmCommands.moveArmToPosition(arm, ArmPosition.HOME));
-    SmartDashboard.putData(
-        "Move Arm L1 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_1_CORAL));
-    SmartDashboard.putData(
-        "Move Arm L2 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_2_CORAL));
-    SmartDashboard.putData(
-        "Move Arm L3 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_3_CORAL));
-    SmartDashboard.putData(
-        "Move Arm L4 Coral", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_4_CORAL));
-
-    SmartDashboard.putData(
-        "Move Arm L1 Algae", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_1_ALGAE));
-    SmartDashboard.putData(
-        "Move Arm L2 Algae", ArmCommands.moveArmToPosition(arm, ArmPosition.REEF_LEVEL_2_ALGAE));
-
-    SmartDashboard.putData(
-        "Move Arm Processor", ArmCommands.moveArmToPosition(arm, ArmPosition.ALGAE_PROCESSOR));
-    SmartDashboard.putData(
-        "Move Arm Human Player", ArmCommands.moveArmToPosition(arm, ArmPosition.HUMAN_PLAYER));
-    SmartDashboard.putData(
-        "Move Arm Barge", ArmCommands.moveArmToPosition(arm, ArmPosition.ALGAE_BARGE));
-
-    // Elevator test commands
-    SmartDashboard.putData("Move Elevator Home", ElevatorCommands.moveElevatorToHome(elevator));
-    SmartDashboard.putData(
-        "Move Elevator L1",
-        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_1_CORAL));
-    SmartDashboard.putData(
-        "Move Elevator L2",
-        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_2_CORAL));
-    SmartDashboard.putData(
-        "Move Elevator L3",
-        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_3_CORAL));
-    SmartDashboard.putData(
-        "Move Elevator L4",
-        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_4_CORAL));
-
-    SmartDashboard.putData(
-        "Move Elevator Barge",
-        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.ALGAE_BARGE));
 
     // ROBOT INITIALIZE COMMANDS
     SmartDashboard.putData("Set Drivetrain Offsets", OffsetCommands.storeDrivetrainOffsets(drive));
-    SmartDashboard.putData("Set Arm Offsets", OffsetCommands.storeArmOffsets(arm));
   }
 
   private void registerNamedCommmands() {
-    NamedCommands.registerCommand("L4 Score", ScoreCommands.ScoreCoralL4(elevator, arm));
-    NamedCommands.registerCommand("L3 Score", ScoreCommands.ScoreCoralL3(elevator, arm));
-    NamedCommands.registerCommand("HP Intake", IntakeCommands.HPIntake(elevator, arm));
+    NamedCommands.registerCommand(
+        "Coral L1 Score",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_2_CORAL, arm, ArmPosition.REEF_LEVEL_2_CORAL));
+    NamedCommands.registerCommand(
+        "Coral L2 Score",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_2_CORAL, arm, ArmPosition.REEF_LEVEL_2_CORAL));
+    NamedCommands.registerCommand(
+        "Coral L3 Score",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_3_CORAL, arm, ArmPosition.REEF_LEVEL_3_CORAL));
+    NamedCommands.registerCommand(
+        "Coral L4 Score",
+        ScoreCommands.ScoreCoral(
+            elevator, ElevatorPosition.REEF_LEVEL_4_CORAL, arm, ArmPosition.REEF_LEVEL_4_CORAL));
+    NamedCommands.registerCommand(
+        "Coral HP Intake", IntakeCommands.CoralIntake(elevator, arm, coralIntake));
   }
 
   /**
@@ -286,5 +278,6 @@ public class RobotContainer {
 
   public void stopAllSubsystems() {
     elevator.stop();
+    arm.stop();
   }
 }

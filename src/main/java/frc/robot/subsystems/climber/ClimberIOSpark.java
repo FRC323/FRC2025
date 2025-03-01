@@ -24,7 +24,6 @@ public class ClimberIOSpark implements ClimberIO {
     leadConfig
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(ArmConstants.currentLimit)
-        .voltageCompensation(12.0)
         .inverted(ArmConstants.leadInverted);
 
     tryUntilOk(

@@ -5,20 +5,25 @@ import static frc.robot.util.SparkUtil.sparkStickyFault;
 import static frc.robot.util.SparkUtil.tryUntilOk;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-public class ArmIOSpark implements ArmIO {
+public class ArmIOSparkInt implements ArmIO {
   private final SparkMax leadSpark;
 
   private final AbsoluteEncoder leadAbsoluteEncoder;
@@ -26,13 +31,8 @@ public class ArmIOSpark implements ArmIO {
 
   private final Debouncer leadConnectedDebounce = new Debouncer(0.5);
 
-  // private final TrapezoidProfile.Constraints constraints =
-  // new TrapezoidProfile.Constraints(ArmConstants.maxVelocity,
-  // ArmConstants.maxAcceleration);
-  final PIDController controller =
-      new PIDController(ArmConstants.kP, ArmConstants.kI, ArmConstants.kD);
-  // private final ArmFeedforward feedForward =
-  // new ArmFeedforward(ArmConstants.kS, ArmConstants.kG, ArmConstants.kV);
+  public final SparkClosedLoopController controller;
+  public final ArmFeedforward feedForward;
 
   private boolean closedLoop = false;
   private double openLoopVoltage = 0.0;
@@ -44,16 +44,35 @@ public class ArmIOSpark implements ArmIO {
   private final LoggedNetworkNumber i = new LoggedNetworkNumber("armI", ArmConstants.kI);
   private final LoggedNetworkNumber d = new LoggedNetworkNumber("armD", ArmConstants.kD);
 
-  public ArmIOSpark() {
+  public ArmIOSparkInt() {
     leadSpark = new SparkMax(ArmConstants.leadCanId, MotorType.kBrushless);
+
+    controller = leadSpark.getClosedLoopController();
+    feedForward = new ArmFeedforward(ArmConstants.kS, ArmConstants.kG, ArmConstants.kV);
+
     leadAbsoluteEncoder = leadSpark.getAbsoluteEncoder();
     leadRelativeEncoder = leadSpark.getEncoder();
 
     var leadConfig = new SparkMaxConfig();
     leadConfig
-        .idleMode(IdleMode.kBrake)
+        .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(ArmConstants.currentLimit)
         .inverted(ArmConstants.leadInverted);
+    leadConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(ArmConstants.kP)
+        .i(ArmConstants.kI)
+        .d(ArmConstants.kD)
+        .outputRange(-1, 1, ClosedLoopSlot.kSlot1)
+        .p(0.0001, ClosedLoopSlot.kSlot1)
+        .i(0, ClosedLoopSlot.kSlot1)
+        .d(0, ClosedLoopSlot.kSlot1)
+        .velocityFF(
+            1.0 / 473,
+            ClosedLoopSlot
+                .kSlot1) // https://docs.revrobotics.com/brushless/neo/v1.1#motor-specifications
+        .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
 
     tryUntilOk(
         leadSpark,
@@ -62,35 +81,17 @@ public class ArmIOSpark implements ArmIO {
             leadSpark.configure(
                 leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
-    // absolute enc has rollover point, if the arm starts on the wrong side, shut down
+    // absolute enc has rollover point, if the arm starts on the wrong side, shut
+    // down
     // we want the arm to start >= 0, not < 0, as it will cause rotation issues
     this.armCanMove = leadAbsoluteEncoder.getPosition() >= 0;
 
     this.home = leadAbsoluteEncoder.getPosition();
   }
-  // 44.52
-  private double calculateOutput(ArmIOInputs inputs) {
-    if (!inputs.leadSparkConnected) return 0.0;
-    if (!armCanMove) {
-      System.out.println("MOVE ARM TO >= 0!!!!!!!!!");
-      return 0.0;
-    }
-
-    if (leadAbsoluteEncoder.getPosition() >= 0 && leadAbsoluteEncoder.getPosition() <= .80) {
-      double output = 0;
-      if (closedLoop) {
-        output = controller.calculate(leadAbsoluteEncoder.getPosition(), targetPosition);
-      } else {
-        output = this.openLoopVoltage;
-      }
-      return output;
-    }
-    return 0.0;
-  }
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    controller.setPID(p.get(), i.get(), d.get());
+    // controller.setPID(p.get(), i.get(), d.get());
 
     sparkStickyFault = false;
     ifOk(
@@ -107,10 +108,21 @@ public class ArmIOSpark implements ArmIO {
     inputs.targetPosition = this.targetPosition;
     inputs.home = this.home;
 
-    double output = calculateOutput(inputs);
-    leadSpark.set(output);
-
-    Logger.recordOutput("Arm/ControlEffort", output);
+    REVLibError error = null;
+    if (inputs.leadSparkConnected) {
+      if (armCanMove) {
+        if (leadAbsoluteEncoder.getPosition() >= 0 && leadAbsoluteEncoder.getPosition() <= .80) {
+          if (closedLoop) {
+            error = controller.setReference(inputs.currentAbsolutePosition, ControlType.kPosition);
+          } else {
+            error =
+                controller.setReference(
+                    this.openLoopVoltage, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+          }
+        }
+      }
+    }
+    Logger.recordOutput("Arm/ControlStatus", error.toString());
   }
 
   @Override

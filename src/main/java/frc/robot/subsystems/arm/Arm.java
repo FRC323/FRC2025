@@ -44,11 +44,11 @@ public class Arm extends SubsystemBase {
   }
 
   public double getAngleRadians() {
-    return inputs.currentAbsolutePositionRadians;
+    return inputs.currentAbsolutePosition;
   }
 
   public double getTargetAngleRadians() {
-    return inputs.targetPositionRadians;
+    return inputs.targetPosition;
   }
 
   public void setArmPosition(ArmPosition position) {
@@ -86,6 +86,10 @@ public class Arm extends SubsystemBase {
     }
   }
 
+  public void stop() {
+    io.setVoltage(0);
+  }
+
   public void runPercentOutput(double percent) {
     percent = MathUtil.clamp(percent, -1, 1);
     io.setPercent(percent);
@@ -101,12 +105,6 @@ public class Arm extends SubsystemBase {
 
   public boolean reachedDesiredPosition() {
     return MathUtil.isNear(
-        inputs.targetPositionRadians,
-        inputs.currentRelativePositionRadians,
-        ArmConstants.SetpointTolerance);
-  }
-
-  public void storeOffset() {
-    io.storeOffset();
+        inputs.targetPosition, inputs.currentRelativePosition, ArmConstants.SetpointTolerance);
   }
 }

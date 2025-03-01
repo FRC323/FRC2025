@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import frc.robot.subsystems.climber.Climber.ClimberState;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ClimberIO {

@@ -7,6 +7,12 @@ public class Climber extends SubsystemBase {
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
+  public enum ClimberState {
+    DEPLOYED,
+    CLIMBED,
+    STOWED
+  }
+
   private final Alert leadDisconnectedAlert;
 
   public Climber(ClimberIO io) {

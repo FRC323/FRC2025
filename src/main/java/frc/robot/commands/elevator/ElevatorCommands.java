@@ -6,10 +6,6 @@ import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import java.util.function.DoubleSupplier;
 
 public class ElevatorCommands {
-  public static Command moveElevatorToHome(Elevator elevator) {
-    return new MoveElevatorToHome(elevator);
-  }
-
   public static Command moveElevatorToPosition(Elevator elevator, ElevatorPosition position) {
     return new MoveElevatorToPosition(elevator, position);
   }

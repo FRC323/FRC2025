@@ -15,7 +15,7 @@ public class MoveArmToPosition extends Command {
   }
 
   @Override
-  public void initialize() {
+  public void execute() {
     this.arm.setArmPosition(position);
   }
 

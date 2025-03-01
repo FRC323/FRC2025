@@ -24,6 +24,7 @@ public class Elevator extends SubsystemBase {
 
   public enum ElevatorPosition {
     Home(0.0),
+    TRAVEL(ElevatorConstants.TravelPosition),
     REEF_LEVEL_1_CORAL(ElevatorConstants.ReefLevel1CoralPosition),
     REEF_LEVEL_2_CORAL(ElevatorConstants.ReefLevel2CoralPosition),
     REEF_LEVEL_3_CORAL(ElevatorConstants.ReefLevel3CoralPosition),
