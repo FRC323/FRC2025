@@ -37,8 +37,7 @@ public class ArmIOSpark implements ArmIO {
   private boolean closedLoop = false;
   private double openLoopVoltage = 0.0;
   private double targetPosition = 0.0;
-  private boolean armCanMove = false;
-  private double home = 0.0;
+  // private boolean armCanMove = false;
 
   private final LoggedNetworkNumber p = new LoggedNetworkNumber("armP", ArmConstants.kP);
   private final LoggedNetworkNumber i = new LoggedNetworkNumber("armI", ArmConstants.kI);
@@ -64,17 +63,15 @@ public class ArmIOSpark implements ArmIO {
 
     // absolute enc has rollover point, if the arm starts on the wrong side, shut down
     // we want the arm to start >= 0, not < 0, as it will cause rotation issues
-    this.armCanMove = leadAbsoluteEncoder.getPosition() >= 0;
-
-    this.home = leadAbsoluteEncoder.getPosition();
+    // this.armCanMove = leadAbsoluteEncoder.getPosition() >= 0;
   }
   // 44.52
   private double calculateOutput(ArmIOInputs inputs) {
     if (!inputs.leadSparkConnected) return 0.0;
-    if (!armCanMove) {
-      System.out.println("MOVE ARM TO >= 0!!!!!!!!!");
-      return 0.0;
-    }
+    // if (!armCanMove) {
+    //   System.out.println("MOVE ARM TO >= 0!!!!!!!!!");
+    //   return 0.0;
+    // }
 
     if (leadAbsoluteEncoder.getPosition() >= 0 && leadAbsoluteEncoder.getPosition() <= .80) {
       double output = 0;
@@ -105,7 +102,6 @@ public class ArmIOSpark implements ArmIO {
     inputs.leadSparkConnected = leadConnectedDebounce.calculate(!sparkStickyFault);
 
     inputs.targetPosition = this.targetPosition;
-    inputs.home = this.home;
 
     double output = calculateOutput(inputs);
     leadSpark.set(output);

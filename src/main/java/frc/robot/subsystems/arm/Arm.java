@@ -18,7 +18,7 @@ public class Arm extends SubsystemBase {
   }
 
   public enum ArmPosition {
-    HOME(0),
+    HOME(ArmConstants.HomePosition),
     REEF_LEVEL_1_CORAL(ArmConstants.ReefLevel1CoralPosition),
     REEF_LEVEL_2_CORAL(ArmConstants.ReefLevel2CoralPosition),
     REEF_LEVEL_3_CORAL(ArmConstants.ReefLevel3CoralPosition),
@@ -105,6 +105,6 @@ public class Arm extends SubsystemBase {
 
   public boolean reachedDesiredPosition() {
     return MathUtil.isNear(
-        inputs.targetPosition, inputs.currentRelativePosition, ArmConstants.SetpointTolerance);
+        inputs.targetPosition, inputs.currentAbsolutePosition, ArmConstants.SetpointTolerance);
   }
 }

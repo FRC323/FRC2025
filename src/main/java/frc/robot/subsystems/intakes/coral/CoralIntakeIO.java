@@ -20,6 +20,8 @@ public interface CoralIntakeIO {
 
     public double totalOutputCurrent = 0.0;
 
+    public boolean hasGamePiece = false;
+
     public IntakeState state = IntakeState.IDLE;
   }
 

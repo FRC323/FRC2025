@@ -38,7 +38,6 @@ public class ArmIOSparkInt implements ArmIO {
   private double openLoopVoltage = 0.0;
   private double targetPosition = 0.0;
   private boolean armCanMove = false;
-  private double home = 0.0;
 
   private final LoggedNetworkNumber p = new LoggedNetworkNumber("armP", ArmConstants.kP);
   private final LoggedNetworkNumber i = new LoggedNetworkNumber("armI", ArmConstants.kI);
@@ -85,8 +84,6 @@ public class ArmIOSparkInt implements ArmIO {
     // down
     // we want the arm to start >= 0, not < 0, as it will cause rotation issues
     this.armCanMove = leadAbsoluteEncoder.getPosition() >= 0;
-
-    this.home = leadAbsoluteEncoder.getPosition();
   }
 
   @Override
@@ -106,7 +103,6 @@ public class ArmIOSparkInt implements ArmIO {
     inputs.leadSparkConnected = leadConnectedDebounce.calculate(!sparkStickyFault);
 
     inputs.targetPosition = this.targetPosition;
-    inputs.home = this.home;
 
     REVLibError error = null;
     if (inputs.leadSparkConnected) {

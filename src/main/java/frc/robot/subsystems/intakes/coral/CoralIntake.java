@@ -36,17 +36,14 @@ public class CoralIntake extends SubsystemBase {
   }
 
   public void intake() {
-    inputs.state = IntakeState.INTAKING;
     runPercentOutput(CoralIntakeConstants.normalOutput);
   }
 
   public void outtake() {
-    inputs.state = IntakeState.OUTTAKING;
     runPercentOutput(-CoralIntakeConstants.normalOutput);
   }
 
   public void stop() {
-    inputs.state = IntakeState.IDLE;
     runPercentOutput(0);
   }
 

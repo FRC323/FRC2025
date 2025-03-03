@@ -12,7 +12,6 @@ public interface ArmIO {
     public double currentVelocity = 0.0;
     public double targetPosition = 0.0;
     public boolean reachedDesiredPosition = false;
-    public double home = 0.0;
   }
 
   public default void updateInputs(ArmIOInputs inputs) {}

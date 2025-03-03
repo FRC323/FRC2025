@@ -6,10 +6,36 @@ import frc.robot.subsystems.arm.Arm.ArmPosition;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.subsystems.intakes.algae.AlgaeIntake;
+import frc.robot.subsystems.intakes.algae.AlgaeIntakeConstants;
 import frc.robot.subsystems.intakes.coral.CoralIntake;
+import frc.robot.subsystems.intakes.coral.CoralIntakeConstants;
 import java.util.function.DoubleSupplier;
 
 public class IntakeCommands {
+  public static Command HoldCoralIntake(CoralIntake coralIntake) {
+    return new RunCoralIntake(coralIntake, () -> -CoralIntakeConstants.normalOutput);
+  }
+
+  public static Command HoldAlgaeIntake(AlgaeIntake algaeIntake) {
+    return new RunAlgaeIntake(algaeIntake, () -> AlgaeIntakeConstants.normalOutput);
+  }
+
+  public static Command StopAlgaeIntake(AlgaeIntake algaeIntake) {
+    return new StopAlgaeIntake(algaeIntake);
+  }
+
+  public static Command StopCoralIntake(CoralIntake coralIntake) {
+    return new StopCoralIntake(coralIntake);
+  }
+
+  public static Command OuttakeAlgae(AlgaeIntake algaeIntake) {
+    return new OuttakeAlgae(algaeIntake);
+  }
+
+  public static Command OuttakeCoral(CoralIntake coralIntake) {
+    return new OuttakeCoral(coralIntake);
+  }
+
   public static Command ManualIntakeControl(
       CoralIntake coralIntake, AlgaeIntake algaeIntake, DoubleSupplier percentSupplier) {
     return new ManualIntakeControl(algaeIntake, coralIntake, percentSupplier);

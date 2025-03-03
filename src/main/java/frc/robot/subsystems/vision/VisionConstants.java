@@ -24,24 +24,24 @@ public class VisionConstants {
   public static AprilTagFieldLayout aprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-  public static final String frontRightCameraName = "camera_front_right";
-  public static final boolean useFrontRightCamera = true;
+  public static final String frontCameraName = "front";
+  public static final boolean useFrontCamera = true;
   // TODO: CHECK THIS TRANSFORM
-  public static final Transform3d frontRightCameraToRobotTransform =
+  public static final Transform3d frontCameraToRobotTransform =
       new Transform3d(
+          0.285,
           -0.285,
-          -0.285,
-          0.209,
-          new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(225)));
+          0.20,
+          new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(315)));
 
-  public static final String rearRightCameraName = "camera_rear_right";
-  public static final boolean useRearRightCamera = true;
+  public static final String rearCameraName = "rear";
+  public static final boolean useRearCamera = true;
   // TODO CHECK THIS TRANSFORM
-  public static final Transform3d rearRightCameraToRobotTransform =
+  public static final Transform3d rearCameraToRobotTransform =
       new Transform3d(
           -0.285,
           0.285,
-          0.209,
+          0.20,
           new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(135)));
 
   // Camera names, must match names configured on coprocessor

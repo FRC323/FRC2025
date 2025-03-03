@@ -3,13 +3,12 @@ package frc.robot.commands.elevator;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
-import org.littletonrobotics.junction.Logger;
 
-public class MoveElevatorToPosition extends Command {
+public class ElevatorSetOpsMode extends Command {
   private Elevator elevator;
   private ElevatorPosition position;
 
-  public MoveElevatorToPosition(Elevator elevator, ElevatorPosition position) {
+  public ElevatorSetOpsMode(Elevator elevator, ElevatorPosition position) {
     addRequirements(elevator);
     this.elevator = elevator;
     this.position = position;
@@ -17,14 +16,16 @@ public class MoveElevatorToPosition extends Command {
 
   @Override
   public void initialize() {
-    this.elevator.setPosition(position);
-    Logger.recordOutput("Elevator/CommandRunning", true);
+    this.elevator.setOpMode(position);
+  }
+
+  @Override
+  public void execute() {
+    this.elevator.setOpMode(position);
   }
 
   @Override
   public boolean isFinished() {
-    boolean finished = this.elevator.reachedDesiredPosition();
-    Logger.recordOutput("Elevator/CommandFinished", finished);
-    return finished;
+    return true;
   }
 }

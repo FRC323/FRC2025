@@ -13,4 +13,8 @@ public class ElevatorCommands {
   public static Command manualElevatorControl(Elevator elevator, DoubleSupplier percentSupplier) {
     return new ManualElevatorControl(elevator, percentSupplier);
   }
+
+  public static Command setOpMode(Elevator elevator, ElevatorPosition elevatorPosition) {
+    return new ElevatorSetOpsMode(elevator, elevatorPosition);
+  }
 }

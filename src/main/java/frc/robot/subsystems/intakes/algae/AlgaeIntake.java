@@ -25,6 +25,10 @@ public class AlgaeIntake extends SubsystemBase {
     io.setPercent(percent);
   }
 
+  public void stop() {
+    io.setPercent(0);
+  }
+
   public void intake() {
     runPercentOutput(1);
   }
