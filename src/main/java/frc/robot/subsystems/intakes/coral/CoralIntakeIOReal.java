@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralIntakeIOReal implements CoralIntakeIO {
@@ -18,6 +19,9 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
 
   private final Debouncer spark1ConnectedDebounce = new Debouncer(0.5);
   private final Debouncer spark2ConnectedDebounce = new Debouncer(0.5);
+
+  private final Timer currentSpikeTimer = new Timer();
+  private boolean hasGamePiece = false;
 
   public CoralIntakeIOReal() {
     spark1 = new SparkMax(CoralIntakeConstants.spark1CanId, MotorType.kBrushed);
@@ -51,6 +55,22 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
                 config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
   }
 
+  private boolean detectGamePiece() {
+    double totalCurrent = spark1.getOutputCurrent() + spark2.getOutputCurrent();
+
+    if (totalCurrent >= CoralIntakeConstants.capturedCurrentOutput) {
+      if (!currentSpikeTimer.isRunning()) {
+        currentSpikeTimer.restart();
+      }
+      if (currentSpikeTimer.hasElapsed(0.25)) {
+        return true;
+      }
+    } else {
+      currentSpikeTimer.stop();
+    }
+    return false;
+  }
+
   @Override
   public void updateInputs(CoralIntakeIOInputs inputs) {
     sparkStickyFault = false;
@@ -66,7 +86,9 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
     inputs.spark1Engaged = spark1.get() != 0;
     inputs.spark2Engaged = spark2.get() != 0;
 
-    // inputs.totalOutputCurrent = spark1.getOutputCurrent() + spark2.getOutputCurrent();
+    inputs.hasGamePiece = detectGamePiece();
+
+    inputs.totalOutputCurrent = spark1.getOutputCurrent() + spark2.getOutputCurrent();
 
     Logger.recordOutput("CoralIntake/Spark1/Connected", inputs.spark1SparkConnected);
     Logger.recordOutput("CoralIntake/Spark1/Engaged", inputs.spark1Engaged);

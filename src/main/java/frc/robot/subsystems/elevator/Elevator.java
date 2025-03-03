@@ -13,6 +13,8 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
+  private ElevatorPosition opsPosition = ElevatorPosition.Home;
+
   private double targetPosition = 0.0;
 
   public Elevator(ElevatorIO io) {
@@ -65,6 +67,25 @@ public class Elevator extends SubsystemBase {
     return inputs.leadEncoderPosition;
   }
 
+  // public boolean canSkipTravelMove(ElevatorPosition position) {
+  //   if (position != ElevatorPosition.TRAVEL) return false;
+
+  //   if (this.getPosition() >= ElevatorPosition.TRAVEL.val) return true;
+
+  //   return false;
+  // }
+
+  public void setOpMode(ElevatorPosition elevatorPosition) {
+    this.opsPosition = elevatorPosition;
+    // io.setOpMode(elevatorPosition);
+  }
+
+  public ElevatorPosition getOpsModePosition() {
+    System.out.println("OPS position:" + this.opsPosition);
+    return this.opsPosition;
+    // return io.getOpModePosition();
+  }
+
   public void setPosition(double targetPosition) {
     var target =
         MathUtil.clamp(
@@ -81,6 +102,9 @@ public class Elevator extends SubsystemBase {
     switch (position) {
       case Home:
         setPosition(ElevatorConstants.HomePosition);
+        break;
+      case TRAVEL:
+        setPosition(ElevatorConstants.TravelPosition);
         break;
       case REEF_LEVEL_1_CORAL:
         setPosition(ElevatorConstants.ReefLevel1CoralPosition);
@@ -113,7 +137,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean reachedDesiredPosition() {
-    return Math.abs(this.targetPosition - inputs.leadEncoderPosition) < 0.05;
+    return Math.abs(this.targetPosition - inputs.leadEncoderPosition) < 0.5;
   }
 
   @Override

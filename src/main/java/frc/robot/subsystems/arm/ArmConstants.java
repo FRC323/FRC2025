@@ -14,20 +14,21 @@ public class ArmConstants {
   public static String ArmOffsetKey = "arm_offset";
   public static double ArmLengthMeters = Units.inchesToMeters(36.0);
 
-  public static double HomePosition = 0.076;
+  public static double HomePosition = 0.09;
 
-  public static double ReefLevel1CoralPosition = .66;
-  public static double ReefLevel2CoralPosition = .66;
-  public static double ReefLevel3CoralPosition = .66;
-  public static double ReefLevel4CoralPosition = .71;
+  public static double ReefLevel1CoralPosition = .645;
+  public static double ReefLevel2CoralPosition = .706;
+  public static double ReefLevel3CoralPosition = .706;
+  public static double ReefLevel4CoralPosition = .66;
 
-  public static double HumanPlayerPosition = 0.159;
+  public static double HumanPlayerPosition = 0.154;
 
-  public static double ReefLevel1AlgaePosition = .265;
-  public static double ReefLevel2AlgaePosition = .265;
+  public static double ReefLevel1AlgaePosition = .25;
+  public static double ReefLevel2AlgaePosition = .25;
+  public static double AlgaeOnCoralPosition = .25;
 
-  public static double BargePosition = 0;
-  public static double ProcessorPosition = 0;
+  public static double BargePosition = .437;
+  public static double ProcessorPosition = .25;
 
   public static int currentLimit = 40;
 

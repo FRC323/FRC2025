@@ -23,6 +23,7 @@ import edu.wpi.first.math.util.Units;
 public class DriveConstants {
   public static final int DRIVE_STICK_PORT = 0;
   public static final int STEER_STICK_PORT = 1;
+  public static final int GAME_PAD_PORT = 2;
 
   public static final double maxSpeedMetersPerSec = 5.66;
   public static final double odometryFrequency = 100.0; // Hz
@@ -120,6 +121,17 @@ public class DriveConstants {
               driveMotorCurrentLimit,
               1),
           moduleTranslations);
+
+  public static class GamePad {
+    public static final int A_BUTTON = 1;
+    public static final int B_BUTTON = 2;
+    public static final int X_BUTTON = 3;
+    public static final int Y_BUTTON = 4;
+    public static final int LEFT_BUMPER_BUTTON = 5;
+    public static final int RIGHT_BUMPER_BUTTON = 6;
+    public static final int BACK_BUTTON = 7;
+    public static final int START_BUTTON = 8;
+  }
 
   public static class DriveStick {
     public static final int LEFT_SIDE_BUTTON = 2;

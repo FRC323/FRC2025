@@ -9,8 +9,10 @@ public class CoralIntakeConstants {
 
   public static int currentLimit = 5;
 
-  public static double normalOutput = .20;
-  public static double IntakeOutput = -.50;
+  public static double normalOutput = .25;
+  public static double IntakeOutput = -1;
+
+  public static double capturedCurrentOutput = 15;
   // output to 'carry' game piece
   // public static double capturedCurrentOutput = .15;
   // the current at which we detect a game piece being caputured

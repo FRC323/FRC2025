@@ -12,6 +12,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -32,12 +33,14 @@ public class ElevatorIOSpark implements ElevatorIO {
   private boolean closedLoop = false;
   private double openLoopVoltage = 0.0;
   private double targetPosition = 0.0;
+  private ElevatorPosition opsCommandedLevel;
 
   private final LoggedNetworkNumber p = new LoggedNetworkNumber("elevatorP", ElevatorConstants.kP);
   private final LoggedNetworkNumber i = new LoggedNetworkNumber("elevatorI", ElevatorConstants.kI);
   private final LoggedNetworkNumber d = new LoggedNetworkNumber("elevatorD", ElevatorConstants.kD);
 
   public ElevatorIOSpark() {
+    opsCommandedLevel = ElevatorPosition.Home;
     // lead set up
     leadSpark = new SparkMax(ElevatorConstants.leadCanId, MotorType.kBrushless);
     leadEncoder = leadSpark.getEncoder();
@@ -45,7 +48,6 @@ public class ElevatorIOSpark implements ElevatorIO {
     leadConfig
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ElevatorConstants.currentLimit)
-        .voltageCompensation(12.0)
         .inverted(ElevatorConstants.leadInverted);
 
     tryUntilOk(
@@ -94,6 +96,8 @@ public class ElevatorIOSpark implements ElevatorIO {
         (value) -> inputs.followerEncoderVelocity = -value);
     inputs.followerSparkConnected = followerConnectedDebounce.calculate(!sparkStickyFault);
 
+    inputs.OpsCommandedLevel = this.opsCommandedLevel;
+
     var bottomLimitSwitchPressed =
         bottomLimitSwitchDebounce.calculate(leadSpark.getReverseLimitSwitch().isPressed());
     if (bottomLimitSwitchPressed) {
@@ -109,13 +113,25 @@ public class ElevatorIOSpark implements ElevatorIO {
       if (inputs.homed) {
         double pidOutput = controller.calculate(inputs.leadEncoderPosition, this.targetPosition);
         output = pidOutput;
+        leadSpark.set(output);
       }
     } else {
       output = this.openLoopVoltage;
+      leadSpark.setVoltage(output);
     }
-    leadSpark.set(output);
 
     Logger.recordOutput("Elevator/ControlOutput", output);
+  }
+
+  @Override
+  public void setOpMode(ElevatorPosition elevatorPosition) {
+    this.opsCommandedLevel = elevatorPosition;
+  }
+
+  @Override
+  public ElevatorPosition getOpModePosition() {
+    Logger.recordOutput("Elevator/CurrentOpsMode", this.opsCommandedLevel.toString());
+    return this.opsCommandedLevel;
   }
 
   @Override

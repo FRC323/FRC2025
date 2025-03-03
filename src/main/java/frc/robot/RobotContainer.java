@@ -19,11 +19,15 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.arm.ArmCommands;
+import frc.robot.commands.climb.ClimbCommands;
 import frc.robot.commands.common.CommonCommands;
+import frc.robot.commands.elevator.ElevatorCommands;
 import frc.robot.commands.initialization.OffsetCommands;
 import frc.robot.commands.intake.IntakeCommands;
 import frc.robot.commands.scoring.ScoreCommands;
@@ -32,8 +36,14 @@ import frc.robot.subsystems.arm.Arm.ArmPosition;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOSpark;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOSpark;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.DriveConstants.DriveStick;
+import frc.robot.subsystems.drive.DriveConstants.GamePad;
+import frc.robot.subsystems.drive.DriveConstants.SteerStick;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
@@ -71,11 +81,13 @@ public class RobotContainer {
   private final Vision vision;
   private final CoralIntake coralIntake;
   private final AlgaeIntake algaeIntake;
+  private final Climber climber;
 
   private final CommandJoystick driveJoystick =
       new CommandJoystick(DriveConstants.DRIVE_STICK_PORT);
   private final CommandJoystick steerJoystick =
       new CommandJoystick(DriveConstants.STEER_STICK_PORT);
+  private final CommandGenericHID gamePad = new CommandGenericHID(DriveConstants.GAME_PAD_PORT);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -98,6 +110,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOSpark());
         coralIntake = new CoralIntake(new CoralIntakeIOReal());
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal());
+        climber = new Climber(new ClimberIOSpark());
         vision = null;
 
         break;
@@ -118,16 +131,17 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.frontRightCameraName,
-                    VisionConstants.frontRightCameraToRobotTransform,
+                    VisionConstants.frontCameraName,
+                    VisionConstants.frontCameraToRobotTransform,
                     drive::getPose),
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.rearRightCameraName,
-                    VisionConstants.rearRightCameraToRobotTransform,
+                    VisionConstants.rearCameraName,
+                    VisionConstants.rearCameraToRobotTransform,
                     drive::getPose));
 
         coralIntake = new CoralIntake(new CoralIntakeIOSim());
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSim());
+        climber = new Climber(new ClimberIOSim());
 
         SmartDashboard.putData("Field", drive.getField());
         break;
@@ -147,6 +161,7 @@ public class RobotContainer {
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         coralIntake = new CoralIntake(new CoralIntakeIO() {});
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal() {});
+        climber = new Climber(new ClimberIOSpark() {});
 
         SmartDashboard.putData("Field", drive.getField());
         break;
@@ -184,18 +199,21 @@ public class RobotContainer {
             algaeIntake));
 
     // coral scoring
-    SmartDashboard.putData(
-        "Coral Score L2",
-        ScoreCommands.ScoreCoral(
-            elevator, ElevatorPosition.REEF_LEVEL_2_CORAL, arm, ArmPosition.REEF_LEVEL_2_CORAL));
-    SmartDashboard.putData(
-        "Coral Score L3",
-        ScoreCommands.ScoreCoral(
-            elevator, ElevatorPosition.REEF_LEVEL_3_CORAL, arm, ArmPosition.REEF_LEVEL_3_CORAL));
-    SmartDashboard.putData(
-        "Coral Score L4",
-        ScoreCommands.ScoreCoral(
-            elevator, ElevatorPosition.REEF_LEVEL_4_CORAL, arm, ArmPosition.REEF_LEVEL_4_CORAL));
+    // SmartDashboard.putData(
+    // "Coral Score L2",
+    // ScoreCommands.ScoreCoral(
+    // elevator, ElevatorPosition.REEF_LEVEL_2_CORAL, arm,
+    // ArmPosition.REEF_LEVEL_2_CORAL));
+    // SmartDashboard.putData(
+    // "Coral Score L3",
+    // ScoreCommands.ScoreCoral(
+    // elevator, ElevatorPosition.REEF_LEVEL_3_CORAL, arm,
+    // ArmPosition.REEF_LEVEL_3_CORAL));
+    // SmartDashboard.putData(
+    // "Coral Score L4",
+    // ScoreCommands.ScoreCoral(
+    // elevator, ElevatorPosition.REEF_LEVEL_4_CORAL, arm,
+    // ArmPosition.REEF_LEVEL_4_CORAL));
 
     // common
     SmartDashboard.putData(
@@ -236,11 +254,132 @@ public class RobotContainer {
             () -> -driveJoystick.getX(),
             () -> steerJoystick.getX()));
 
-    coralIntake.setDefaultCommand(
-        IntakeCommands.ManualCoralIntakeControl(coralIntake, () -> steerJoystick.getY()));
+    coralIntake.setDefaultCommand(IntakeCommands.HoldCoralIntake(coralIntake));
 
-    algaeIntake.setDefaultCommand(
-        IntakeCommands.ManualAlgaeIntakeControl(algaeIntake, () -> steerJoystick.getY()));
+    algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(algaeIntake));
+
+    // elevator.setDefaultCommand(
+    //     ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.TRAVEL));
+
+    // arm.setDefaultCommand(ArmCommands.moveArmToPosition(arm, ArmPosition.HOME));
+
+    // reset gyro
+    driveJoystick
+        .button(DriveStick.RIGHT_SIDE_BUTTON)
+        .onTrue(new InstantCommand(() -> drive.zeroGryo(), drive));
+
+    // pose to reef algae intake level 1
+    gamePad
+        .povDown()
+        .and(steerJoystick.button(SteerStick.MIDDLE))
+        .whileTrue(
+            IntakeCommands.AlgaeIntake(
+                elevator,
+                ElevatorPosition.REEF_LEVEL_1_ALGAE,
+                arm,
+                ArmPosition.REEF_LEVEL_1_ALGAE,
+                algaeIntake));
+
+    // pose to reef algae intake level 2
+    gamePad
+        .povUp()
+        .and(steerJoystick.button(SteerStick.MIDDLE))
+        .whileTrue(
+            IntakeCommands.AlgaeIntake(
+                elevator,
+                ElevatorPosition.REEF_LEVEL_2_ALGAE,
+                arm,
+                ArmPosition.REEF_LEVEL_2_ALGAE,
+                algaeIntake));
+
+    // shoot into barge
+    steerJoystick
+        .button(SteerStick.RIGHT)
+        .whileTrue(
+            ScoreCommands.ScoreAlgae(
+                elevator, ElevatorPosition.ALGAE_BARGE, arm, ArmPosition.ALGAE_BARGE));
+
+    // pose to algae processor
+    steerJoystick
+        .trigger()
+        .whileTrue(
+            ScoreCommands.ScoreAlgae(
+                elevator, ElevatorPosition.ALGAE_PROCESSOR, arm, ArmPosition.ALGAE_PROCESSOR));
+
+    // pose to reef coral level 1
+    gamePad
+        .button(GamePad.A_BUTTON)
+        .and(steerJoystick.button(SteerStick.MIDDLE))
+        .whileTrue(
+            ScoreCommands.ScoreCoral(
+                elevator,
+                ElevatorPosition.REEF_LEVEL_1_CORAL,
+                arm,
+                ArmPosition.REEF_LEVEL_1_CORAL));
+
+    // pose to reef coral level 2
+    gamePad
+        .button(GamePad.B_BUTTON)
+        .and(steerJoystick.button(SteerStick.MIDDLE))
+        .whileTrue(
+            ScoreCommands.ScoreCoral(
+                elevator,
+                ElevatorPosition.REEF_LEVEL_2_CORAL,
+                arm,
+                ArmPosition.REEF_LEVEL_2_CORAL));
+
+    // pose to reef coral level 3
+    gamePad
+        .button(GamePad.X_BUTTON)
+        .and(steerJoystick.button(SteerStick.MIDDLE))
+        .whileTrue(
+            ScoreCommands.ScoreCoral(
+                elevator,
+                ElevatorPosition.REEF_LEVEL_3_CORAL,
+                arm,
+                ArmPosition.REEF_LEVEL_3_CORAL));
+
+    // pose to reef coral level 4
+    gamePad
+        .button(GamePad.Y_BUTTON)
+        .and(steerJoystick.button(SteerStick.MIDDLE))
+        .whileTrue(
+            ScoreCommands.ScoreCoral(
+                elevator,
+                ElevatorPosition.REEF_LEVEL_4_CORAL,
+                arm,
+                ArmPosition.REEF_LEVEL_4_CORAL));
+
+    // pose to human player coral pickup
+    driveJoystick.trigger().onTrue(IntakeCommands.CoralIntake(elevator, arm, coralIntake));
+
+    // spit out algae
+    driveJoystick
+        .button(DriveStick.TOP_BIG_BUTTON)
+        .whileTrue(IntakeCommands.OuttakeAlgae(algaeIntake));
+
+    // spit out coral
+    driveJoystick
+        .button(DriveStick.LEFT_SIDE_BUTTON)
+        .whileTrue(IntakeCommands.OuttakeCoral(coralIntake));
+    // .whileFalse(IntakeCommands.CoralIntake(elevator, arm, coralIntake));
+
+    // temp reset
+    driveJoystick
+        .button(DriveStick.BACK_SIDE_BUTTON)
+        .onTrue(CommonCommands.moveToTravelPosition(elevator, arm, coralIntake, algaeIntake));
+
+    SmartDashboard.putData(
+        "Move Elevator L3",
+        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_3_CORAL));
+    SmartDashboard.putData(
+        "Move Elevator L4",
+        ElevatorCommands.moveElevatorToPosition(elevator, ElevatorPosition.REEF_LEVEL_4_CORAL));
+
+    // driveJoystick.button(DriveStick.LEFT_SIDE_BUTTON).whileTrue()
+
+    climber.setDefaultCommand(
+        ClimbCommands.manualClimberControl(climber, () -> gamePad.getRawAxis(1)));
 
     // ROBOT INITIALIZE COMMANDS
     SmartDashboard.putData("Set Drivetrain Offsets", OffsetCommands.storeDrivetrainOffsets(drive));
@@ -279,5 +418,6 @@ public class RobotContainer {
   public void stopAllSubsystems() {
     elevator.stop();
     arm.stop();
+    algaeIntake.stop();
   }
 }

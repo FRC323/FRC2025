@@ -11,9 +11,7 @@ import frc.robot.subsystems.arm.Arm.ArmPosition;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.subsystems.intakes.algae.AlgaeIntake;
-import frc.robot.subsystems.intakes.algae.AlgaeIntakeConstants;
 import frc.robot.subsystems.intakes.coral.CoralIntake;
-import frc.robot.subsystems.intakes.coral.CoralIntakeConstants;
 
 // put the robot in a travel pose
 
@@ -21,12 +19,10 @@ public class MoveToTravel extends SequentialCommandGroup {
   public MoveToTravel(
       Elevator elevator, Arm arm, CoralIntake coralIntake, AlgaeIntake algaeIntake) {
     addCommands(
-        // new MoveElevatorToPosition(elevator,
-        // Elevator.ElevatorPosition.TRAVEL).withTimeout(10),
         new ParallelCommandGroup(
             new MoveElevatorToPosition(elevator, ElevatorPosition.TRAVEL),
             new MoveArmToPosition(arm, ArmPosition.HOME),
-            new RunCoralIntake(coralIntake, () -> CoralIntakeConstants.normalOutput)),
-        new RunAlgaeIntake(algaeIntake, () -> AlgaeIntakeConstants.normalOutput).withTimeout(10));
+            new RunCoralIntake(coralIntake, () -> 0.0),
+            new RunAlgaeIntake(algaeIntake, () -> 0.0)));
   }
 }
