@@ -22,6 +22,5 @@ public class ScoreAlgae extends SequentialCommandGroup {
         new ParallelCommandGroup(
             new MoveElevatorToPosition(elevator, elevatorPosition),
             new MoveArmToPosition(arm, armPosition)));
-    // new RunAlgaeIntake(algaeIntake, () -> -AlgaeIntakeConstants.intakeOutput)));
   }
 }

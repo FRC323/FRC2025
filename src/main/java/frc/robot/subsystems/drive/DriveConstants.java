@@ -122,6 +122,8 @@ public class DriveConstants {
               1),
           moduleTranslations);
 
+  public static final double elevatorUpDriveSpeed = 0.5;
+
   public static class GamePad {
     public static final int A_BUTTON = 1;
     public static final int B_BUTTON = 2;

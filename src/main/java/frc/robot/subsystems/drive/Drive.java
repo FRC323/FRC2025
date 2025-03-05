@@ -84,7 +84,7 @@ public class Drive extends SubsystemBase {
       ModuleIO brModuleIO) {
 
     this.gyroIO = gyroIO;
-    this.gyroIO.zeroGyro(0);
+    // this.gyroIO.zeroGyro(0);
 
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
@@ -104,7 +104,7 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(2.0, 0.0, 0.0)),
         ppConfig,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);

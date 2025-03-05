@@ -13,15 +13,6 @@ public class CoralIntake extends SubsystemBase {
   private final CoralIntakeIO io;
   private final CoralIntakeIOInputsAutoLogged inputs = new CoralIntakeIOInputsAutoLogged();
 
-  public enum IntakeState {
-    IDLE,
-    INTAKING,
-    HOLDING_PIECE,
-    OUTTAKING
-  }
-
-  private final Timer currentSpikeTimer = new Timer();
-
   public CoralIntake(CoralIntakeIO io) {
     this.io = io;
     spark1DisconnectedAlert =
@@ -47,6 +38,28 @@ public class CoralIntake extends SubsystemBase {
     runPercentOutput(0);
   }
 
+  public boolean hasGamePiece() {
+    return inputs.hasGamePiece;
+  }
+
+  private final Timer currentSpikeTimer = new Timer();
+
+  private boolean detectGamePieceIntake() {
+    double totalCurrent = inputs.totalOutputCurrent;
+
+    if (totalCurrent >= CoralIntakeConstants.capturedCurrentOutput) {
+      if (!currentSpikeTimer.isRunning()) {
+        currentSpikeTimer.restart();
+      }
+      if (currentSpikeTimer.hasElapsed(0.25)) {
+        return true;
+      }
+    } else {
+      currentSpikeTimer.stop();
+    }
+    return false;
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -55,36 +68,12 @@ public class CoralIntake extends SubsystemBase {
     spark1DisconnectedAlert.set(!inputs.spark1SparkConnected);
     spark2DisconnectedAlert.set(!inputs.spark2SparkConnected);
 
-    // switch (inputs.state) {
-    //   case IDLE:
-    //     currentSpikeTimer.stop();
-    //     runPercentOutput(0);
-    //     break;
+    if (inputs.spark1SpeedPercent > 0) { // positive, so intaking
+      inputs.hasGamePiece = detectGamePieceIntake();
+      // else {
+      // inputs.hasGamePiece = detectGamePieceOuttake();
+    }
 
-    //   case INTAKING:
-    //     if (inputs.totalOutputCurrent >= CoralIntakeConstants.capturingPieceCurrent) {
-    //       if (!currentSpikeTimer.isRunning()) {
-    //         currentSpikeTimer.restart();
-    //       }
-    //       if (currentSpikeTimer.hasElapsed(CoralIntakeConstants.currentSpikeDuration)) {
-    //         inputs.state = IntakeState.HOLDING_PIECE;
-    //       }
-    //     } else {
-    //       currentSpikeTimer.stop();
-    //     }
-    //     runPercentOutput(CoralIntakeConstants.normalOutput);
-    //     break;
-
-    //   case HOLDING_PIECE:
-    //     runPercentOutput(CoralIntakeConstants.capturedCurrentOutput);
-    //     break;
-
-    //   case OUTTAKING:
-    //     runPercentOutput(-CoralIntakeConstants.normalOutput);
-    //     break;
-    // }
-
-    Logger.recordOutput("CoralIntake/State", inputs.state.toString());
     Logger.recordOutput("CoralIntake/CurrentTimer", currentSpikeTimer.get());
   }
 }

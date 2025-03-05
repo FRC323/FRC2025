@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intakes.coral;
 
-import frc.robot.subsystems.intakes.coral.CoralIntake.IntakeState;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface CoralIntakeIO {
@@ -21,8 +20,6 @@ public interface CoralIntakeIO {
     public double totalOutputCurrent = 0.0;
 
     public boolean hasGamePiece = false;
-
-    public IntakeState state = IntakeState.IDLE;
   }
 
   public default void setPercent(double percent) {}

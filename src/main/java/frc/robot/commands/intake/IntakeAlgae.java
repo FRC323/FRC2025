@@ -26,9 +26,8 @@ public class IntakeAlgae extends SequentialCommandGroup {
             new InstantCommand(),
             () -> elevator.getPosition() <= ElevatorPosition.TRAVEL.val),
         new ParallelCommandGroup(
-                new MoveElevatorToPosition(elevator, elevatorPosition),
-                new MoveArmToPosition(arm, armPosition),
-                new RunAlgaeIntake(algaeIntake, () -> AlgaeIntakeConstants.intakeOutput))
-            .withTimeout(10));
+            new MoveElevatorToPosition(elevator, elevatorPosition),
+            new MoveArmToPosition(arm, armPosition),
+            new RunAlgaeIntake(algaeIntake, () -> AlgaeIntakeConstants.intakeOutput)));
   }
 }
