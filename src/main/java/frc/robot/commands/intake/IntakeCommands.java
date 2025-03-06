@@ -55,6 +55,10 @@ public class IntakeCommands {
     return new IntakeCoral(elevator, arm, coralIntake);
   }
 
+  public static Command RunCoralIntake(CoralIntake coralIntake) {
+    return new RunCoralIntake(coralIntake, () -> CoralIntakeConstants.normalOutput);
+  }
+
   public static Command AlgaeIntake(
       Elevator elevator,
       ElevatorPosition elevatorPosition,

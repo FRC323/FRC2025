@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -88,7 +87,7 @@ public class ElevatorIOSim implements ElevatorIO {
     elevatorRoot = mechanism2d.getRoot("Elevator", 20, 0);
     elevatorCarriage = elevatorRoot.append(new MechanismLigament2d("Carriage", 0, 90));
 
-    SmartDashboard.putData("Elevator Simulation", mechanism2d);
+    // SmartDashboard.putData("Elevator Simulation", mechanism2d);
   }
 
   @Override

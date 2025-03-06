@@ -10,5 +10,5 @@ public class AlgaeIntakeConstants {
   public static int currentLimit = 7;
 
   public static double intakeOutput = 1;
-  public static double normalOutput = .35;
+  public static double normalOutput = .5;
 }

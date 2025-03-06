@@ -30,6 +30,14 @@ public class Climber extends SubsystemBase {
     io.setPercent(percent);
   }
 
+  public boolean isDeployed() {
+    return io.getPosition() == ClimberConstants.DeployedPosition;
+  }
+
+  public boolean isClimbed() {
+    return io.getPosition() == ClimberConstants.ClimbedPosition;
+  }
+
   public void runVoltageOutput(double voltage) {
     voltage = MathUtil.clamp(voltage, -12, 12);
     io.setVoltage(voltage);

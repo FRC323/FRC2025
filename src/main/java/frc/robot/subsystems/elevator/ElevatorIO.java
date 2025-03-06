@@ -17,9 +17,6 @@ public interface ElevatorIO {
 
     public double leadEncoderVelocity = 0.0;
     public double followerEncoderVelocity = 0.0;
-
-    // op controller sets the level
-    public ElevatorPosition OpsCommandedLevel = ElevatorPosition.Home;
   }
 
   public default void setOpMode(ElevatorPosition elevatorPosition) {}

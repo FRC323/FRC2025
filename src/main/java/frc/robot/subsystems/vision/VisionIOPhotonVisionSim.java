@@ -18,7 +18,6 @@ import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.Supplier;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
@@ -57,7 +56,7 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
     cameraProperties.setLatencyStdDevMs(5);
     cameraSim = new PhotonCameraSim(camera, cameraProperties);
     visionSim.addCamera(cameraSim, robotToCamera);
-    SmartDashboard.putData("VisionSimulation", visionSim.getDebugField());
+    // SmartDashboard.putData("VisionSimulation", visionSim.getDebugField());
   }
 
   @Override

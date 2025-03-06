@@ -31,7 +31,7 @@ public class CoralIntake extends SubsystemBase {
   }
 
   public void outtake() {
-    runPercentOutput(-CoralIntakeConstants.normalOutput);
+    runPercentOutput(-CoralIntakeConstants.IntakeOutput);
   }
 
   public void stop() {

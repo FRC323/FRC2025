@@ -90,6 +90,12 @@ public class Arm extends SubsystemBase {
     io.setVoltage(0);
   }
 
+  public boolean isInInvertedRange() {
+    double position = inputs.currentAbsolutePosition;
+    return position >= ArmConstants.invertedStartPosition
+        && position <= ArmConstants.invertedEndPosition;
+  }
+
   public void runPercentOutput(double percent) {
     percent = MathUtil.clamp(percent, -1, 1);
     io.setPercent(percent);

@@ -10,6 +10,7 @@ public class CoralIntakeConstants {
   public static int currentLimit = 5;
 
   public static double normalOutput = .3;
+  public static double coralArmInvertedOutput = .75;
   public static double IntakeOutput = -1;
 
   public static double capturedCurrentOutput = 15;

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -73,7 +72,7 @@ public class ArmIOSim implements ArmIO {
     armLigamentRight.setAngle(Units.radiansToDegrees(armSim.getAngleRads()));
     armLigamentLeft.setAngle(Units.radiansToDegrees(armSim.getAngleRads()));
 
-    SmartDashboard.putData("Arm Simulation", armVisualization);
+    // SmartDashboard.putData("Arm Simulation", armVisualization);
   }
 
   @Override
@@ -118,9 +117,9 @@ public class ArmIOSim implements ArmIO {
     armLigamentRight.setAngle(currentAngleDegrees);
     armLigamentLeft.setAngle(currentAngleDegrees + 180);
 
-    SmartDashboard.putData("Arm Simulation", armVisualization);
+    // SmartDashboard.putData("Arm Simulation", armVisualization);
 
-    Logger.recordOutput("Arm/ControlEffort", output);
+    // Logger.recordOutput("Arm/ControlEffort", output);
   }
 
   private boolean reachedDesiredPosition(double current, double target) {

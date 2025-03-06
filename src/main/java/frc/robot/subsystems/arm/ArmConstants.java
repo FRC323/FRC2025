@@ -49,6 +49,9 @@ public class ArmConstants {
   public static final double maxPosition = .75;
 
   public static final double SetpointTolerance = 0.05;
+
+  public static final double invertedStartPosition = 0.35;
+  public static final double invertedEndPosition = 0.65;
 }
 
 // 270

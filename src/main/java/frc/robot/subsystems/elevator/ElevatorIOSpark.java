@@ -96,8 +96,6 @@ public class ElevatorIOSpark implements ElevatorIO {
         (value) -> inputs.followerEncoderVelocity = -value);
     inputs.followerSparkConnected = followerConnectedDebounce.calculate(!sparkStickyFault);
 
-    inputs.OpsCommandedLevel = this.opsCommandedLevel;
-
     var bottomLimitSwitchPressed =
         bottomLimitSwitchDebounce.calculate(leadSpark.getReverseLimitSwitch().isPressed());
     if (bottomLimitSwitchPressed) {
