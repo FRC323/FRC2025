@@ -24,7 +24,7 @@ public class AlgaeIntakeIOReal implements AlgaeIntakeIO {
 
     var config1 = new SparkMaxConfig();
     config1
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(AlgaeIntakeConstants.currentLimit)
         .inverted(AlgaeIntakeConstants.spark1Inverted);
 
@@ -39,7 +39,7 @@ public class AlgaeIntakeIOReal implements AlgaeIntakeIO {
 
     var config2 = new SparkMaxConfig();
     config2
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(AlgaeIntakeConstants.currentLimit)
         .voltageCompensation(12.0)
         .inverted(AlgaeIntakeConstants.spark2Inverted);

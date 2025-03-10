@@ -18,11 +18,11 @@ public class ElevatorConstants {
   // reef levels
   public static double ReefLevel1CoralPosition = 0.0;
   public static double ReefLevel2CoralPosition = 16.47; // 5.64;
-  public static double ReefLevel3CoralPosition = 33.47;
+  public static double ReefLevel3CoralPosition = 32.47;
   public static double ReefLevel4CoralPosition = 55.00;
 
-  public static double ReefLevel1AlgaePosition = 24.00;
-  public static double ReefLevel2AlgaePosition = 38.50;
+  public static double ReefLevel1AlgaePosition = 25.00;
+  public static double ReefLevel2AlgaePosition = 39.50;
 
   public static double HumanPlayerPosition = 2.00;
 

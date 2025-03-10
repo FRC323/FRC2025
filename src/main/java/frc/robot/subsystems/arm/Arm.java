@@ -3,6 +3,7 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -41,6 +42,7 @@ public class Arm extends SubsystemBase {
     Logger.processInputs("Arm", inputs);
 
     leadDisconnectedAlert.set(!inputs.leadSparkConnected);
+    SmartDashboard.putNumber("Arm.Position", inputs.currentAbsolutePosition);
   }
 
   public double getAngleRadians() {
@@ -49,6 +51,11 @@ public class Arm extends SubsystemBase {
 
   public double getTargetAngleRadians() {
     return inputs.targetPosition;
+  }
+
+  public boolean isArmMoving() {
+    return MathUtil.isNear(
+        inputs.currentAbsolutePosition, inputs.targetPosition, ArmConstants.SetpointTolerance);
   }
 
   public void setArmPosition(ArmPosition position) {

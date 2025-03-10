@@ -7,11 +7,11 @@ public class CoralIntakeConstants {
   public static boolean spark1Inverted = false;
   public static boolean spark2Inverted = true;
 
-  public static int currentLimit = 5;
+  public static int currentLimit = 8;
 
-  public static double normalOutput = .3;
+  public static double normalOutput = .5;
   public static double coralArmInvertedOutput = .75;
-  public static double IntakeOutput = -1;
+  public static double IntakeOutput = -.8;
 
   public static double capturedCurrentOutput = 15;
   // output to 'carry' game piece

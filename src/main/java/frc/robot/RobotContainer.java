@@ -15,10 +15,12 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -149,7 +151,7 @@ public class RobotContainer {
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSim());
         climber = new Climber(new ClimberIOSim());
 
-        // .putData("Field", drive.getField());
+        SmartDashboard.putData("Field", drive.getField());
         break;
 
       default:
@@ -199,6 +201,11 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
+  public Command autoDrive() {
+    return new RunCommand(() -> drive.runVelocity(new ChassisSpeeds(0.8, 0, 0)), drive)
+        .withTimeout(3.0);
+  }
+
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -210,12 +217,12 @@ public class RobotContainer {
         DriveCommands.joystickDrive(
             drive,
             elevator,
-            () -> -driveJoystick.getY(),
-            () -> -driveJoystick.getX(),
+            () -> driveJoystick.getY(),
+            () -> driveJoystick.getX(),
             () -> steerJoystick.getX()));
 
-    coralIntake.setDefaultCommand(IntakeCommands.HoldCoralIntake(coralIntake));
-    algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(algaeIntake));
+    coralIntake.setDefaultCommand(IntakeCommands.HoldCoralIntake(arm, coralIntake));
+    algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(arm, elevator, algaeIntake));
 
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));
@@ -329,8 +336,16 @@ public class RobotContainer {
 
     // driveJoystick.button(DriveStick.LEFT_SIDE_BUTTON).whileTrue()
 
-    climber.setDefaultCommand(
-        ClimbCommands.manualClimberControl(climber, () -> driveJoystick.getRawAxis(1)));
+    // climber.setDefaultCommand(
+    //    ClimbCommands.manualClimberControl(climber, () -> driveJoystick.getRawAxis(1)));
+
+    climber.setDefaultCommand(ClimbCommands.ClimberStop(climber));
+
+    driveJoystick.button(DriveStick.UP_DIRECTIONAL).whileTrue(ClimbCommands.RunClimberUp(climber));
+
+    driveJoystick
+        .button(DriveStick.DOWN_DIRECTIONAL)
+        .whileTrue(ClimbCommands.RunClimberDown(climber));
 
     // ROBOT INITIALIZE COMMANDS
     SmartDashboard.putData("Set Drivetrain Offsets", OffsetCommands.storeDrivetrainOffsets(drive));

@@ -28,7 +28,7 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
 
     var config1 = new SparkMaxConfig();
     config1
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(CoralIntakeConstants.currentLimit)
         .inverted(CoralIntakeConstants.spark1Inverted);
 
@@ -43,7 +43,7 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
 
     var config2 = new SparkMaxConfig();
     config2
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(CoralIntakeConstants.currentLimit)
         .inverted(CoralIntakeConstants.spark2Inverted);
 

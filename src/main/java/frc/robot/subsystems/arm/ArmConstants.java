@@ -27,7 +27,7 @@ public class ArmConstants {
   public static double ReefLevel2AlgaePosition = .175;
   public static double AlgaeOnCoralPosition = .25;
 
-  public static double BargePosition = .49;
+  public static double BargePosition = .68;
   public static double ProcessorPosition = .25;
 
   public static int currentLimit = 40;

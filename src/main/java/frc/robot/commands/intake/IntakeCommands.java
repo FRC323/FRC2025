@@ -12,12 +12,17 @@ import frc.robot.subsystems.intakes.coral.CoralIntakeConstants;
 import java.util.function.DoubleSupplier;
 
 public class IntakeCommands {
-  public static Command HoldCoralIntake(CoralIntake coralIntake) {
+  public static Command HoldCoralIntake(Arm arm, CoralIntake coralIntake) {
     return new RunCoralIntake(coralIntake, () -> -CoralIntakeConstants.normalOutput);
   }
 
-  public static Command HoldAlgaeIntake(AlgaeIntake algaeIntake) {
-    return new RunAlgaeIntake(algaeIntake, () -> AlgaeIntakeConstants.normalOutput);
+  public static Command HoldAlgaeIntake(Arm arm, Elevator elevator, AlgaeIntake algaeIntake) {
+    return new RunAlgaeIntakeWithScaling(
+        algaeIntake,
+        arm,
+        elevator,
+        () -> AlgaeIntakeConstants.normalOutput,
+        () -> AlgaeIntakeConstants.intakeOutput);
   }
 
   public static Command StopAlgaeIntake(AlgaeIntake algaeIntake) {

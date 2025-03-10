@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -200,7 +201,7 @@ public class Drive extends SubsystemBase {
   }
 
   public void zeroGryo() {
-    this.gyroIO.zeroGyro(0);
+    this.gyroIO.zeroGyro(180);
   }
 
   /**
@@ -289,6 +290,13 @@ public class Drive extends SubsystemBase {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
 
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    ChassisSpeeds speeds = kinematics.toChassisSpeeds(getModuleStates());
+    // Negate X for auto path following
+    return new ChassisSpeeds(
+        -speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
+  }
+
   /** Returns the position of each module in radians. */
   public double[] getWheelRadiusCharacterizationPositions() {
     double[] values = new double[4];
@@ -310,16 +318,23 @@ public class Drive extends SubsystemBase {
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
+    SmartDashboard.putNumber("Drive.GetPose.X", poseEstimator.getEstimatedPosition().getX());
+    SmartDashboard.putNumber("Drive.GetPose.Y", poseEstimator.getEstimatedPosition().getX());
+    SmartDashboard.putNumber(
+        "Drive.GetPose.Rotation", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
     return poseEstimator.getEstimatedPosition();
   }
 
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
+    SmartDashboard.putNumber("Drive.GetRotation", getPose().getRotation().getDegrees());
     return getPose().getRotation();
   }
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
+    SmartDashboard.putNumber("Drive.SetPose.GryoRotation", rawGyroRotation.getDegrees());
+    // rawGyroRotation = Rotation2d.fromDegrees(pose.getRotation().getDegrees() + 180);
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 

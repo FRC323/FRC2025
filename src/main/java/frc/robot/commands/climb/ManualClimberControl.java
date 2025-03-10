@@ -16,7 +16,12 @@ public class ManualClimberControl extends Command {
 
   @Override
   public void execute() {
-    double percent = percentSupplier.getAsDouble();
+    double percent = 0;
+    if (percentSupplier.getAsDouble() > .1 && percentSupplier.getAsDouble() < .1) {
+      percent = percentSupplier.getAsDouble();
+    } else {
+      percent = 0;
+    }
     climber.runPercentOutput(percent);
   }
 }
