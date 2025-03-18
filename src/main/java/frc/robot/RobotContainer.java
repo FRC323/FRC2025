@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.auto.AutoCommands;
+import frc.robot.commands.auto.DriveToAprilTag;
 import frc.robot.commands.climb.ClimbCommands;
 import frc.robot.commands.common.CommonCommands;
 import frc.robot.commands.initialization.OffsetCommands;
@@ -225,6 +226,8 @@ public class RobotContainer {
 
     coralIntake.setDefaultCommand(IntakeCommands.HoldCoralIntake(arm, coralIntake));
     algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(arm, elevator, algaeIntake));
+
+    SmartDashboard.putData("DriveToTag", new DriveToAprilTag(vision, drive, 0, 10, 0.5, 1.5, 1.0));
 
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));

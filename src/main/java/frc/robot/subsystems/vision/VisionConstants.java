@@ -44,7 +44,7 @@ public class VisionConstants {
           -0.285,
           0.285,
           0.20,
-          new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(135)));
+          new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(45)));
 
   // Camera names, must match names configured on coprocessor
   //   public static String camera0Name = "camera_0";

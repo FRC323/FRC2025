@@ -86,12 +86,21 @@ public class VisionIOPhotonVision implements VisionIO {
           tagIds.add((short) target.fiducialId);
         }
 
+        // calculate ambiguity
+        var ambiguity = 0.0;
+        if (result.multitagResult.isPresent()) {
+          ambiguity = result.multitagResult.get().estimatedPose.ambiguity;
+        } else if (!result.targets.isEmpty()) {
+          var target = result.targets.get(0);
+          ambiguity = target.poseAmbiguity;
+        }
+
         // Add observation
         poseObservations.add(
             new PoseObservation(
                 result.getTimestampSeconds(), // Timestamp
                 robotPose, // 3D pose estimate
-                0.0, // Ambiguity
+                ambiguity, // Ambiguity
                 result.targets.size(), // Tag count
                 averageTagDistance, // Average tag distance
                 PoseObservationType.PHOTONVISION)); // Observation type

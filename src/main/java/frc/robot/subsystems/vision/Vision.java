@@ -64,6 +64,24 @@ public class Vision extends SubsystemBase {
     return inputs[cameraIndex].latestTargetObservation.tx();
   }
 
+  public Pose3d getAprilTagPose(int id, int cameraIndex) {
+    if (cameraIndex >= 0 && cameraIndex < inputs.length) {
+      for (int i = 0; i < inputs[cameraIndex].tagIds.length; i++) {
+        if (inputs[cameraIndex].tagIds[i] == id) {
+          var tagPose = VisionConstants.aprilTagLayout.getTagPose(id);
+          if (tagPose.isPresent()) {
+            return tagPose.get();
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  public boolean isAprilTagVisible(int id, int cameraIndex) {
+    return getAprilTagPose(id, cameraIndex) != null;
+  }
+
   @Override
   public void periodic() {
     for (int i = 0; i < io.length; i++) {
