@@ -53,10 +53,10 @@ public class Arm extends SubsystemBase {
     return inputs.targetPosition;
   }
 
-  public boolean isArmMoving() {
-    return MathUtil.isNear(
-        inputs.currentAbsolutePosition, inputs.targetPosition, ArmConstants.SetpointTolerance);
-  }
+  // public boolean isArmMoving() {
+  //   return MathUtil.isNear(
+  //       inputs.currentAbsolutePosition, inputs.targetPosition, ArmConstants.SetpointTolerance);
+  // }
 
   public void setArmPosition(ArmPosition position) {
     switch (position) {

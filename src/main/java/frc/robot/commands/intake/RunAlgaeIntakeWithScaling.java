@@ -31,17 +31,14 @@ public class RunAlgaeIntakeWithScaling extends Command {
   @Override
   public void execute() {
     double percent = normalSpeed.getAsDouble();
+
     var elevatorNearHome =
         MathUtil.isNear(Elevator.ElevatorPosition.Home.val, elevator.getPosition(), .1);
     var armNearHome = MathUtil.isNear(Arm.ArmPosition.HOME.val, arm.getAngleRadians(), .1);
+
     if (elevatorNearHome && armNearHome) {
       percent = 0;
-    } else if (arm.isArmMoving()) {
-      percent = armMovingSpeed.getAsDouble();
     }
-    // if (arm.getAngleRadians() == Arm.ArmPosition.HOME.val) {
-    //   percent = 0;
-    // }
     intake.runPercentOutput(percent);
   }
 }
