@@ -17,6 +17,7 @@ public class DriveToAprilTag extends Command {
   private final int cameraIndex;
   private final int tagId;
   private final double stopDistance; // meters
+  private final double lateralOffset; // meters
   private final PathConstraints constraints;
 
   // Command state
@@ -31,6 +32,7 @@ public class DriveToAprilTag extends Command {
       int cameraIndex,
       int tagId,
       double stopDistance,
+      double lateralOffset,
       double maxVelocity,
       double maxAcceleration) {
 
@@ -39,6 +41,7 @@ public class DriveToAprilTag extends Command {
     this.cameraIndex = cameraIndex;
     this.tagId = tagId;
     this.stopDistance = stopDistance;
+    this.lateralOffset = lateralOffset;
     this.constraints =
         new PathConstraints(
             maxVelocity, maxAcceleration, Units.degreesToRadians(540), Units.degreesToRadians(720));
@@ -51,6 +54,7 @@ public class DriveToAprilTag extends Command {
     isPathfinding = false;
     isFinished = false;
     SmartDashboard.putBoolean("DriveToAprilTag/Active", true);
+    SmartDashboard.putNumber("DriveToAprilTag/LateralOffset", lateralOffset);
   }
 
   @Override
@@ -80,10 +84,17 @@ public class DriveToAprilTag extends Command {
     // Calculate the adjusted target pose with proper offset
     Translation2d direction = toTag.div(distanceToTag);
     Translation2d targetTranslation = tagPose.getTranslation().minus(direction.times(stopDistance));
+    Translation2d lateralDirection = new Translation2d(-direction.getY(), direction.getX());
+
+    targetTranslation = targetTranslation.plus(lateralDirection.times(lateralOffset));
+
+    // Log the lateral offset direction
+    SmartDashboard.putNumber("DriveToAprilTag/LateralDirX", lateralDirection.getX());
+    SmartDashboard.putNumber("DriveToAprilTag/LateralDirY", lateralDirection.getY());
 
     // Rotation2d leftSideAlignmentRotation = new Rotation2d(direction.getY(), -direction.getX());
-    //Optional<Alliance> alliance = DriverStation.getAlliance();
-    //boolean isRedAlliance = alliance.isPresent() && alliance.get() == Alliance.Red;
+    // Optional<Alliance> alliance = DriverStation.getAlliance();
+    // boolean isRedAlliance = alliance.isPresent() && alliance.get() == Alliance.Red;
 
     // Use the tag's rotation for the target pose
     // add 90 degrees to the tag's rotation to align with the tag's left side

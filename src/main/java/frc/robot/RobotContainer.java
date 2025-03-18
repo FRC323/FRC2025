@@ -227,7 +227,8 @@ public class RobotContainer {
     coralIntake.setDefaultCommand(IntakeCommands.HoldCoralIntake(arm, coralIntake));
     algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(arm, elevator, algaeIntake));
 
-    SmartDashboard.putData("DriveToTag", new DriveToAprilTag(vision, drive, 0, 10, 0.5, 1.5, 1.0));
+    SmartDashboard.putData(
+        "DriveToTag", new DriveToAprilTag(vision, drive, 0, 10, 0, 0.0635, 3, 4));
 
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));
