@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BottomCenterToBranchF"
+            "pathName": "RightCenterToEFCenter"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Run Coral Outtake"
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "StrafeE"
           }
         }
       ]

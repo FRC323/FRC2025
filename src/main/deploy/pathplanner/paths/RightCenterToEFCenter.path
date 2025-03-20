@@ -8,27 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.610044463278742,
-        "y": 2.29315827953389
+        "x": 6.590871710525506,
+        "y": 2.1583881578931265
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.46990666996757,
-        "y": 2.7391312367934155
+        "x": 5.329793201374822,
+        "y": 2.648541578948806
       },
       "prevControl": {
-        "x": 6.539283890166976,
-        "y": 2.3092358170261247
+        "x": 6.399170421574228,
+        "y": 2.218646159181515
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BranchF"
+      "linkedName": "EFCenter"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.15,
+      "rotationDegrees": 13.932955152419316
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
@@ -54,7 +59,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 29.407189060733632
+    "rotation": 29.999999999999996
   },
   "reversed": false,
   "folder": null,

@@ -8,42 +8,33 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.661777978778353,
-        "y": 1.577091263209286
+        "x": 4.551072350054625,
+        "y": 2.2449772406152366
       },
       "isLocked": false,
-      "linkedName": "BranchF"
+      "linkedName": "EFCenter"
     },
     {
       "anchor": {
-        "x": 1.3259470701126903,
-        "y": 0.8485491727450812
+        "x": 5.081660798405185,
+        "y": 2.5039832631612375
       },
       "prevControl": {
-        "x": 1.9147203947395228,
-        "y": 0.9845394736854735
+        "x": 5.782507437729004,
+        "y": 2.886263248246954
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.3789308176100629,
-      "rotationDegrees": -67.2849622835756
-    },
-    {
-      "waypointRelativePos": 0.6084905660377344,
-      "rotationDegrees": -72.52061490913624
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 1.5,
+    "maxAcceleration": 1.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -51,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -36.02737338510364
+    "rotation": 29.999999999999996
   },
   "reversed": false,
   "folder": null,
@@ -59,5 +50,5 @@
     "velocity": 0,
     "rotation": 29.999999999999996
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
