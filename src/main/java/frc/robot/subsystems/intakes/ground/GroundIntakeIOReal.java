@@ -98,6 +98,11 @@ public class GroundIntakeIOReal implements GroundIntakeIO {
   }
 
   @Override
+  public double getWristPosition() {
+    return wristAbsoluteEncoder.get();
+  }
+
+  @Override
   public void setWristPercent(double percent) {
     var clamped = MathUtil.clamp(percent, -1.0, 1.0);
     setWristVoltage(clamped * 12);

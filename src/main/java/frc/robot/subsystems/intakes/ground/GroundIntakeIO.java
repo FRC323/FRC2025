@@ -14,6 +14,7 @@ public interface GroundIntakeIO {
     public double intakeOutputCurrent = 0.0;
   }
 
+  public default double getWristPosition() { return 0.0; }
   public default void setWristPercent(double percent) {}
 
   public default void setWristVoltage(double voltage) {}

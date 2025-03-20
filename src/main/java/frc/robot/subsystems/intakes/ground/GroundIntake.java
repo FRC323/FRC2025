@@ -3,8 +3,6 @@ package frc.robot.subsystems.intakes.ground;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.arm.ArmConstants;
-
 import org.littletonrobotics.junction.Logger;
 
 public class GroundIntake extends SubsystemBase {
@@ -58,6 +56,16 @@ public class GroundIntake extends SubsystemBase {
     }
   }
 
+  public boolean isStowed() {
+    var currentWristPosition = io.getWristPosition();
+    return MathUtil.isNear(GroundIntakeConstants.stowedPosition, currentWristPosition, 0.05);
+  }
+
+  public boolean isDeployed() {
+    var currentWristPosition = io.getWristPosition();
+    return MathUtil.isNear(GroundIntakeConstants.deployedPosition, currentWristPosition, 0.05);
+  }
+
   public void runIntakePercentOutput(double percent) {
     percent = MathUtil.clamp(percent, -1, 1);
     io.setIntakePercent(percent);
@@ -84,6 +92,8 @@ public class GroundIntake extends SubsystemBase {
 
   public boolean reachedDesiredPosition() {
     return MathUtil.isNear(
-        inputs.wristTargetPosition, inputs.wristCurrentPosition, GroundIntakeConstants.wristSetpointTolerance);
+        inputs.wristTargetPosition,
+        inputs.wristCurrentPosition,
+        GroundIntakeConstants.wristSetpointTolerance);
   }
 }
