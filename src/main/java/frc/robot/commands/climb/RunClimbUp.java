@@ -13,6 +13,6 @@ public class RunClimbUp extends Command {
 
   @Override
   public void initialize() {
-    this.climber.runPercentOutput(.8);
+    this.climber.runPercentOutput(.8, Climber.ClimberPosition.Climb);
   }
 }

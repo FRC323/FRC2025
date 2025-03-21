@@ -13,6 +13,6 @@ public class ClimberStop extends Command {
 
   @Override
   public void initialize() {
-    this.climber.runPercentOutput(0);
+    this.climber.stop();
   }
 }
