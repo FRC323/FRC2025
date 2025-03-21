@@ -62,7 +62,6 @@ import frc.robot.subsystems.intakes.coral.CoralIntakeIO;
 import frc.robot.subsystems.intakes.coral.CoralIntakeIOReal;
 import frc.robot.subsystems.intakes.coral.CoralIntakeIOSim;
 import frc.robot.subsystems.intakes.ground.GroundIntake;
-import frc.robot.subsystems.intakes.ground.GroundIntake.GroundIntakePosition;
 import frc.robot.subsystems.intakes.ground.GroundIntakeIO;
 import frc.robot.subsystems.intakes.ground.GroundIntakeIOReal;
 import frc.robot.subsystems.vision.Vision;
@@ -192,27 +191,32 @@ public class RobotContainer {
 
     // Set up SysId routines
     // autoChooser.addOption(
-    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    // "Drive Wheel Radius Characterization",
+    // DriveCommands.wheelRadiusCharacterization(drive));
     // autoChooser.addOption(
-    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    // "Drive Simple FF Characterization",
+    // DriveCommands.feedforwardCharacterization(drive));
     // autoChooser.addOption(
-    //     "Drive SysId (Quasistatic Forward)",
-    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // "Drive SysId (Quasistatic Forward)",
+    // drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     // autoChooser.addOption(
-    //     "Drive SysId (Quasistatic Reverse)",
-    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // "Drive SysId (Quasistatic Reverse)",
+    // drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     // autoChooser.addOption(
-    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // "Drive SysId (Dynamic Forward)",
+    // drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     // autoChooser.addOption(
-    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // "Drive SysId (Dynamic Reverse)",
+    // drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
   }
 
   // public Command autoDrive() {
-  //   return new RunCommand(() -> drive.runVelocity(new ChassisSpeeds(0.8, 0, 0)), drive)
-  //       .withTimeout(3.0);
+  // return new RunCommand(() -> drive.runVelocity(new ChassisSpeeds(0.8, 0, 0)),
+  // drive)
+  // .withTimeout(3.0);
   // }
 
   /**
@@ -233,12 +237,10 @@ public class RobotContainer {
     coralIntake.setDefaultCommand(IntakeCommands.HoldCoralIntake(arm, coralIntake));
     algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(arm, elevator, algaeIntake));
 
+    SmartDashboard.putData("Climber Stow", ClimbCommands.MoveClimberToStow(climber));
     SmartDashboard.putData(
-        "GroundIntake Deploy",
-        IntakeCommands.MoveGroundIntakeToPosition(groundIntake, GroundIntakePosition.DEPLOY));
-    SmartDashboard.putData(
-        "GroundIntake Stow",
-        IntakeCommands.MoveGroundIntakeToPosition(groundIntake, GroundIntakePosition.STOW));
+        "Climber Deploy", ClimbCommands.MoveClimberToDeploy(climber, elevator, arm, groundIntake));
+    SmartDashboard.putData("Climber Climb", ClimbCommands.MoveClimberToDonkeyKong(climber));
 
     SmartDashboard.putData(
         "Move to Ground Pickup",
@@ -350,8 +352,8 @@ public class RobotContainer {
 
     // spit out coral - no assistance
     // driveJoystick
-    //     .button(DriveStick.LEFT_SIDE_BUTTON)
-    //     .whileTrue(IntakeCommands.OuttakeCoral(coralIntake));
+    // .button(DriveStick.LEFT_SIDE_BUTTON)
+    // .whileTrue(IntakeCommands.OuttakeCoral(coralIntake));
 
     // temp reset
     driveJoystick
@@ -362,11 +364,11 @@ public class RobotContainer {
 
     climber.setDefaultCommand(ClimbCommands.ClimberStop(climber));
 
-    driveJoystick.button(DriveStick.UP_DIRECTIONAL).whileTrue(ClimbCommands.RunClimberUp(climber));
+    driveJoystick.button(DriveStick.UP_DIRECTIONAL).whileTrue(ClimbCommands.MoveClimberUp(climber));
 
     driveJoystick
         .button(DriveStick.DOWN_DIRECTIONAL)
-        .whileTrue(ClimbCommands.RunClimberDown(climber));
+        .whileTrue(ClimbCommands.MoveClimberDown(climber));
 
     // ROBOT INITIALIZE COMMANDS
     SmartDashboard.putData("Set Drivetrain Offsets", OffsetCommands.storeDrivetrainOffsets(drive));
