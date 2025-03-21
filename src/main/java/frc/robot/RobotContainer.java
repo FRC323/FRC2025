@@ -61,6 +61,10 @@ import frc.robot.subsystems.intakes.coral.CoralIntake;
 import frc.robot.subsystems.intakes.coral.CoralIntakeIO;
 import frc.robot.subsystems.intakes.coral.CoralIntakeIOReal;
 import frc.robot.subsystems.intakes.coral.CoralIntakeIOSim;
+import frc.robot.subsystems.intakes.ground.GroundIntake;
+import frc.robot.subsystems.intakes.ground.GroundIntake.GroundIntakePosition;
+import frc.robot.subsystems.intakes.ground.GroundIntakeIO;
+import frc.robot.subsystems.intakes.ground.GroundIntakeIOReal;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -81,6 +85,7 @@ public class RobotContainer {
   private final Vision vision;
   private final CoralIntake coralIntake;
   private final AlgaeIntake algaeIntake;
+  private final GroundIntake groundIntake;
   private final Climber climber;
 
   private final CommandJoystick driveJoystick =
@@ -111,6 +116,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOSpark());
         coralIntake = new CoralIntake(new CoralIntakeIOReal());
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal());
+        groundIntake = new GroundIntake(new GroundIntakeIOReal());
         climber = new Climber(new ClimberIOSpark());
         vision =
             new Vision(
@@ -150,6 +156,7 @@ public class RobotContainer {
 
         coralIntake = new CoralIntake(new CoralIntakeIOSim());
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSim());
+        groundIntake = null;
         climber = new Climber(new ClimberIOSim());
 
         SmartDashboard.putData("Field", drive.getField());
@@ -170,9 +177,9 @@ public class RobotContainer {
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         coralIntake = new CoralIntake(new CoralIntakeIO() {});
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal() {});
+        groundIntake = new GroundIntake(new GroundIntakeIO() {});
         climber = new Climber(new ClimberIOSpark() {});
 
-        // SmartDashboard.putData("Field", drive.getField());
         break;
     }
 
@@ -225,6 +232,17 @@ public class RobotContainer {
 
     coralIntake.setDefaultCommand(IntakeCommands.HoldCoralIntake(arm, coralIntake));
     algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(arm, elevator, algaeIntake));
+
+    SmartDashboard.putData(
+        "GroundIntake Deploy",
+        IntakeCommands.MoveGroundIntakeToPosition(groundIntake, GroundIntakePosition.DEPLOY));
+    SmartDashboard.putData(
+        "GroundIntake Stow",
+        IntakeCommands.MoveGroundIntakeToPosition(groundIntake, GroundIntakePosition.STOW));
+
+    SmartDashboard.putData(
+        "Move to Ground Pickup",
+        IntakeCommands.MoveToGroundPickup(elevator, arm, groundIntake, coralIntake));
 
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));
@@ -338,7 +356,9 @@ public class RobotContainer {
     // temp reset
     driveJoystick
         .button(DriveStick.BACK_SIDE_BUTTON)
-        .onTrue(CommonCommands.moveToTravelPosition(elevator, arm, coralIntake, algaeIntake));
+        .onTrue(
+            CommonCommands.moveToTravelPosition(
+                elevator, arm, coralIntake, algaeIntake, groundIntake));
 
     climber.setDefaultCommand(ClimbCommands.ClimberStop(climber));
 
@@ -388,5 +408,6 @@ public class RobotContainer {
     arm.stop();
     algaeIntake.stop();
     coralIntake.stop();
+    groundIntake.stop();
   }
 }

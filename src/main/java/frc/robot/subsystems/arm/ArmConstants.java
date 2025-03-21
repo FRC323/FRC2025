@@ -30,6 +30,8 @@ public class ArmConstants {
   public static double BargePosition = .68;
   public static double ProcessorPosition = .25;
 
+  public static double GroundPickupPosition = .396;
+
   public static int currentLimit = 40;
 
   public static final double kS = 0.0;

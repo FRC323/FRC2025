@@ -61,7 +61,7 @@ public class CoralIntake extends SubsystemBase {
 
   private final Timer currentSpikeTimer = new Timer();
 
-  //play code...
+  // play code...
   private boolean detectGamePieceIntake() {
     double totalCurrent = inputs.totalOutputCurrent;
 
@@ -86,7 +86,7 @@ public class CoralIntake extends SubsystemBase {
     spark1DisconnectedAlert.set(!inputs.spark1SparkConnected);
     spark2DisconnectedAlert.set(!inputs.spark2SparkConnected);
 
-    //play code
+    // play code
     if (inputs.spark1SpeedPercent > 0) { // positive, so intaking
       inputs.hasGamePiece = detectGamePieceIntake();
       // else {
