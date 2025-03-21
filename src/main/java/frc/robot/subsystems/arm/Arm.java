@@ -29,7 +29,8 @@ public class Arm extends SubsystemBase {
     REEF_LEVEL_2_ALGAE(ArmConstants.ReefLevel2AlgaePosition),
     ALGAE_BARGE(ArmConstants.BargePosition),
     ALGAE_PROCESSOR(ArmConstants.ProcessorPosition),
-    GROUND_PICKUP(ArmConstants.GroundPickupPosition);
+    GROUND_PICKUP(ArmConstants.GroundPickupPosition),
+    CLIMB_POSITION(ArmConstants.ClimbPosition);
 
     public final double val;
 
@@ -93,6 +94,10 @@ public class Arm extends SubsystemBase {
         break;
       case GROUND_PICKUP:
         setAngleRadians(ArmConstants.GroundPickupPosition);
+        break;
+      case CLIMB_POSITION:
+        setAngleRadians(ArmConstants.ClimbPosition);
+        break;
     }
   }
 

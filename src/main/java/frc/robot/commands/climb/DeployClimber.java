@@ -6,17 +6,15 @@ import frc.robot.subsystems.climber.Climber.ClimberPosition;
 
 public class DeployClimber extends Command {
   private final Climber climber;
-  private final double percent;
 
-  public DeployClimber(Climber climber, double percent) {
+  public DeployClimber(Climber climber) {
     this.climber = climber;
-    this.percent = percent;
     addRequirements(climber);
   }
 
   @Override
   public void initialize() {
-    climber.runPercentOutput(percent, ClimberPosition.Deploy);
+    climber.setPosition(ClimberPosition.Deploy);
   }
 
   @Override

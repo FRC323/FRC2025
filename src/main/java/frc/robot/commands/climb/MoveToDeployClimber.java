@@ -1,7 +1,6 @@
 package frc.robot.commands.climb;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.arm.MoveArmToPosition;
 import frc.robot.commands.elevator.MoveElevatorToPosition;
@@ -18,9 +17,9 @@ public class MoveToDeployClimber extends SequentialCommandGroup {
       Climber climber, Elevator elevator, Arm arm, GroundIntake groundIntake) {
     addCommands(
         new ParallelCommandGroup(
-            new RepeatCommand(new DeployClimber(climber, 1)),
+            new DeployClimber(climber),
             new MoveElevatorToPosition(elevator, ElevatorPosition.Home),
-            new MoveArmToPosition(arm, ArmPosition.REEF_LEVEL_1_ALGAE),
+            new MoveArmToPosition(arm, ArmPosition.CLIMB_POSITION),
             new MoveGroundIntakeToPosition(
                 groundIntake, GroundIntake.GroundIntakePosition.DEPLOY)));
   }

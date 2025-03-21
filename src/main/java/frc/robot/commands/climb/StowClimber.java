@@ -16,7 +16,7 @@ public class StowClimber extends Command {
 
   @Override
   public void execute() {
-    climber.runVoltageOutput(-percent, ClimberPosition.Stowed);
+    climber.runPercentOutput(percent, ClimberPosition.Stowed);
   }
 
   @Override

@@ -12,21 +12,24 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.arm.ArmConstants;
 import frc.robot.subsystems.climber.Climber.ClimberPosition;
-import org.littletonrobotics.junction.Logger;
 
 public class ClimberIOSpark implements ClimberIO {
   public final SparkMax leadSpark;
   public final RelativeEncoder leadEncoder;
+
+  private final PIDController controller = new PIDController(ClimberConstants.kP, 0.0, 0.0);
 
   public ClimberPosition targetPosition = ClimberPosition.Stowed;
 
   private final Debouncer leadConnectedDebounce = new Debouncer(0.5);
 
   public double openLoopVoltage = 0.0;
+  public boolean closedLoop = false;
 
   public ClimberIOSpark() {
     leadSpark = new SparkMax(ClimberConstants.leadCanId, MotorType.kBrushless);
@@ -55,29 +58,44 @@ public class ClimberIOSpark implements ClimberIO {
     inputs.leadSparkConnected = leadConnectedDebounce.calculate(!sparkStickyFault);
 
     inputs.CurrentOutput = leadSpark.getOutputCurrent();
+    double currentPosition = leadEncoder.getPosition();
 
-    if (this.targetPosition != ClimberPosition.Stowed) {
-      double currentPosition = leadEncoder.getPosition();
-
-      if (this.targetPosition == ClimberPosition.Deploy
+    double output = 0.0;
+    if (closedLoop) {
+      var rawPosition = getRawPosition(targetPosition);
+      output = controller.calculate(leadEncoder.getPosition(), rawPosition);
+      leadSpark.set(output);
+    } else {
+      if (this.targetPosition == ClimberPosition.Climb
+          && currentPosition < ClimberConstants.ClimbedPosition) {
+        output = this.openLoopVoltage;
+        leadSpark.setVoltage(output);
+      } else if (this.targetPosition == ClimberPosition.Deploy
           && currentPosition < ClimberConstants.DeployedPosition) {
-        leadSpark.setVoltage(this.openLoopVoltage);
+        output = this.openLoopVoltage;
+        leadSpark.setVoltage(output);
+      } else if (this.targetPosition == ClimberPosition.Stowed
+          && currentPosition > ClimberConstants.StowedPosition) {
+        output = -this.openLoopVoltage;
+        leadSpark.setVoltage(output);
       } else {
         leadSpark.setVoltage(0);
       }
-    } else {
-      leadSpark.setVoltage(0);
     }
 
-    Logger.recordOutput("Climber/ControlOutput", this.openLoopVoltage);
+    SmartDashboard.putNumber("Climber/ControlOutput", this.openLoopVoltage);
     SmartDashboard.putNumber("Climber/CurrentPosition", inputs.leadEncoderPosition);
+    SmartDashboard.putNumber("Climber/TargetPosition", getRawPosition(targetPosition));
+  }
+
+  @Override
+  public void resetZero() {
+    leadEncoder.setPosition(0.0);
   }
 
   @Override
   public double getTargetPosition() {
-    return this.targetPosition == ClimberPosition.Deploy
-        ? ClimberConstants.DeployedPosition
-        : ClimberConstants.ClimbedPosition;
+    return getRawPosition(targetPosition);
   }
 
   @Override
@@ -96,12 +114,30 @@ public class ClimberIOSpark implements ClimberIO {
     var clamped = MathUtil.clamp(voltage, -12, 12);
     this.targetPosition = position;
     this.openLoopVoltage = clamped;
+    this.closedLoop = false;
+  }
+
+  public void setPosition(ClimberPosition position) {
+    this.targetPosition = position;
+    // var rawPosition = getRawPosition(position);
+    // MathUtil.clamp(rawPosition, ClimberConstants.StowedPosition,
+    // ClimberConstants.ClimbedPosition);
+    this.closedLoop = true;
+  }
+
+  private double getRawPosition(ClimberPosition position) {
+    if (position == ClimberPosition.Deploy) {
+      return ClimberConstants.DeployedPosition;
+    } else if (position == ClimberPosition.Climb) {
+      return ClimberConstants.ClimbedPosition;
+    } else {
+      return ClimberConstants.StowedPosition;
+    }
   }
 
   @Override
   public void stop() {
     this.openLoopVoltage = 0.0;
-    this.targetPosition = ClimberPosition.Stowed;
     leadSpark.setVoltage(0);
   }
 }

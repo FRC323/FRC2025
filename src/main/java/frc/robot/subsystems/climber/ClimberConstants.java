@@ -12,5 +12,7 @@ public class ClimberConstants {
 
   public static final double currentPosition = 0.0;
 
+  public static final double kP = .25;
+
   public static double kDt = 0.02;
 }

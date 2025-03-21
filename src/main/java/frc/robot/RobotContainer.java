@@ -238,13 +238,12 @@ public class RobotContainer {
     algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(arm, elevator, algaeIntake));
 
     SmartDashboard.putData("Climber Stow", ClimbCommands.MoveClimberToStow(climber));
-    SmartDashboard.putData(
-        "Climber Deploy", ClimbCommands.MoveClimberToDeploy(climber, elevator, arm, groundIntake));
-    SmartDashboard.putData("Climber Climb", ClimbCommands.MoveClimberToDonkeyKong(climber));
 
     SmartDashboard.putData(
         "Move to Ground Pickup",
         IntakeCommands.MoveToGroundPickup(elevator, arm, groundIntake, coralIntake));
+
+    SmartDashboard.putData("Zero Climber", ClimbCommands.ClimberZero(climber));
 
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));
@@ -364,11 +363,18 @@ public class RobotContainer {
 
     climber.setDefaultCommand(ClimbCommands.ClimberStop(climber));
 
-    driveJoystick.button(DriveStick.UP_DIRECTIONAL).whileTrue(ClimbCommands.MoveClimberUp(climber));
+    // deploy climber
+    driveJoystick
+        .button(DriveStick.UP_DIRECTIONAL)
+        .whileTrue(ClimbCommands.MoveClimberToDeploy(climber, elevator, arm, groundIntake));
 
     driveJoystick
         .button(DriveStick.DOWN_DIRECTIONAL)
-        .whileTrue(ClimbCommands.MoveClimberDown(climber));
+        .whileTrue(ClimbCommands.MoveClimberToDonkeyKong(climber));
+
+    driveJoystick
+        .button(DriveStick.LEFT_DIRECTIONAL)
+        .whileTrue(ClimbCommands.MoveClimberToStow(climber));
 
     // ROBOT INITIALIZE COMMANDS
     SmartDashboard.putData("Set Drivetrain Offsets", OffsetCommands.storeDrivetrainOffsets(drive));
@@ -411,5 +417,6 @@ public class RobotContainer {
     algaeIntake.stop();
     coralIntake.stop();
     groundIntake.stop();
+    climber.stop();
   }
 }

@@ -7,6 +7,10 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.intakes.ground.GroundIntake;
 
 public class ClimbCommands {
+  public static Command ClimberZero(Climber climber) {
+    return new ClimberZero(climber);
+  }
+
   public static Command ClimberStop(Climber climber) {
     return new ClimberStop(climber);
   }
@@ -25,7 +29,7 @@ public class ClimbCommands {
   }
 
   public static Command MoveClimberToDonkeyKong(Climber climber) {
-    return new DonkeyKong(climber, 1);
+    return new MoveToDonkeyKong(climber);
   }
 
   public static Command MoveClimberToStow(Climber climber) {

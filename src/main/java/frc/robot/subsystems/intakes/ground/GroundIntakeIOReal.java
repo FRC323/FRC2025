@@ -123,9 +123,11 @@ public class GroundIntakeIOReal implements GroundIntakeIO {
 
   @Override
   public void setWristPosition(double position) {
-    this.wristTargetPosition = position;
-    MathUtil.clamp(
-        position, GroundIntakeConstants.wristMinPosition, GroundIntakeConstants.wristMaxPosition);
+    this.wristTargetPosition =
+        MathUtil.clamp(
+            position,
+            GroundIntakeConstants.wristMinPosition,
+            GroundIntakeConstants.wristMaxPosition);
     wristClosedLoop = true;
   }
 

@@ -43,6 +43,10 @@ public class Climber extends SubsystemBase {
     io.stop();
   }
 
+  public void setPosition(ClimberPosition position) {
+    io.setPosition(position);
+  }
+
   public void runPercentOutput(double percent, ClimberPosition position) {
     percent = MathUtil.clamp(percent, -1, 1);
     io.setPercent(percent, position);
@@ -55,5 +59,9 @@ public class Climber extends SubsystemBase {
 
   public boolean reachedDesiredPosition() {
     return MathUtil.isNear(getTargetPosition(), getCurrentPosition(), 0.05);
+  }
+
+  public void resetZero() {
+    io.resetZero();
   }
 }

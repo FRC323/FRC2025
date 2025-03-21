@@ -17,7 +17,7 @@ public class DonkeyKong extends Command {
 
   @Override
   public void initialize() {
-    climber.runVoltageOutput(percent, ClimberPosition.Climb);
+    climber.runPercentOutput(percent, ClimberPosition.Climb);
   }
 
   @Override
