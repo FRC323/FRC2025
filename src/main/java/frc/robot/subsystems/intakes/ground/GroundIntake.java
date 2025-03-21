@@ -81,6 +81,11 @@ public class GroundIntake extends SubsystemBase {
     io.setWristPosition(position);
   }
 
+  public void stop() {
+    runIntakePercentOutput(0);
+    runWristPercentOutput(0);
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);

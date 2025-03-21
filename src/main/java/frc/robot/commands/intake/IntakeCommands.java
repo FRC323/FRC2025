@@ -9,9 +9,21 @@ import frc.robot.subsystems.intakes.algae.AlgaeIntake;
 import frc.robot.subsystems.intakes.algae.AlgaeIntakeConstants;
 import frc.robot.subsystems.intakes.coral.CoralIntake;
 import frc.robot.subsystems.intakes.coral.CoralIntakeConstants;
+import frc.robot.subsystems.intakes.ground.GroundIntake;
+import frc.robot.subsystems.intakes.ground.GroundIntake.GroundIntakePosition;
 import java.util.function.DoubleSupplier;
 
 public class IntakeCommands {
+  public static Command MoveToGroundPickup(
+      Elevator elevator, Arm arm, GroundIntake groundIntake, CoralIntake coralIntake) {
+    return new MoveToGroundPickup(elevator, arm, groundIntake, coralIntake);
+  }
+
+  public static Command MoveGroundIntakeToPosition(
+      GroundIntake groundIntake, GroundIntakePosition position) {
+    return new MoveGroundIntakeToPosition(groundIntake, position);
+  }
+
   public static Command HoldCoralIntake(Arm arm, CoralIntake coralIntake) {
     return new RunCoralIntake(coralIntake, () -> -CoralIntakeConstants.normalOutput);
   }

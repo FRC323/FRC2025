@@ -22,6 +22,9 @@ public class MoveGroundIntakeToPosition extends Command {
   @Override
   public boolean isFinished() {
     boolean finished = this.groundIntake.reachedDesiredPosition();
+    if (finished && this.position == GroundIntakePosition.STOW) {
+      this.groundIntake.runIntakePercentOutput(0);
+    }
     return finished;
   }
 }

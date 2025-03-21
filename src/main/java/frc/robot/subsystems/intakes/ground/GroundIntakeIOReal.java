@@ -4,6 +4,7 @@ import static frc.robot.util.SparkUtil.ifOk;
 import static frc.robot.util.SparkUtil.sparkStickyFault;
 import static frc.robot.util.SparkUtil.tryUntilOk;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -13,7 +14,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GroundIntakeIOReal implements GroundIntakeIO {
   private final SparkMax wristLeadSpark;
@@ -22,7 +23,7 @@ public class GroundIntakeIOReal implements GroundIntakeIO {
   private final SparkMax intakeLeadSpark;
   private final Debouncer intakeLeadConnectedDebounce = new Debouncer(0.5);
 
-  private final DutyCycleEncoder wristAbsoluteEncoder;
+  private final AbsoluteEncoder wristAbsoluteEncoder;
   private final PIDController wristController =
       new PIDController(
           GroundIntakeConstants.wristP, GroundIntakeConstants.wristI, GroundIntakeConstants.wristD);
@@ -34,7 +35,7 @@ public class GroundIntakeIOReal implements GroundIntakeIO {
   public GroundIntakeIOReal() {
     // wrist
     wristLeadSpark = new SparkMax(GroundIntakeConstants.wirstSparkCanId, MotorType.kBrushless);
-    wristAbsoluteEncoder = new DutyCycleEncoder(GroundIntakeConstants.encoderPort);
+    wristAbsoluteEncoder = wristLeadSpark.getAbsoluteEncoder();
 
     var wristConfig = new SparkMaxConfig();
     wristConfig
@@ -50,13 +51,13 @@ public class GroundIntakeIOReal implements GroundIntakeIO {
                 wristConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
     // intake
-    intakeLeadSpark = new SparkMax(GroundIntakeConstants.wirstSparkCanId, MotorType.kBrushless);
+    intakeLeadSpark = new SparkMax(GroundIntakeConstants.intakeSparkCanId, MotorType.kBrushless);
 
     var intakeConfig = new SparkMaxConfig();
     intakeConfig
         .idleMode(IdleMode.kCoast)
         .smartCurrentLimit(GroundIntakeConstants.intakeCurrentLimit)
-        .inverted(GroundIntakeConstants.wirstSparkInverted);
+        .inverted(GroundIntakeConstants.intakeSparkInverted);
 
     tryUntilOk(
         wristLeadSpark,
@@ -84,22 +85,27 @@ public class GroundIntakeIOReal implements GroundIntakeIO {
         (value) -> inputs.intakeOutputCurrent = value);
     inputs.intakeSparkConnected = intakeLeadConnectedDebounce.calculate(!sparkStickyFault);
 
-    inputs.wristCurrentPosition = wristAbsoluteEncoder.get();
+    inputs.wristCurrentPosition = wristAbsoluteEncoder.getPosition();
     inputs.wristTargetPosition = this.wristTargetPosition;
 
     double output = 0;
     if (wristClosedLoop) {
-      output = wristController.calculate(wristAbsoluteEncoder.get(), this.wristTargetPosition);
+      output =
+          wristController.calculate(wristAbsoluteEncoder.getPosition(), this.wristTargetPosition);
       wristLeadSpark.set(output);
     } else {
       inputs.wristTargetPosition = wristOpenLoopVoltage;
       wristLeadSpark.setVoltage(output);
     }
+
+    SmartDashboard.putNumber("GroundIntake/CurrentWristPosition", inputs.wristCurrentPosition);
+    SmartDashboard.putNumber("GroundIntake/TargetWristPosition", inputs.wristTargetPosition);
+    SmartDashboard.putNumber("GroundIntake/WristOutput", output);
   }
 
   @Override
   public double getWristPosition() {
-    return wristAbsoluteEncoder.get();
+    return wristAbsoluteEncoder.getPosition();
   }
 
   @Override
@@ -117,11 +123,9 @@ public class GroundIntakeIOReal implements GroundIntakeIO {
 
   @Override
   public void setWristPosition(double position) {
-    this.wristTargetPosition =
-        MathUtil.clamp(
-            position,
-            GroundIntakeConstants.wristMinPosition,
-            GroundIntakeConstants.wristMaxPosition);
+    this.wristTargetPosition = position;
+    MathUtil.clamp(
+        position, GroundIntakeConstants.wristMinPosition, GroundIntakeConstants.wristMaxPosition);
     wristClosedLoop = true;
   }
 
