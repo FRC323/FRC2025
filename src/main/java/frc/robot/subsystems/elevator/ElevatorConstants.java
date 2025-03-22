@@ -17,8 +17,8 @@ public class ElevatorConstants {
   public static double TravelPosition = 3.50;
   // reef levels
   public static double ReefLevel1CoralPosition = 0.0;
-  public static double ReefLevel2CoralPosition = 18.47; // 16.47
-  public static double ReefLevel3CoralPosition = 34.47; // 32.47
+  public static double ReefLevel2CoralPosition = 17.47; // 16.47
+  public static double ReefLevel3CoralPosition = 33.47; // 32.47
   public static double ReefLevel4CoralPosition = 55.00; // 55.00
 
   public static double ReefLevel1AlgaePosition = 25.00;

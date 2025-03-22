@@ -11,6 +11,12 @@ public class Climber extends SubsystemBase {
 
   private final Alert leadDisconnectedAlert;
 
+  public enum ClimberPosition {
+    Stowed,
+    Deploy,
+    Climb
+  }
+
   public Climber(ClimberIO io) {
     this.io = io;
     leadDisconnectedAlert =
@@ -25,21 +31,37 @@ public class Climber extends SubsystemBase {
     leadDisconnectedAlert.set(!inputs.leadSparkConnected);
   }
 
-  public void runPercentOutput(double percent) {
+  public double getTargetPosition() {
+    return io.getTargetPosition();
+  }
+
+  public double getCurrentPosition() {
+    return io.getCurrentPosition();
+  }
+
+  public void stop() {
+    io.stop();
+  }
+
+  public void setPosition(ClimberPosition position) {
+    io.setPosition(position);
+  }
+
+  public void runPercentOutput(double percent, ClimberPosition position) {
     percent = MathUtil.clamp(percent, -1, 1);
-    io.setPercent(percent);
+    io.setPercent(percent, position);
   }
 
-  public boolean isDeployed() {
-    return io.getPosition() == ClimberConstants.DeployedPosition;
-  }
-
-  public boolean isClimbed() {
-    return io.getPosition() == ClimberConstants.ClimbedPosition;
-  }
-
-  public void runVoltageOutput(double voltage) {
+  public void runVoltageOutput(double voltage, ClimberPosition position) {
     voltage = MathUtil.clamp(voltage, -12, 12);
-    io.setVoltage(voltage);
+    io.setVoltage(voltage, position);
+  }
+
+  public boolean reachedDesiredPosition() {
+    return MathUtil.isNear(getTargetPosition(), getCurrentPosition(), 0.05);
+  }
+
+  public void resetZero() {
+    io.resetZero();
   }
 }

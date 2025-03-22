@@ -28,7 +28,9 @@ public class Arm extends SubsystemBase {
     REEF_LEVEL_1_ALGAE(ArmConstants.ReefLevel1AlgaePosition),
     REEF_LEVEL_2_ALGAE(ArmConstants.ReefLevel2AlgaePosition),
     ALGAE_BARGE(ArmConstants.BargePosition),
-    ALGAE_PROCESSOR(ArmConstants.ProcessorPosition);
+    ALGAE_PROCESSOR(ArmConstants.ProcessorPosition),
+    GROUND_PICKUP(ArmConstants.GroundPickupPosition),
+    CLIMB_POSITION(ArmConstants.ClimbPosition);
 
     public final double val;
 
@@ -53,10 +55,14 @@ public class Arm extends SubsystemBase {
     return inputs.targetPosition;
   }
 
-  public boolean isArmMoving() {
-    return MathUtil.isNear(
-        inputs.currentAbsolutePosition, inputs.targetPosition, ArmConstants.SetpointTolerance);
+  public boolean armInGroundIntakePosition() {
+    return MathUtil.isNear(ArmConstants.GroundPickupPosition, inputs.currentAbsolutePosition, .1);
   }
+
+  // public boolean isArmMoving() {
+  //   return MathUtil.isNear(
+  //       inputs.currentAbsolutePosition, inputs.targetPosition, ArmConstants.SetpointTolerance);
+  // }
 
   public void setArmPosition(ArmPosition position) {
     switch (position) {
@@ -89,6 +95,12 @@ public class Arm extends SubsystemBase {
         break;
       case ALGAE_PROCESSOR:
         setAngleRadians(ArmConstants.ProcessorPosition);
+        break;
+      case GROUND_PICKUP:
+        setAngleRadians(ArmConstants.GroundPickupPosition);
+        break;
+      case CLIMB_POSITION:
+        setAngleRadians(ArmConstants.ClimbPosition);
         break;
     }
   }

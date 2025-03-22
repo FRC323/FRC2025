@@ -17,9 +17,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "StrafeE"
+            "name": "Run Coral Outtake"
           }
         }
       ]

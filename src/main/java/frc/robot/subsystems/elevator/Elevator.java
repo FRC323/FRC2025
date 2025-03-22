@@ -44,6 +44,10 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  public boolean elevatorInGroundIntakePosition() {
+    return MathUtil.isNear(ElevatorConstants.HomePosition, inputs.leadEncoderPosition, .1);
+  }
+
   public void stop() {
     this.targetPosition = 0.0;
     io.setPercent(0);

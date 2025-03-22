@@ -62,6 +62,9 @@ import frc.robot.subsystems.intakes.coral.CoralIntake;
 import frc.robot.subsystems.intakes.coral.CoralIntakeIO;
 import frc.robot.subsystems.intakes.coral.CoralIntakeIOReal;
 import frc.robot.subsystems.intakes.coral.CoralIntakeIOSim;
+import frc.robot.subsystems.intakes.ground.GroundIntake;
+import frc.robot.subsystems.intakes.ground.GroundIntakeIO;
+import frc.robot.subsystems.intakes.ground.GroundIntakeIOReal;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -82,6 +85,7 @@ public class RobotContainer {
   private final Vision vision;
   private final CoralIntake coralIntake;
   private final AlgaeIntake algaeIntake;
+  private final GroundIntake groundIntake;
   private final Climber climber;
 
   private final CommandJoystick driveJoystick =
@@ -112,6 +116,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOSpark());
         coralIntake = new CoralIntake(new CoralIntakeIOReal());
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal());
+        groundIntake = new GroundIntake(new GroundIntakeIOReal());
         climber = new Climber(new ClimberIOSpark());
         vision =
             new Vision(
@@ -151,6 +156,7 @@ public class RobotContainer {
 
         coralIntake = new CoralIntake(new CoralIntakeIOSim());
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSim());
+        groundIntake = null;
         climber = new Climber(new ClimberIOSim());
 
         SmartDashboard.putData("Field", drive.getField());
@@ -171,9 +177,9 @@ public class RobotContainer {
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         coralIntake = new CoralIntake(new CoralIntakeIO() {});
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal() {});
+        groundIntake = new GroundIntake(new GroundIntakeIO() {});
         climber = new Climber(new ClimberIOSpark() {});
 
-        // SmartDashboard.putData("Field", drive.getField());
         break;
     }
 
@@ -186,27 +192,32 @@ public class RobotContainer {
 
     // Set up SysId routines
     // autoChooser.addOption(
-    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    // "Drive Wheel Radius Characterization",
+    // DriveCommands.wheelRadiusCharacterization(drive));
     // autoChooser.addOption(
-    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    // "Drive Simple FF Characterization",
+    // DriveCommands.feedforwardCharacterization(drive));
     // autoChooser.addOption(
-    //     "Drive SysId (Quasistatic Forward)",
-    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // "Drive SysId (Quasistatic Forward)",
+    // drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     // autoChooser.addOption(
-    //     "Drive SysId (Quasistatic Reverse)",
-    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // "Drive SysId (Quasistatic Reverse)",
+    // drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     // autoChooser.addOption(
-    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // "Drive SysId (Dynamic Forward)",
+    // drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     // autoChooser.addOption(
-    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // "Drive SysId (Dynamic Reverse)",
+    // drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
   }
 
   // public Command autoDrive() {
-  //   return new RunCommand(() -> drive.runVelocity(new ChassisSpeeds(0.8, 0, 0)), drive)
-  //       .withTimeout(3.0);
+  // return new RunCommand(() -> drive.runVelocity(new ChassisSpeeds(0.8, 0, 0)),
+  // drive)
+  // .withTimeout(3.0);
   // }
 
   /**
@@ -320,9 +331,14 @@ public class RobotContainer {
                 ArmPosition.REEF_LEVEL_4_CORAL));
 
     // pose to human player coral pickup
-    driveJoystick.trigger().onTrue(IntakeCommands.CoralIntake(elevator, arm, coralIntake));
+    // driveJoystick.trigger().onTrue(IntakeCommands.CoralIntake(elevator, arm, coralIntake));
 
-    // driveJoystick.button(DriveStick.).whileTrue(IntakeCommands.RunCoralIntake(coralIntake));
+    groundIntake.setDefaultCommand(IntakeCommands.StopGroundIntake(groundIntake));
+
+    // pose to ground pick up and turn on intakes
+    driveJoystick
+        .trigger()
+        .whileTrue(IntakeCommands.MoveToGroundPickup(elevator, arm, groundIntake, coralIntake));
 
     // spit out algae
     driveJoystick
@@ -332,25 +348,34 @@ public class RobotContainer {
     // spit out coral - OuttakeCoralWSensor: with laser can assistance
     driveJoystick
         .button(DriveStick.LEFT_SIDE_BUTTON)
-        .whileTrue(IntakeCommands.OuttakeCoralWSensor(coralIntake));
+        .whileTrue(IntakeCommands.OuttakeCoralWSensor(coralIntake, groundIntake, elevator, arm));
 
     // spit out coral - no assistance
     // driveJoystick
-    //     .button(DriveStick.LEFT_SIDE_BUTTON)
-    //     .whileTrue(IntakeCommands.OuttakeCoral(coralIntake));
+    // .button(DriveStick.LEFT_SIDE_BUTTON)
+    // .whileTrue(IntakeCommands.OuttakeCoral(coralIntake));
 
     // temp reset
     driveJoystick
         .button(DriveStick.BACK_SIDE_BUTTON)
-        .onTrue(CommonCommands.moveToTravelPosition(elevator, arm, coralIntake, algaeIntake));
+        .onTrue(
+            CommonCommands.moveToTravelPosition(
+                elevator, arm, coralIntake, algaeIntake, groundIntake));
 
     climber.setDefaultCommand(ClimbCommands.ClimberStop(climber));
 
-    driveJoystick.button(DriveStick.UP_DIRECTIONAL).whileTrue(ClimbCommands.RunClimberUp(climber));
+    // deploy climber
+    driveJoystick
+        .button(DriveStick.LEFT_DIRECTIONAL)
+        .whileTrue(ClimbCommands.MoveClimberToDeploy(climber, elevator, arm, groundIntake));
+
+    driveJoystick
+        .button(DriveStick.UP_DIRECTIONAL)
+        .whileTrue(ClimbCommands.MoveClimberToDonkeyKong(climber));
 
     driveJoystick
         .button(DriveStick.DOWN_DIRECTIONAL)
-        .whileTrue(ClimbCommands.RunClimberDown(climber));
+        .whileTrue(ClimbCommands.MoveClimberToStow(climber));
 
     // ROBOT INITIALIZE COMMANDS
     SmartDashboard.putData("Set Drivetrain Offsets", OffsetCommands.storeDrivetrainOffsets(drive));
@@ -392,5 +417,7 @@ public class RobotContainer {
     arm.stop();
     algaeIntake.stop();
     coralIntake.stop();
+    groundIntake.stop();
+    climber.stop();
   }
 }
