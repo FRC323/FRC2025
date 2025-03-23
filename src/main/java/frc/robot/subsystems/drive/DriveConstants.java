@@ -61,7 +61,7 @@ public class DriveConstants {
 
   // Drive motor configuration
   public static final int driveMotorCurrentLimit = 40;
-  public static final double wheelRadiusMeters = Units.inchesToMeters(1.5);
+  public static final double wheelRadiusMeters = Units.inchesToMeters(1.6);
   public static final double driveMotorReduction =
       (45.0 * 20.0)
           / (15.0 * 15.0); // MAXSwerve with 15 pinion teeth and 20 spur teeth (upgrade kit)
@@ -106,7 +106,7 @@ public class DriveConstants {
   public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
   // PathPlanner configuration TODO: UPDATE VALUES
-  public static final double robotMassKg = 36.280;
+  public static final double robotMassKg = 56.690;
   public static final double robotMOI = 6.883;
   public static final double wheelCOF = 1.2;
   public static final RobotConfig ppConfig =

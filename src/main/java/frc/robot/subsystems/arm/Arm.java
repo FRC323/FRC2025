@@ -132,4 +132,15 @@ public class Arm extends SubsystemBase {
     return MathUtil.isNear(
         inputs.targetPosition, inputs.currentAbsolutePosition, ArmConstants.SetpointTolerance);
   }
+
+  public boolean isInReefScoringPosition() {
+    return MathUtil.isNear(
+            ArmConstants.ReefLevel1CoralPosition, inputs.currentAbsolutePosition, 0.1)
+        || MathUtil.isNear(
+            ArmConstants.ReefLevel2CoralPosition, inputs.currentAbsolutePosition, 0.1)
+        || MathUtil.isNear(
+            ArmConstants.ReefLevel3CoralPosition, inputs.currentAbsolutePosition, 0.1)
+        || MathUtil.isNear(
+            ArmConstants.ReefLevel4CoralPosition, inputs.currentAbsolutePosition, 0.1);
+  }
 }

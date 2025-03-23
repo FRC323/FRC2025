@@ -21,7 +21,7 @@ public class RunCoralIntake extends Command {
   }
 
   @Override
-  public boolean isFinished() {
-    return false;
+  public void end(boolean interrupted) {
+    intake.runPercentOutput(0);
   }
 }

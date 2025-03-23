@@ -23,13 +23,23 @@ public class IntakeCommands {
     return new MoveToGroundPickup(elevator, arm, groundIntake, coralIntake);
   }
 
+  public static Command MoveToHumanPlayerPickup(
+      Elevator elevator, Arm arm, GroundIntake groundIntake, CoralIntake coralIntake) {
+    return new IntakeCoral(elevator, arm, coralIntake, groundIntake);
+  }
+
   public static Command MoveGroundIntakeToPosition(
       GroundIntake groundIntake, GroundIntakePosition position) {
     return new MoveGroundIntakeToPosition(groundIntake, position);
   }
 
-  public static Command HoldCoralIntake(Arm arm, CoralIntake coralIntake) {
-    return new RunCoralIntake(coralIntake, () -> -CoralIntakeConstants.normalOutput);
+  // public static Command HoldCoralIntake(Arm arm, CoralIntake coralIntake) {
+  //   return new RunCoralIntake(coralIntake, () -> -CoralIntakeConstants.normalOutput);
+  // }
+  public static Command HoldCoralAndDetectScore(
+      Elevator elevator, Arm arm, CoralIntake coralIntake) {
+    return new HoldCoralAndDetectScore(
+        coralIntake, elevator, arm, () -> -CoralIntakeConstants.normalOutput);
   }
 
   public static Command HoldAlgaeIntake(Arm arm, Elevator elevator, AlgaeIntake algaeIntake) {
@@ -53,8 +63,8 @@ public class IntakeCommands {
     return new OuttakeAlgae(algaeIntake);
   }
 
-  public static Command OuttakeCoral(CoralIntake coralIntake) {
-    return new OuttakeCoral(coralIntake);
+  public static Command OuttakeCoral(CoralIntake coralIntake, GroundIntake groundIntake) {
+    return new OuttakeCoral(coralIntake, groundIntake);
   }
 
   public static Command OuttakeCoralWSensor(
@@ -77,9 +87,9 @@ public class IntakeCommands {
     return new ManualAlgaeIntakeControl(aglaeIntake, percentSupplier);
   }
 
-  public static Command CoralIntake(Elevator elevator, Arm arm, CoralIntake coralIntake) {
-    return new IntakeCoral(elevator, arm, coralIntake);
-  }
+  // public static Command CoralIntake(Elevator elevator, Arm arm, CoralIntake coralIntake) {
+  //   return new IntakeCoral(elevator, arm, coralIntake);
+  // }
 
   public static Command RunCoralIntake(CoralIntake coralIntake) {
     return new RunCoralIntake(coralIntake, () -> CoralIntakeConstants.normalOutput);

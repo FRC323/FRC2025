@@ -11,7 +11,7 @@ public class CoralIntakeConstants {
 
   public static double normalOutput = .5;
   public static double coralArmInvertedOutput = .75;
-  public static double IntakeOutput = -.99;
+  public static double IntakeOutput = -1;
 
   public static int laserCanId = 60;
   // reef branch min - end of coral in intake

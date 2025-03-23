@@ -20,6 +20,7 @@ public class MoveToDeployClimber extends SequentialCommandGroup {
             new DeployClimber(climber),
             new MoveElevatorToPosition(elevator, ElevatorPosition.Home),
             new MoveArmToPosition(arm, ArmPosition.CLIMB_POSITION),
-            new MoveGroundIntakeToPosition(groundIntake, GroundIntake.GroundIntakePosition.CLIMB)));
+            new MoveGroundIntakeToPosition(
+                groundIntake, GroundIntake.GroundIntakePosition.DEPLOY)));
   }
 }

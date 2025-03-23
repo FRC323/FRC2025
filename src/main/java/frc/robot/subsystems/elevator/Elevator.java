@@ -53,6 +53,17 @@ public class Elevator extends SubsystemBase {
     io.setPercent(0);
   }
 
+  public boolean isInReefScoringPosition() {
+    return MathUtil.isNear(
+            ElevatorConstants.ReefLevel1CoralPosition, inputs.leadEncoderPosition, 0.5)
+        || MathUtil.isNear(
+            ElevatorConstants.ReefLevel2CoralPosition, inputs.leadEncoderPosition, 0.5)
+        || MathUtil.isNear(
+            ElevatorConstants.ReefLevel3CoralPosition, inputs.leadEncoderPosition, 0.5)
+        || MathUtil.isNear(
+            ElevatorConstants.ReefLevel4CoralPosition, inputs.leadEncoderPosition, 0.5);
+  }
+
   public boolean isAtBottom() {
     return inputs.isAtBottom;
   }
@@ -151,5 +162,10 @@ public class Elevator extends SubsystemBase {
 
     leadDisconnectedAlert.set(!inputs.leadSparkConnected);
     followerDisconnectedAlert.set(!inputs.followerSparkConnected);
+  }
+
+  public boolean isGoingDown(ElevatorPosition newPosition) {
+    double currentPosition = inputs.leadEncoderPosition;
+    return newPosition.val < currentPosition;
   }
 }

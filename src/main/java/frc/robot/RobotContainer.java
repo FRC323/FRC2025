@@ -235,7 +235,8 @@ public class RobotContainer {
             () -> -driveJoystick.getX(),
             () -> -steerJoystick.getX()));
 
-    coralIntake.setDefaultCommand(IntakeCommands.HoldCoralIntake(arm, coralIntake));
+    coralIntake.setDefaultCommand(
+        IntakeCommands.HoldCoralAndDetectScore(elevator, arm, coralIntake));
     algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(arm, elevator, algaeIntake));
 
     SmartDashboard.putData(
@@ -345,10 +346,15 @@ public class RobotContainer {
         .button(DriveStick.TOP_BIG_BUTTON)
         .whileTrue(IntakeCommands.OuttakeAlgae(algaeIntake));
 
-    // spit out coral - OuttakeCoralWSensor: with laser can assistance
+    // spit out coral - no assistance
     driveJoystick
         .button(DriveStick.LEFT_SIDE_BUTTON)
-        .whileTrue(IntakeCommands.OuttakeCoralWSensor(coralIntake, groundIntake, elevator, arm));
+        .whileTrue(IntakeCommands.OuttakeCoral(coralIntake, groundIntake));
+
+    driveJoystick
+        .button(DriveStick.SMALL_TOP_BUTTON)
+        .whileTrue(
+            IntakeCommands.MoveToHumanPlayerPickup(elevator, arm, groundIntake, coralIntake));
 
     // spit out coral - no assistance
     // driveJoystick
@@ -399,7 +405,8 @@ public class RobotContainer {
         ScoreCommands.ScoreCoral(
             elevator, ElevatorPosition.REEF_LEVEL_4_CORAL, arm, ArmPosition.REEF_LEVEL_4_CORAL));
     NamedCommands.registerCommand(
-        "Coral HP Intake", IntakeCommands.CoralIntake(elevator, arm, coralIntake));
+        "Coral HP Intake",
+        IntakeCommands.MoveToHumanPlayerPickup(elevator, arm, groundIntake, coralIntake));
     NamedCommands.registerCommand("Run Coral Outtake", AutoCommands.CoralOuttakeAuto(coralIntake));
   }
 
