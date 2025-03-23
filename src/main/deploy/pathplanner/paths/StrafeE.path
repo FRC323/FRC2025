@@ -3,6 +3,7 @@
   "waypoints": [
     {
       "anchor": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/StrafeE.path
         "x": 5.359292763157895,
         "y": 2.966611842105263
       },
@@ -10,18 +11,36 @@
       "nextControl": {
         "x": 4.580571911837698,
         "y": 2.5630475037716938
+========
+        "x": 7.2,
+        "y": 4.054
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.571333700725433,
+        "y": 4.054
+>>>>>>>> autostuff:src/main/deploy/pathplanner/paths/CenterLeave.path
       },
       "isLocked": false,
       "linkedName": "EFCenter"
     },
     {
       "anchor": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/StrafeE.path
         "x": 5.081660798405185,
         "y": 2.5039832631612375
       },
       "prevControl": {
         "x": 5.782507437729004,
         "y": 2.886263248246954
+========
+        "x": 6.071299342105262,
+        "y": 4.053865131578948
+      },
+      "prevControl": {
+        "x": 6.514316164041742,
+        "y": 4.053865131578948
+>>>>>>>> autostuff:src/main/deploy/pathplanner/paths/CenterLeave.path
       },
       "nextControl": null,
       "isLocked": false,

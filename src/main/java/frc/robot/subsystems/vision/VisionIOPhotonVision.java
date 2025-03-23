@@ -49,6 +49,10 @@ public class VisionIOPhotonVision implements VisionIO {
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
   }
 
+  public void setPipeline(int pipeline) {
+    camera.setPipelineIndex(pipeline);
+  }
+
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.connected = camera.isConnected();

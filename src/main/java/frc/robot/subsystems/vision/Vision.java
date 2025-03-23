@@ -158,8 +158,8 @@ public class Vision extends SubsystemBase {
           angularStdDev *= cameraStdDevFactors[cameraIndex];
         }
 
-        // Send vision observation
         if (DriverStation.isAutonomous()) {
+          // Send vision observation
           consumer.accept(
               observation.pose().toPose2d(),
               observation.timestamp(),
@@ -197,6 +197,10 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+  }
+
+  public void setPipeline(int cameraIndex, int pipeline) {
+    io[cameraIndex].setPipeline(pipeline);
   }
 
   @FunctionalInterface
