@@ -17,7 +17,7 @@ public class GroundIntakeConstants {
   public static double wristI = 0.0;
   public static double wristD = 0.0;
 
-  public static double wristMinPosition = 0.138;
+  public static double wristMinPosition = 0.150;
   public static double wristMaxPosition = 0.481;
 
   public static double stowedPosition = 0.138;
