@@ -55,6 +55,10 @@ public class Arm extends SubsystemBase {
     return inputs.targetPosition;
   }
 
+  public boolean armInGroundIntakePosition() {
+    return MathUtil.isNear(ArmConstants.GroundPickupPosition, inputs.currentAbsolutePosition, .1);
+  }
+
   // public boolean isArmMoving() {
   //   return MathUtil.isNear(
   //       inputs.currentAbsolutePosition, inputs.targetPosition, ArmConstants.SetpointTolerance);
@@ -127,5 +131,16 @@ public class Arm extends SubsystemBase {
   public boolean reachedDesiredPosition() {
     return MathUtil.isNear(
         inputs.targetPosition, inputs.currentAbsolutePosition, ArmConstants.SetpointTolerance);
+  }
+
+  public boolean isInReefScoringPosition() {
+    return MathUtil.isNear(
+            ArmConstants.ReefLevel1CoralPosition, inputs.currentAbsolutePosition, 0.1)
+        || MathUtil.isNear(
+            ArmConstants.ReefLevel2CoralPosition, inputs.currentAbsolutePosition, 0.1)
+        || MathUtil.isNear(
+            ArmConstants.ReefLevel3CoralPosition, inputs.currentAbsolutePosition, 0.1)
+        || MathUtil.isNear(
+            ArmConstants.ReefLevel4CoralPosition, inputs.currentAbsolutePosition, 0.1);
   }
 }

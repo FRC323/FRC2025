@@ -9,12 +9,6 @@
           "data": {
             "pathName": "OneMeterPath"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "OneMeterPathBack"
-          }
         }
       ]
     }

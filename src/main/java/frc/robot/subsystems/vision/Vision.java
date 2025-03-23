@@ -24,6 +24,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import java.util.LinkedList;
@@ -62,6 +63,24 @@ public class Vision extends SubsystemBase {
    */
   public Rotation2d getTargetX(int cameraIndex) {
     return inputs[cameraIndex].latestTargetObservation.tx();
+  }
+
+  public Pose3d getAprilTagPose(int id, int cameraIndex) {
+    if (cameraIndex >= 0 && cameraIndex < inputs.length) {
+      for (int i = 0; i < inputs[cameraIndex].tagIds.length; i++) {
+        if (inputs[cameraIndex].tagIds[i] == id) {
+          var tagPose = VisionConstants.aprilTagLayout.getTagPose(id);
+          if (tagPose.isPresent()) {
+            return tagPose.get();
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  public boolean isAprilTagVisible(int id, int cameraIndex) {
+    return getAprilTagPose(id, cameraIndex) != null;
   }
 
   @Override
@@ -140,10 +159,12 @@ public class Vision extends SubsystemBase {
         }
 
         // Send vision observation
-        consumer.accept(
-            observation.pose().toPose2d(),
-            observation.timestamp(),
-            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+        if (DriverStation.isAutonomous()) {
+          consumer.accept(
+              observation.pose().toPose2d(),
+              observation.timestamp(),
+              VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+        }
       }
 
       // Log camera datadata

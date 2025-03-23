@@ -33,7 +33,7 @@ public class VisionConstants {
       new Transform3d(
           0.285,
           -0.285,
-          0.20,
+          0.21,
           new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(315)));
 
   public static final String rearCameraName = "rear";
@@ -43,7 +43,7 @@ public class VisionConstants {
       new Transform3d(
           -0.285,
           0.285,
-          0.20,
+          0.21,
           new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(135)));
 
   // Camera names, must match names configured on coprocessor

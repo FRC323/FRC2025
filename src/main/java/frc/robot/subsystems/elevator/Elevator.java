@@ -44,9 +44,24 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  public boolean elevatorInGroundIntakePosition() {
+    return MathUtil.isNear(ElevatorConstants.HomePosition, inputs.leadEncoderPosition, .1);
+  }
+
   public void stop() {
     this.targetPosition = 0.0;
     io.setPercent(0);
+  }
+
+  public boolean isInReefScoringPosition() {
+    return MathUtil.isNear(
+            ElevatorConstants.ReefLevel1CoralPosition, inputs.leadEncoderPosition, 0.5)
+        || MathUtil.isNear(
+            ElevatorConstants.ReefLevel2CoralPosition, inputs.leadEncoderPosition, 0.5)
+        || MathUtil.isNear(
+            ElevatorConstants.ReefLevel3CoralPosition, inputs.leadEncoderPosition, 0.5)
+        || MathUtil.isNear(
+            ElevatorConstants.ReefLevel4CoralPosition, inputs.leadEncoderPosition, 0.5);
   }
 
   public boolean isAtBottom() {
@@ -147,5 +162,10 @@ public class Elevator extends SubsystemBase {
 
     leadDisconnectedAlert.set(!inputs.leadSparkConnected);
     followerDisconnectedAlert.set(!inputs.followerSparkConnected);
+  }
+
+  public boolean isGoingDown(ElevatorPosition newPosition) {
+    double currentPosition = inputs.leadEncoderPosition;
+    return newPosition.val < currentPosition;
   }
 }

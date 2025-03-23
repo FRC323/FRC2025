@@ -11,7 +11,7 @@ public class GroundIntakeConstants {
   public static int intakeSparkCanId = 25;
   public static boolean intakeSparkInverted = false;
   public static int intakeCurrentLimit = 40;
-  public static double IntakeOutput = -1;
+  public static double IntakeOutput = -.8;
 
   public static double wristP = 4.5;
   public static double wristI = 0.0;
@@ -22,4 +22,5 @@ public class GroundIntakeConstants {
 
   public static double stowedPosition = 0.138;
   public static double deployedPosition = 0.481;
+  public static double climbPosition = 0.350;
 }

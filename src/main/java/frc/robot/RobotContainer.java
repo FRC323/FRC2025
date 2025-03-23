@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.auto.AutoCommands;
+import frc.robot.commands.auto.DriveToAprilTag;
 import frc.robot.commands.climb.ClimbCommands;
 import frc.robot.commands.common.CommonCommands;
 import frc.robot.commands.initialization.OffsetCommands;
@@ -234,16 +235,12 @@ public class RobotContainer {
             () -> -driveJoystick.getX(),
             () -> -steerJoystick.getX()));
 
-    coralIntake.setDefaultCommand(IntakeCommands.HoldCoralIntake(arm, coralIntake));
+    coralIntake.setDefaultCommand(
+        IntakeCommands.HoldCoralAndDetectScore(elevator, arm, coralIntake));
     algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(arm, elevator, algaeIntake));
 
-    SmartDashboard.putData("Climber Stow", ClimbCommands.MoveClimberToStow(climber));
-
     SmartDashboard.putData(
-        "Move to Ground Pickup",
-        IntakeCommands.MoveToGroundPickup(elevator, arm, groundIntake, coralIntake));
-
-    SmartDashboard.putData("Zero Climber", ClimbCommands.ClimberZero(climber));
+        "DriveToTag", new DriveToAprilTag(vision, drive, 0, 10, 0, 0.0635, 3, 4));
 
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));
@@ -335,19 +332,29 @@ public class RobotContainer {
                 ArmPosition.REEF_LEVEL_4_CORAL));
 
     // pose to human player coral pickup
-    driveJoystick.trigger().onTrue(IntakeCommands.CoralIntake(elevator, arm, coralIntake));
+    // driveJoystick.trigger().onTrue(IntakeCommands.CoralIntake(elevator, arm, coralIntake));
 
-    // driveJoystick.button(DriveStick.).whileTrue(IntakeCommands.RunCoralIntake(coralIntake));
+    groundIntake.setDefaultCommand(IntakeCommands.StopGroundIntake(groundIntake));
+
+    // pose to ground pick up and turn on intakes
+    driveJoystick
+        .trigger()
+        .whileTrue(IntakeCommands.MoveToGroundPickup(elevator, arm, groundIntake, coralIntake));
 
     // spit out algae
     driveJoystick
         .button(DriveStick.TOP_BIG_BUTTON)
         .whileTrue(IntakeCommands.OuttakeAlgae(algaeIntake));
 
-    // spit out coral - OuttakeCoralWSensor: with laser can assistance
+    // spit out coral - no assistance
     driveJoystick
         .button(DriveStick.LEFT_SIDE_BUTTON)
-        .whileTrue(IntakeCommands.OuttakeCoralWSensor(coralIntake));
+        .whileTrue(IntakeCommands.OuttakeCoral(coralIntake, groundIntake));
+
+    driveJoystick
+        .button(DriveStick.SMALL_TOP_BUTTON)
+        .whileTrue(
+            IntakeCommands.MoveToHumanPlayerPickup(elevator, arm, groundIntake, coralIntake));
 
     // spit out coral - no assistance
     // driveJoystick
@@ -365,15 +372,15 @@ public class RobotContainer {
 
     // deploy climber
     driveJoystick
-        .button(DriveStick.UP_DIRECTIONAL)
+        .button(DriveStick.LEFT_DIRECTIONAL)
         .whileTrue(ClimbCommands.MoveClimberToDeploy(climber, elevator, arm, groundIntake));
 
     driveJoystick
-        .button(DriveStick.DOWN_DIRECTIONAL)
+        .button(DriveStick.UP_DIRECTIONAL)
         .whileTrue(ClimbCommands.MoveClimberToDonkeyKong(climber));
 
     driveJoystick
-        .button(DriveStick.LEFT_DIRECTIONAL)
+        .button(DriveStick.DOWN_DIRECTIONAL)
         .whileTrue(ClimbCommands.MoveClimberToStow(climber));
 
     // ROBOT INITIALIZE COMMANDS
@@ -398,7 +405,8 @@ public class RobotContainer {
         ScoreCommands.ScoreCoral(
             elevator, ElevatorPosition.REEF_LEVEL_4_CORAL, arm, ArmPosition.REEF_LEVEL_4_CORAL));
     NamedCommands.registerCommand(
-        "Coral HP Intake", IntakeCommands.CoralIntake(elevator, arm, coralIntake));
+        "Coral HP Intake",
+        IntakeCommands.MoveToHumanPlayerPickup(elevator, arm, groundIntake, coralIntake));
     NamedCommands.registerCommand("Run Coral Outtake", AutoCommands.CoralOuttakeAuto(coralIntake));
   }
 

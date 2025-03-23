@@ -11,7 +11,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Timer;
-import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CoralIntakeIOReal implements CoralIntakeIO {
   public final SparkMax spark1;
@@ -91,15 +91,11 @@ public class CoralIntakeIOReal implements CoralIntakeIO {
 
     inputs.totalOutputCurrent = spark1.getOutputCurrent() + spark2.getOutputCurrent();
 
-    Logger.recordOutput("CoralIntake/Spark1/Connected", inputs.spark1SparkConnected);
-    Logger.recordOutput("CoralIntake/Spark1/Engaged", inputs.spark1Engaged);
-    Logger.recordOutput("CoralIntake/Spark1/SpeedPercent", inputs.spark1SpeedPercent);
-    Logger.recordOutput("CoralIntake/Spark1/Current", inputs.spark1OutputCurrent);
+    SmartDashboard.putNumber("CoralIntake/Spark1Speed", inputs.spark1SpeedPercent);
+    SmartDashboard.putNumber("CoralIntake/Spark1Current", inputs.spark1OutputCurrent);
 
-    Logger.recordOutput("CoralIntake/Spark2/Connected", inputs.spark2SparkConnected);
-    Logger.recordOutput("CoralIntake/Spark2/Engaged", inputs.spark2Engaged);
-    Logger.recordOutput("CoralIntake/Spark2/SpeedPercent", inputs.spark2SpeedPercent);
-    Logger.recordOutput("CoralIntake/Spark2/Current", inputs.spark2OutputCurrent);
+    SmartDashboard.putNumber("CoralIntake/Spark2Speed", inputs.spark2SpeedPercent);
+    SmartDashboard.putNumber("CoralIntake/Spark2Current", inputs.spark2OutputCurrent);
   }
 
   @Override

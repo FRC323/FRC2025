@@ -22,7 +22,8 @@ public class GroundIntake extends SubsystemBase {
 
   public enum GroundIntakePosition {
     STOW,
-    DEPLOY
+    DEPLOY,
+    CLIMB
   }
 
   public enum GroundIntakeDirection {
@@ -38,6 +39,9 @@ public class GroundIntake extends SubsystemBase {
         break;
       case DEPLOY:
         setWristPosition(GroundIntakeConstants.deployedPosition);
+        break;
+      case CLIMB:
+        setWristPosition(GroundIntakeConstants.climbPosition);
         break;
     }
   }

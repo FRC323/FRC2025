@@ -6,17 +6,18 @@ import frc.robot.subsystems.climber.Climber.ClimberPosition;
 
 public class StowClimber extends Command {
   private final Climber climber;
-  private double percent;
+  // private double percent;
 
-  public StowClimber(Climber climber, double percent) {
+  public StowClimber(Climber climber) {
     this.climber = climber;
-    this.percent = percent;
+    // this.percent = percent;
     addRequirements(climber);
   }
 
   @Override
   public void execute() {
-    climber.runPercentOutput(percent, ClimberPosition.Stowed);
+    // climber.runPercentOutput(percent, ClimberPosition.Stowed);
+    climber.setPosition(ClimberPosition.Stowed);
   }
 
   @Override

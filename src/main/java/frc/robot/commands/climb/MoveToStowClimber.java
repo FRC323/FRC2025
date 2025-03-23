@@ -6,6 +6,6 @@ import frc.robot.subsystems.climber.Climber;
 
 public class MoveToStowClimber extends SequentialCommandGroup {
   public MoveToStowClimber(Climber climber) {
-    addCommands(new RepeatCommand(new StowClimber(climber, 1)));
+    addCommands(new RepeatCommand(new StowClimber(climber)));
   }
 }
