@@ -296,7 +296,8 @@ public class RobotContainer {
                 elevator,
                 ElevatorPosition.REEF_LEVEL_1_CORAL,
                 arm,
-                ArmPosition.REEF_LEVEL_1_CORAL));
+                ArmPosition.REEF_LEVEL_1_CORAL,
+                groundIntake));
 
     // pose to reef coral level 2
     gamePad
@@ -307,7 +308,8 @@ public class RobotContainer {
                 elevator,
                 ElevatorPosition.REEF_LEVEL_2_CORAL,
                 arm,
-                ArmPosition.REEF_LEVEL_2_CORAL));
+                ArmPosition.REEF_LEVEL_2_CORAL,
+                groundIntake));
 
     // pose to reef coral level 3
     gamePad
@@ -318,7 +320,8 @@ public class RobotContainer {
                 elevator,
                 ElevatorPosition.REEF_LEVEL_3_CORAL,
                 arm,
-                ArmPosition.REEF_LEVEL_3_CORAL));
+                ArmPosition.REEF_LEVEL_3_CORAL,
+                groundIntake));
 
     // pose to reef coral level 4
     gamePad
@@ -329,7 +332,8 @@ public class RobotContainer {
                 elevator,
                 ElevatorPosition.REEF_LEVEL_4_CORAL,
                 arm,
-                ArmPosition.REEF_LEVEL_4_CORAL));
+                ArmPosition.REEF_LEVEL_4_CORAL,
+                groundIntake));
 
     // pose to human player coral pickup
     // driveJoystick.trigger().onTrue(IntakeCommands.CoralIntake(elevator, arm, coralIntake));
@@ -391,19 +395,35 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Coral L1 Score",
         ScoreCommands.ScoreCoral(
-            elevator, ElevatorPosition.REEF_LEVEL_2_CORAL, arm, ArmPosition.REEF_LEVEL_2_CORAL));
+            elevator,
+            ElevatorPosition.REEF_LEVEL_2_CORAL,
+            arm,
+            ArmPosition.REEF_LEVEL_2_CORAL,
+            groundIntake));
     NamedCommands.registerCommand(
         "Coral L2 Score",
         ScoreCommands.ScoreCoral(
-            elevator, ElevatorPosition.REEF_LEVEL_2_CORAL, arm, ArmPosition.REEF_LEVEL_2_CORAL));
+            elevator,
+            ElevatorPosition.REEF_LEVEL_2_CORAL,
+            arm,
+            ArmPosition.REEF_LEVEL_2_CORAL,
+            groundIntake));
     NamedCommands.registerCommand(
         "Coral L3 Score",
         ScoreCommands.ScoreCoral(
-            elevator, ElevatorPosition.REEF_LEVEL_3_CORAL, arm, ArmPosition.REEF_LEVEL_3_CORAL));
+            elevator,
+            ElevatorPosition.REEF_LEVEL_3_CORAL,
+            arm,
+            ArmPosition.REEF_LEVEL_3_CORAL,
+            groundIntake));
     NamedCommands.registerCommand(
         "Coral L4 Score",
         ScoreCommands.ScoreCoral(
-            elevator, ElevatorPosition.REEF_LEVEL_4_CORAL, arm, ArmPosition.REEF_LEVEL_4_CORAL));
+            elevator,
+            ElevatorPosition.REEF_LEVEL_4_CORAL,
+            arm,
+            ArmPosition.REEF_LEVEL_4_CORAL,
+            groundIntake));
     NamedCommands.registerCommand(
         "Coral HP Intake",
         IntakeCommands.MoveToHumanPlayerPickup(elevator, arm, groundIntake, coralIntake));
