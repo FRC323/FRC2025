@@ -425,8 +425,10 @@ public class RobotContainer {
             groundIntake));
     NamedCommands.registerCommand(
         "Coral HP Intake",
-        IntakeCommands.MoveToHumanPlayerPickup(elevator, arm, groundIntake, coralIntake));
+        AutoCommands.MoveToCoralIntakeAuto(elevator, arm, coralIntake, groundIntake));
+
     NamedCommands.registerCommand("Run Coral Outtake", AutoCommands.CoralOuttakeAuto(coralIntake));
+    NamedCommands.registerCommand("Run Coral Intake", AutoCommands.CoralIntakeAuto(coralIntake));
   }
 
   /**

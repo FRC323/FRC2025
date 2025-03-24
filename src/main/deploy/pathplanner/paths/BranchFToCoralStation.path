@@ -3,44 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.329793201374822,
-        "y": 2.648541578948806
+        "x": 5.311,
+        "y": 2.899
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.661777978778353,
-        "y": 1.577091263209286
+        "x": 6.330901315789474,
+        "y": 2.3216973684210522
       },
       "isLocked": false,
-      "linkedName": "BranchF"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3259470701126903,
-        "y": 0.8485491727450812
+        "x": 1.434,
+        "y": 0.859
       },
       "prevControl": {
-        "x": 1.9147203947395228,
-        "y": 0.9845394736854735
+        "x": 2.022773324626834,
+        "y": 0.9949903009403922
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.3789308176100629,
-      "rotationDegrees": -67.2849622835756
-    },
-    {
-      "waypointRelativePos": 0.6084905660377344,
-      "rotationDegrees": -72.52061490913624
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "",
+      "waypointRelativePos": 0.10233393177737882,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Coral HP Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -51,7 +54,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -36.02737338510364
+    "rotation": -34.0
   },
   "reversed": false,
   "folder": null,

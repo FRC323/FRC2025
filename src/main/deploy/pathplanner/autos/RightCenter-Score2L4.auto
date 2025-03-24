@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightCenterToE"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Outtake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BranchFToCoralStation"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CoralStationToBranchE"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Outtake"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

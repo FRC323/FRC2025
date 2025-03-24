@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 5.359292763157895,
-        "y": 2.966611842105263
+        "y": 2.899259868421052
       },
       "prevControl": {
         "x": 6.28297697368421,
-        "y": 2.4662828947368434
+        "y": 2.3989309210526324
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,7 +39,7 @@
   "eventMarkers": [
     {
       "name": "Coral Score",
-      "waypointRelativePos": 0.75,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": 1.0,
       "command": {
         "type": "named",
