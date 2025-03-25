@@ -65,6 +65,7 @@ import frc.robot.subsystems.intakes.coral.CoralIntakeIOSim;
 import frc.robot.subsystems.intakes.ground.GroundIntake;
 import frc.robot.subsystems.intakes.ground.GroundIntakeIO;
 import frc.robot.subsystems.intakes.ground.GroundIntakeIOReal;
+import frc.robot.subsystems.intakes.ground.GroundIntakeIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -124,7 +125,10 @@ public class RobotContainer {
                 new VisionIOPhotonVision(
                     VisionConstants.rearCameraName, VisionConstants.rearCameraToRobotTransform),
                 new VisionIOPhotonVision(
-                    VisionConstants.frontCameraName, VisionConstants.frontCameraToRobotTransform));
+                    VisionConstants.frontCameraName, VisionConstants.frontCameraToRobotTransform),
+                new VisionIOPhotonVision(
+                    VisionConstants.elevatorCameraName,
+                    VisionConstants.elevatorCameraToRobotTransform));
 
         if (VisionConstants.show2dField) SmartDashboard.putData("Field", drive.getField());
 
@@ -152,11 +156,15 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     VisionConstants.rearCameraName,
                     VisionConstants.rearCameraToRobotTransform,
+                    drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.elevatorCameraName,
+                    VisionConstants.elevatorCameraToRobotTransform,
                     drive::getPose));
 
         coralIntake = new CoralIntake(new CoralIntakeIOSim());
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSim());
-        groundIntake = null;
+        groundIntake = new GroundIntake(new GroundIntakeIOSim());
         climber = new Climber(new ClimberIOSim());
 
         SmartDashboard.putData("Field", drive.getField());
@@ -335,7 +343,8 @@ public class RobotContainer {
                 groundIntake));
 
     // pose to human player coral pickup
-    // driveJoystick.trigger().onTrue(IntakeCommands.CoralIntake(elevator, arm, coralIntake));
+    // driveJoystick.trigger().onTrue(IntakeCommands.CoralIntake(elevator, arm,
+    // coralIntake));
 
     groundIntake.setDefaultCommand(IntakeCommands.StopGroundIntake(groundIntake));
 

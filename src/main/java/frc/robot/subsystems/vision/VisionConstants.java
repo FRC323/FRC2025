@@ -27,35 +27,28 @@ public class VisionConstants {
   public static final boolean show2dField = true;
 
   public static final String frontCameraName = "front";
-  public static final boolean useFrontCamera = true;
-  // TODO: CHECK THIS TRANSFORM
   public static final Transform3d frontCameraToRobotTransform =
       new Transform3d(
-          0.285,
-          -0.285,
-          0.21,
+          0.281,
+          -0.281,
+          0.212,
           new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(315)));
 
   public static final String rearCameraName = "rear";
-  public static final boolean useRearCamera = true;
-  // TODO CHECK THIS TRANSFORM
   public static final Transform3d rearCameraToRobotTransform =
       new Transform3d(
-          -0.285,
-          0.285,
-          0.21,
+          -0.281,
+          0.281,
+          0.212,
           new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(135)));
 
-  // Camera names, must match names configured on coprocessor
-  //   public static String camera0Name = "camera_0";
-  //   public static String camera1Name = "camera_1";
-
-  //   // Robot to camera transforms
-  //   // (Not used by Limelight, configure in web UI instead)
-  //   public static Transform3d robotToCamera0 =
-  //       new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
-  //   public static Transform3d robotToCamera1 =
-  //       new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+  public static final String elevatorCameraName = "elevator";
+  public static final Transform3d elevatorCameraToRobotTransform =
+      new Transform3d(
+          -0.233,
+          0.184,
+          0.415,
+          new Rotation3d(0.0, Units.degreesToRadians(30.0), Units.degreesToRadians(75)));
 
   // Basic filtering thresholds
   public static double maxAmbiguity = 0.3;
@@ -71,7 +64,8 @@ public class VisionConstants {
   public static double[] cameraStdDevFactors =
       new double[] {
         1.0, // Camera 0
-        1.0 // Camera 1
+        1.0, // Camera 1
+        1.0 // Camera 2
       };
 
   // Multipliers to apply for MegaTag 2 observations
