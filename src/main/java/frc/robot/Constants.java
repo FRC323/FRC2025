@@ -29,18 +29,18 @@ public final class Constants {
   public final class ReefAlignmentConstants {
     public static final String smartDashboardLogPrefix = "ReefAlign/";
 
-    public static final double depthP = 1;
+    public static final double depthP = 2;
     public static final double depthI = 0.0;
     public static final double depthD = 0.0;
     public static final double depthFF = 0.0;
     public static final double depthThreshold = 0.05;
 
-    public static final double lateralP = 1;
+    public static final double lateralP = 2;
     public static final double lateralI = 0.0;
     public static final double lateralD = 0.0;
     public static final double lateralThreshold = 0.05;
 
-    public static final double rotationP = 6;
+    public static final double rotationP = 10;
     public static final double rotationI = 0.0;
     public static final double rotationD = 0.0;
     public static final double rotationFF = 0.0;
@@ -51,7 +51,7 @@ public final class Constants {
     public static final double tagScanTimeoutInSeconds = 2.0;
 
     // robot width / 2
-    public static final double outwardOffsetFromTag = 0.42;
+    public static final double outwardOffsetFromTag = 0.38;
 
     // center of the reef translation - blue
     public static final Translation2d blueReefCenter = new Translation2d(4.49, 4.02);
@@ -93,8 +93,8 @@ public final class Constants {
             put("20_right", .165);
             put("21_left", .165);
             put("21_right", .165);
-            put("22_left", .165);
-            put("22_right", .165);
+            put("22_left", .250);
+            put("22_right", .250);
 
             put("6_left", .165); // red
             put("6_right", .165);

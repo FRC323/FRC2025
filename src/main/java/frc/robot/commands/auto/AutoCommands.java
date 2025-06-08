@@ -36,7 +36,7 @@ public class AutoCommands {
   }
 
   public static Command AlignToReefBranch22(Drive drive, Vision vision) {
-    return new AlignToReefBranch(drive, vision, 22, BranchSide.LEFT).withTimeout(50);
+    return new AlignToReefBranch(drive, vision, 22, BranchSide.RIGHT).withTimeout(5);
   }
 
   public static Command AlignToReefBranch17(Drive drive, Vision vision) {

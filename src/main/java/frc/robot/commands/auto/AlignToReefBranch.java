@@ -126,10 +126,16 @@ public class AlignToReefBranch extends Command {
       // Logging ...
       SmartDashboard.putNumber(logPrefix + "DesiredPoseX", desiredPose.getX());
       SmartDashboard.putNumber(logPrefix + "DesiredPoseY", desiredPose.getY());
+      SmartDashboard.putNumber(
+          logPrefix + "DesiredPoseRotation", desiredPose.getRotation().getDegrees());
       SmartDashboard.putNumber(logPrefix + "DrivePoseX", drivePose.getX());
       SmartDashboard.putNumber(logPrefix + "DrivePoseY", drivePose.getY());
+      SmartDashboard.putNumber(
+          logPrefix + "DrivePoseRotation", drivePose.getRotation().getDegrees());
       SmartDashboard.putNumber(logPrefix + "TargetTagPoseX", targetTagPose.getX());
       SmartDashboard.putNumber(logPrefix + "TargetTagPoseY", targetTagPose.getY());
+      SmartDashboard.putNumber(
+          logPrefix + "TargetTagPoseRotation", targetTagPose.getRotation().getDegrees());
       SmartDashboard.putNumber(logPrefix + "TargetTagId", targetTagId);
     } else {
       writeMsgToSmartDashboard("Desired pose is null. Cannot execute alignment.");
