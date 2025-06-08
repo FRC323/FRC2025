@@ -135,7 +135,7 @@ public class Drive extends SubsystemBase {
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
 
-    poseEstimator.resetPose(Constants.ReefAlignmentConstants.tag17AlignInitPose.toPose2d());
+    // poseEstimator.resetPose(Constants.ReefAlignmentConstants.tag17AlignInitPose.toPose2d());
   }
 
   public Field2d getField() {

@@ -121,9 +121,11 @@ public class AlignToReefBranch extends Command {
       ChassisSpeeds robotRelativeSpeeds =
           ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, drivePose.getRotation());
 
-      drive.runVelocity(robotRelativeSpeeds);
+      if (Constants.ReefAlignmentConstants.moveRobot) drive.runVelocity(robotRelativeSpeeds);
 
       // Logging ...
+      SmartDashboard.putNumber(logPrefix + "DesiredPoseX", desiredPose.getX());
+      SmartDashboard.putNumber(logPrefix + "DesiredPoseY", desiredPose.getY());
       SmartDashboard.putNumber(logPrefix + "DrivePoseX", drivePose.getX());
       SmartDashboard.putNumber(logPrefix + "DrivePoseY", drivePose.getY());
       SmartDashboard.putNumber(logPrefix + "TargetTagPoseX", targetTagPose.getX());

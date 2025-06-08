@@ -58,6 +58,8 @@ public final class Constants {
     // center of the reef translation - red
     public static final Translation2d redReefCenter = new Translation2d(13.03, 4.05);
 
+    public static final boolean moveRobot = true;
+
     public static final HashMap<Integer, Alliance> tagToAlliance =
         new HashMap<>() {
           {
