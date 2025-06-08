@@ -19,6 +19,7 @@ import static frc.robot.subsystems.drive.DriveConstants.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -133,6 +134,8 @@ public class Drive extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+    poseEstimator.resetPose(Constants.ReefAlignmentConstants.tag17AlignInitPose.toPose2d());
   }
 
   public Field2d getField() {
@@ -263,6 +266,11 @@ public class Drive extends SubsystemBase {
 
   public Command followPath(PathPlannerPath path) {
     return AutoBuilder.followPath(path);
+  }
+
+  public Command findPathToPose(Pose2d targetPose) {
+    return AutoBuilder.pathfindToPose(
+        targetPose, new PathConstraints(DriveConstants.maxSpeedMetersPerSec, 3.11, 8.49, 10.61));
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

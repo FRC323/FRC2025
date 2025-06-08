@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.auto.AutoCommands;
-import frc.robot.commands.auto.AutoTagAlign;
 import frc.robot.commands.climb.ClimbCommands;
 import frc.robot.commands.common.CommonCommands;
 import frc.robot.commands.initialization.OffsetCommands;
@@ -247,7 +246,11 @@ public class RobotContainer {
         IntakeCommands.HoldCoralAndDetectScore(elevator, arm, coralIntake));
     algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(arm, elevator, algaeIntake));
 
-    SmartDashboard.putData("DriveToTag", new AutoTagAlign(drive, vision, 1));
+    SmartDashboard.putData("AlignTag22", AutoCommands.AlignToReefBranch22(drive, vision));
+    SmartDashboard.putData("AlignTag17", AutoCommands.AlignToReefBranch17(drive, vision));
+    SmartDashboard.putData("AlignTag20", AutoCommands.AlignToReefBranch20(drive, vision));
+    SmartDashboard.putData("AlignTag8", AutoCommands.AlignToReefBranch8(drive, vision));
+    SmartDashboard.putData("AlignTag11", AutoCommands.AlignToReefBranch11(drive, vision));
 
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));
@@ -438,6 +441,10 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Run Coral Outtake", AutoCommands.CoralOuttakeAuto(coralIntake));
     NamedCommands.registerCommand("Run Coral Intake", AutoCommands.CoralIntakeAuto(coralIntake));
+    NamedCommands.registerCommand(
+        "AlignToReefBranch22", AutoCommands.AlignToReefBranch22(drive, vision));
+    NamedCommands.registerCommand(
+        "AlignToReefBranch17", AutoCommands.AlignToReefBranch17(drive, vision));
   }
 
   /**
