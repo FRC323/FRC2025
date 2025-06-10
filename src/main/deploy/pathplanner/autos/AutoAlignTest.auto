@@ -13,7 +13,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AlignToReefBranch22"
+            "name": "ReefAlign_22_Left"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AlignToReefBranch17"
+            "name": "ReefAlign_17_Left"
           }
         }
       ]

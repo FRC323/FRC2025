@@ -31,6 +31,7 @@ import frc.robot.commands.initialization.OffsetCommands;
 import frc.robot.commands.initialization.ZeroGryo;
 import frc.robot.commands.intake.IntakeCommands;
 import frc.robot.commands.scoring.ScoreCommands;
+import frc.robot.field.align.ReefAlignConstants.ReefAlignmentConstants.ReefPoleLabel;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.Arm.ArmPosition;
 import frc.robot.subsystems.arm.ArmIO;
@@ -246,11 +247,14 @@ public class RobotContainer {
         IntakeCommands.HoldCoralAndDetectScore(elevator, arm, coralIntake));
     algaeIntake.setDefaultCommand(IntakeCommands.HoldAlgaeIntake(arm, elevator, algaeIntake));
 
-    SmartDashboard.putData("AlignTag22", AutoCommands.AlignToReefBranch22(drive, vision));
-    SmartDashboard.putData("AlignTag17", AutoCommands.AlignToReefBranch17(drive, vision));
-    SmartDashboard.putData("AlignTag20", AutoCommands.AlignToReefBranch20(drive, vision));
-    SmartDashboard.putData("AlignTag8", AutoCommands.AlignToReefBranch8(drive, vision));
-    SmartDashboard.putData("AlignTag11", AutoCommands.AlignToReefBranch11(drive, vision));
+    SmartDashboard.putData(
+        "AlignTag22Left", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.E));
+    SmartDashboard.putData(
+        "AlignTag22Right", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.F));
+    SmartDashboard.putData(
+        "AlignTag17Left", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.C));
+    SmartDashboard.putData(
+        "AlignTag17Right", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.D));
 
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));
@@ -441,10 +445,31 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Run Coral Outtake", AutoCommands.CoralOuttakeAuto(coralIntake));
     NamedCommands.registerCommand("Run Coral Intake", AutoCommands.CoralIntakeAuto(coralIntake));
+
     NamedCommands.registerCommand(
-        "AlignToReefBranch22", AutoCommands.AlignToReefBranch22(drive, vision));
+        "ReefAlign_A", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.A));
     NamedCommands.registerCommand(
-        "AlignToReefBranch17", AutoCommands.AlignToReefBranch17(drive, vision));
+        "ReefAlign_B", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.B));
+    NamedCommands.registerCommand(
+        "ReefAlign_C", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.C));
+    NamedCommands.registerCommand(
+        "ReefAlign_D", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.D));
+    NamedCommands.registerCommand(
+        "ReefAlign_E", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.E));
+    NamedCommands.registerCommand(
+        "ReefAlign_F", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.F));
+    NamedCommands.registerCommand(
+        "ReefAlign_G", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.G));
+    NamedCommands.registerCommand(
+        "ReefAlign_H", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.H));
+    NamedCommands.registerCommand(
+        "ReefAlign_I", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.I));
+    NamedCommands.registerCommand(
+        "ReefAlign_J", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.J));
+    NamedCommands.registerCommand(
+        "ReefAlign_K", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.K));
+    NamedCommands.registerCommand(
+        "ReefAlign_L", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.L));
   }
 
   /**

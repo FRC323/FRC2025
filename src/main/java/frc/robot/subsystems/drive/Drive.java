@@ -101,7 +101,7 @@ public class Drive extends SubsystemBase {
 
     // Start odometry thread
     SparkOdometryThread.getInstance().start();
-
+    System.out.println(DriverStation.getAlliance().toString());
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configure(
         this::getPose,

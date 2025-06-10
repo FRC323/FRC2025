@@ -1,93 +1,109 @@
 package frc.robot.commands.auto;
 
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
+import frc.robot.field.TagReefPole;
+import frc.robot.field.align.Reef;
+import frc.robot.field.align.ReefAlignConstants;
+import frc.robot.field.align.ReefAlignConstants.ReefAlignmentConstants.PoleSide;
+import frc.robot.field.align.ReefAlignConstants.ReefAlignmentConstants.ReefPoleLabel;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 
 public class AlignToReefBranch extends Command {
   private final Drive drive;
   private final Vision vision;
+  private final ReefPoleLabel pole;
 
-  private final String logPrefix = Constants.ReefAlignmentConstants.smartDashboardLogPrefix;
+  private final String logPrefix =
+      ReefAlignConstants.ReefAlignmentConstants.smartDashboardLogPrefix;
 
   private int targetTagId = 0;
-  private BranchSide branchSide;
+  private PoleSide poleSide;
   private Pose2d targetTagPose;
-  private Pose2d desiredPose;
+  private Pose2d desiredRobotPose;
   private double tagScanStartTime = 0.0;
 
+  private HolonomicDriveController hdcontroller;
   private PIDController depthController;
   private PIDController lateralController;
-  private PIDController rotationController;
+  private ProfiledPIDController rotationController;
 
-  public enum BranchSide {
-    LEFT,
-    RIGHT
-  }
-
-  public AlignToReefBranch(Drive drive, Vision vision, int targetTagId, BranchSide branchSide) {
+  public AlignToReefBranch(Drive drive, Vision vision, ReefPoleLabel pole) {
     this.drive = drive;
     this.vision = vision;
-
-    this.targetTagId = targetTagId;
-    this.branchSide = branchSide;
+    this.pole = pole;
 
     depthController =
         new PIDController(
-            Constants.ReefAlignmentConstants.depthP,
-            Constants.ReefAlignmentConstants.depthI,
-            Constants.ReefAlignmentConstants.depthD);
-    depthController.setTolerance(Constants.ReefAlignmentConstants.depthThreshold);
+            ReefAlignConstants.ReefAlignmentConstants.depthP,
+            ReefAlignConstants.ReefAlignmentConstants.depthI,
+            ReefAlignConstants.ReefAlignmentConstants.depthD);
 
     lateralController =
         new PIDController(
-            Constants.ReefAlignmentConstants.lateralP,
-            Constants.ReefAlignmentConstants.lateralI,
-            Constants.ReefAlignmentConstants.lateralD);
-    lateralController.setTolerance(Constants.ReefAlignmentConstants.lateralThreshold);
+            ReefAlignConstants.ReefAlignmentConstants.lateralP,
+            ReefAlignConstants.ReefAlignmentConstants.lateralI,
+            ReefAlignConstants.ReefAlignmentConstants.lateralD);
 
     rotationController =
-        new PIDController(
-            Constants.ReefAlignmentConstants.rotationP,
-            Constants.ReefAlignmentConstants.rotationI,
-            Constants.ReefAlignmentConstants.rotationD);
-    rotationController.setTolerance(Constants.ReefAlignmentConstants.rotationThreshold);
+        new ProfiledPIDController(
+            ReefAlignConstants.ReefAlignmentConstants.rotationP,
+            ReefAlignConstants.ReefAlignmentConstants.rotationI,
+            ReefAlignConstants.ReefAlignmentConstants.rotationD,
+            new Constraints(1.0, 1.0));
+
+    hdcontroller =
+        new HolonomicDriveController(depthController, lateralController, rotationController);
+    hdcontroller.setTolerance(new Pose2d(0.05, 0.05, Rotation2d.fromDegrees(2.0)));
   }
 
   @Override
   public void initialize() {
     this.tagScanStartTime = Timer.getFPGATimestamp();
-    Pose3d targetTagPose3d = vision.getAprilTagPose(targetTagId, 2);
 
-    if (targetTagPose3d == null) {
-      writeMsgToSmartDashboard("Target tag pose not found for tag ID: " + targetTagId);
-      return;
-    }
+    TagReefPole reefPole = Reef.getPoleFromLabel(pole, DriverStation.getAlliance());
 
-    this.desiredPose = getDesiredPose(targetTagPose3d);
+    this.targetTagId = reefPole.tagId;
+    this.poleSide = reefPole.poleSide;
+
+    System.out.println(
+        "AlignToReefBranch initialized with pole: "
+            + pole
+            + ", tag ID: "
+            + reefPole.tagId
+            + ", side: "
+            + reefPole.poleSide);
   }
 
   @Override
   public void execute() {
     double currentTime = Timer.getFPGATimestamp();
 
-    Pose3d targetTagPose3d = vision.getAprilTagPose(targetTagId, 2);
+    Pose3d targetTagPose3d = null;
+    targetTagPose3d = vision.getAprilTagPose(targetTagId, 2);
+    if (targetTagPose3d == null) {
+      targetTagPose3d = vision.getAprilTagPose(targetTagId, 1);
+    }
+    if (targetTagPose3d == null) {
+      targetTagPose3d = vision.getAprilTagPose(targetTagId, 0);
+    }
     if (targetTagPose3d != null) {
-      this.desiredPose = getDesiredPose(targetTagPose3d);
-    } else if (desiredPose == null) {
+      this.targetTagPose = targetTagPose3d.toPose2d();
+      this.desiredRobotPose = Reef.getReefPolePose(targetTagId, targetTagPose3d, poleSide);
+    } else if (desiredRobotPose == null) {
       if (currentTime - tagScanStartTime
-          > Constants.ReefAlignmentConstants.tagScanTimeoutInSeconds) {
+          > ReefAlignConstants.ReefAlignmentConstants.tagScanTimeoutInSeconds) {
         writeMsgToSmartDashboard("Failed to get desired pose within 2 seconds. Ending command.");
         drive.runVelocity(new ChassisSpeeds(0, 0, 0));
         return;
@@ -95,39 +111,26 @@ public class AlignToReefBranch extends Command {
       writeMsgToSmartDashboard("Target tag pose not found for tag ID: " + targetTagId);
     }
 
-    if (desiredPose != null) {
+    if (desiredRobotPose != null) {
       writeMsgToSmartDashboard(
           "Desired pose calculated: x: "
-              + desiredPose.getX()
+              + desiredRobotPose.getX()
               + " y: "
-              + desiredPose.getY()
+              + desiredRobotPose.getY()
               + " rotation: "
-              + desiredPose.getRotation().getDegrees());
+              + desiredRobotPose.getRotation().getDegrees());
       Pose2d drivePose = drive.getPose();
 
-      Translation2d error = calculateError(desiredPose, drivePose);
-      double xError = error.getX();
-      double yError = error.getY();
+      ChassisSpeeds speeds =
+          hdcontroller.calculate(drivePose, desiredRobotPose, 0.0, desiredRobotPose.getRotation());
 
-      double xOutput = depthController.calculate(0, xError);
-      double yOutput = lateralController.calculate(0, yError);
-      double rotationOutput =
-          rotationController.calculate(
-              drivePose.getRotation().getRadians(), desiredPose.getRotation().getRadians());
-
-      normalizeVelocity(Constants.ReefAlignmentConstants.maxVelocity, xOutput, yOutput);
-
-      ChassisSpeeds fieldRelativeSpeeds = new ChassisSpeeds(xOutput, yOutput, rotationOutput);
-      ChassisSpeeds robotRelativeSpeeds =
-          ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, drivePose.getRotation());
-
-      if (Constants.ReefAlignmentConstants.moveRobot) drive.runVelocity(robotRelativeSpeeds);
+      if (ReefAlignConstants.ReefAlignmentConstants.moveRobot) drive.runVelocity(speeds);
 
       // Logging ...
-      SmartDashboard.putNumber(logPrefix + "DesiredPoseX", desiredPose.getX());
-      SmartDashboard.putNumber(logPrefix + "DesiredPoseY", desiredPose.getY());
+      SmartDashboard.putNumber(logPrefix + "DesiredPoseX", desiredRobotPose.getX());
+      SmartDashboard.putNumber(logPrefix + "DesiredPoseY", desiredRobotPose.getY());
       SmartDashboard.putNumber(
-          logPrefix + "DesiredPoseRotation", desiredPose.getRotation().getDegrees());
+          logPrefix + "DesiredPoseRotation", desiredRobotPose.getRotation().getDegrees());
       SmartDashboard.putNumber(logPrefix + "DrivePoseX", drivePose.getX());
       SmartDashboard.putNumber(logPrefix + "DrivePoseY", drivePose.getY());
       SmartDashboard.putNumber(
@@ -151,17 +154,14 @@ public class AlignToReefBranch extends Command {
   @Override
   public boolean isFinished() {
 
-    if (this.desiredPose == null || this.targetTagPose == null) {
+    if (this.desiredRobotPose == null || this.targetTagPose == null) {
       writeMsgToSmartDashboard("Desired pose or target tag pose is null. Cannot check alignment.");
       return false;
     }
 
-    Pose2d drivePose = drive.getPose();
-    boolean depthInPosition = depthInPosition(drivePose, desiredPose);
-    boolean lateralInPosition = lateralInPosition(drivePose, desiredPose);
-    boolean rotationInPosition = rotationInPosition(drivePose, desiredPose);
+    boolean inPosition = hdcontroller.atReference();
 
-    if (depthInPosition && lateralInPosition && rotationInPosition) {
+    if (inPosition) {
       writeMsgToSmartDashboard("Alignment complete. Ending command.");
       return true;
     } else {
@@ -169,97 +169,13 @@ public class AlignToReefBranch extends Command {
       writeMsgToSmartDashboard(
           "Alignment not complete. Continuing execution. "
               + "Depth: "
-              + depthInPosition
+              + hdcontroller.getXController().atSetpoint()
               + ", Lateral: "
-              + lateralInPosition
+              + hdcontroller.getYController().atSetpoint()
               + ", Rotation: "
-              + rotationInPosition);
+              + hdcontroller.getThetaController().atSetpoint());
       return false;
     }
-  }
-
-  private Pose2d getDesiredPose(Pose3d targetTagPose3d) {
-    this.targetTagPose = targetTagPose3d.toPose2d();
-
-    // robot offset from tag robot width / 2 basically
-    double outwardOffset = Constants.ReefAlignmentConstants.outwardOffsetFromTag;
-
-    // rotation
-    double rotationTargetDegrees =
-        Constants.ReefAlignmentConstants.tagToRotationTarget.get(targetTagId);
-    double targetRotation = Units.degreesToRadians(rotationTargetDegrees);
-
-    Alliance tagAlliance =
-        Constants.ReefAlignmentConstants.tagToAlliance.getOrDefault(targetTagId, Alliance.Blue);
-
-    // center of the reef based on alliance
-    Translation2d reefCenter = Constants.ReefAlignmentConstants.blueReefCenter;
-    if (tagAlliance == Alliance.Red) {
-      reefCenter = Constants.ReefAlignmentConstants.redReefCenter;
-    }
-
-    // translation based on outward direction from reef center
-    Translation2d tagTranslation = targetTagPose.getTranslation();
-    Translation2d outwardDirection = tagTranslation.minus(reefCenter);
-    outwardDirection = outwardDirection.div(outwardDirection.getNorm());
-
-    // rotate outwardDirection by pi/2 radians to get the perpendicular direction
-    Translation2d perpendicularDirection =
-        outwardDirection.rotateBy(Rotation2d.fromRadians(Math.PI / 2));
-
-    // Adjust offsets based on branch side
-    double poleOffset = getPoleOffset(targetTagId, branchSide);
-    Translation2d baseOffset = outwardDirection.times(outwardOffset);
-    Translation2d poleSpecificOffset =
-        perpendicularDirection.times(poleOffset * (branchSide == BranchSide.LEFT ? -1 : 1));
-
-    Translation2d totalOffset = baseOffset.plus(poleSpecificOffset);
-    Translation2d desiredTranslation = tagTranslation.plus(totalOffset);
-    return new Pose2d(desiredTranslation, new Rotation2d(targetRotation));
-  }
-
-  private void normalizeVelocity(double maxVelocity, double xOutput, double yOutput) {
-    double magnitude = Math.sqrt(xOutput * xOutput + yOutput * yOutput);
-
-    if (magnitude > maxVelocity) {
-      xOutput = (xOutput / magnitude) * maxVelocity;
-      yOutput = (yOutput / magnitude) * maxVelocity;
-    }
-  }
-
-  private Translation2d calculateError(Pose2d desiredPose, Pose2d drivePose) {
-    return desiredPose.getTranslation().minus(drivePose.getTranslation());
-  }
-
-  private double getPoleOffset(int tagId, BranchSide branchSide) {
-    String key = tagId + "_" + branchSide.name().toLowerCase();
-    return Constants.ReefAlignmentConstants.tagToPoleOffset.getOrDefault(key, 0.33);
-  }
-
-  private boolean depthInPosition(Pose2d drivePose, Pose2d desiredPose) {
-    return drivePose.getTranslation().getX()
-            >= desiredPose.getTranslation().getX() - Constants.ReefAlignmentConstants.depthThreshold
-        && drivePose.getTranslation().getX()
-            <= desiredPose.getTranslation().getX()
-                + Constants.ReefAlignmentConstants.depthThreshold;
-  }
-
-  private boolean lateralInPosition(Pose2d drivePose, Pose2d desiredPose) {
-    return drivePose.getTranslation().getY()
-            >= desiredPose.getTranslation().getY()
-                - Constants.ReefAlignmentConstants.lateralThreshold
-        && drivePose.getTranslation().getY()
-            <= desiredPose.getTranslation().getY()
-                + Constants.ReefAlignmentConstants.lateralThreshold;
-  }
-
-  private boolean rotationInPosition(Pose2d drivePose, Pose2d desiredPose) {
-    return drivePose.getRotation().getRadians()
-            >= desiredPose.getRotation().getRadians()
-                - Constants.ReefAlignmentConstants.rotationThreshold
-        && drivePose.getRotation().getRadians()
-            <= desiredPose.getRotation().getRadians()
-                + Constants.ReefAlignmentConstants.rotationThreshold;
   }
 
   private void writeMsgToSmartDashboard(String message) {
@@ -267,33 +183,3 @@ public class AlignToReefBranch extends Command {
     System.out.println(message);
   }
 }
-
-// pathplanner find path code
-// private Command pathCommand;
-// executre
-// drive.findPathToPose(this.desiredPose).execute();
-// if (pathCommand != null) {
-// pathCommand.execute();
-// } else {
-// System.out.println("Path command is null. Cannot execute alignment.");
-// return;
-// }
-
-// isfinished
-// if (pathCommand != null && pathCommand.isFinished()) {
-// pathCommand.end(false);
-// return true;
-// }
-// return false;
-// }
-
-// end
-// if (pathCommand != null) {
-// pathCommand.end(interrupted);
-// }
-
-// init
-// drive.setPose(desiredPose);
-
-// pathCommand = drive.findPathToPose(desiredPose);
-// pathCommand.initialize();
