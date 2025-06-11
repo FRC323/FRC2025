@@ -31,7 +31,7 @@ import frc.robot.commands.initialization.OffsetCommands;
 import frc.robot.commands.initialization.ZeroGryo;
 import frc.robot.commands.intake.IntakeCommands;
 import frc.robot.commands.scoring.ScoreCommands;
-import frc.robot.field.align.ReefAlignConstants.ReefAlignmentConstants.ReefPoleLabel;
+import frc.robot.field.align.ReefAlignmentConstants.ReefPoleLabel;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.Arm.ArmPosition;
 import frc.robot.subsystems.arm.ArmIO;

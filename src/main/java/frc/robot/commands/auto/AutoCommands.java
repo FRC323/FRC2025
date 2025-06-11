@@ -3,7 +3,7 @@ package frc.robot.commands.auto;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.intake.RunCoralIntake;
 import frc.robot.commands.intake.RunCoralOuttake;
-import frc.robot.field.align.ReefAlignConstants.ReefAlignmentConstants.ReefPoleLabel;
+import frc.robot.field.align.ReefAlignmentConstants.ReefPoleLabel;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;

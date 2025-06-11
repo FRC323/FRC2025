@@ -1,6 +1,6 @@
 package frc.robot.field;
 
-import frc.robot.field.align.ReefAlignConstants.ReefAlignmentConstants.PoleSide;
+import frc.robot.field.align.ReefAlignmentConstants.PoleSide;
 
 public class TagReefPole {
   public final int tagId;

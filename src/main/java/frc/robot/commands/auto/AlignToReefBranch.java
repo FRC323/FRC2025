@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.field.TagReefPole;
 import frc.robot.field.align.Reef;
-import frc.robot.field.align.ReefAlignConstants;
-import frc.robot.field.align.ReefAlignConstants.ReefAlignmentConstants.PoleSide;
-import frc.robot.field.align.ReefAlignConstants.ReefAlignmentConstants.ReefPoleLabel;
+import frc.robot.field.align.ReefAlignmentConstants;
+import frc.robot.field.align.ReefAlignmentConstants.PoleSide;
+import frc.robot.field.align.ReefAlignmentConstants.ReefPoleLabel;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 
@@ -25,8 +25,7 @@ public class AlignToReefBranch extends Command {
   private final Vision vision;
   private final ReefPoleLabel pole;
 
-  private final String logPrefix =
-      ReefAlignConstants.ReefAlignmentConstants.smartDashboardLogPrefix;
+  private final String logPrefix = ReefAlignmentConstants.smartDashboardLogPrefix;
 
   private int targetTagId = 0;
   private PoleSide poleSide;
@@ -46,26 +45,30 @@ public class AlignToReefBranch extends Command {
 
     depthController =
         new PIDController(
-            ReefAlignConstants.ReefAlignmentConstants.depthP,
-            ReefAlignConstants.ReefAlignmentConstants.depthI,
-            ReefAlignConstants.ReefAlignmentConstants.depthD);
+            ReefAlignmentConstants.depthP,
+            ReefAlignmentConstants.depthI,
+            ReefAlignmentConstants.depthD);
 
     lateralController =
         new PIDController(
-            ReefAlignConstants.ReefAlignmentConstants.lateralP,
-            ReefAlignConstants.ReefAlignmentConstants.lateralI,
-            ReefAlignConstants.ReefAlignmentConstants.lateralD);
+            ReefAlignmentConstants.lateralP,
+            ReefAlignmentConstants.lateralI,
+            ReefAlignmentConstants.lateralD);
 
     rotationController =
         new ProfiledPIDController(
-            ReefAlignConstants.ReefAlignmentConstants.rotationP,
-            ReefAlignConstants.ReefAlignmentConstants.rotationI,
-            ReefAlignConstants.ReefAlignmentConstants.rotationD,
-            new Constraints(1.0, 1.0));
+            ReefAlignmentConstants.rotationP,
+            ReefAlignmentConstants.rotationI,
+            ReefAlignmentConstants.rotationD,
+            new Constraints(ReefAlignmentConstants.rotationMaxVelocity, ReefAlignmentConstants.rotationMaxAcceleration));
 
     hdcontroller =
         new HolonomicDriveController(depthController, lateralController, rotationController);
-    hdcontroller.setTolerance(new Pose2d(0.05, 0.05, Rotation2d.fromDegrees(2.0)));
+    hdcontroller.setTolerance(
+        new Pose2d(
+            ReefAlignmentConstants.xTolerance,
+            ReefAlignmentConstants.yTolerance,
+            Rotation2d.fromDegrees(ReefAlignmentConstants.rotationTolerance)));
   }
 
   @Override
@@ -100,10 +103,10 @@ public class AlignToReefBranch extends Command {
     }
     if (targetTagPose3d != null) {
       this.targetTagPose = targetTagPose3d.toPose2d();
-      this.desiredRobotPose = Reef.getReefPolePose(targetTagId, targetTagPose3d, poleSide);
+      this.desiredRobotPose =
+          Reef.getReefPolePose(targetTagId, targetTagPose3d.toPose2d(), drive.getPose(), poleSide);
     } else if (desiredRobotPose == null) {
-      if (currentTime - tagScanStartTime
-          > ReefAlignConstants.ReefAlignmentConstants.tagScanTimeoutInSeconds) {
+      if (currentTime - tagScanStartTime > ReefAlignmentConstants.tagScanTimeoutInSeconds) {
         writeMsgToSmartDashboard("Failed to get desired pose within 2 seconds. Ending command.");
         drive.runVelocity(new ChassisSpeeds(0, 0, 0));
         return;
@@ -124,7 +127,7 @@ public class AlignToReefBranch extends Command {
       ChassisSpeeds speeds =
           hdcontroller.calculate(drivePose, desiredRobotPose, 0.0, desiredRobotPose.getRotation());
 
-      if (ReefAlignConstants.ReefAlignmentConstants.moveRobot) drive.runVelocity(speeds);
+      if (ReefAlignmentConstants.moveRobot) drive.runVelocity(speeds);
 
       // Logging ...
       SmartDashboard.putNumber(logPrefix + "DesiredPoseX", desiredRobotPose.getX());

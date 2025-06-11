@@ -1,63 +1,43 @@
 package frc.robot.field.align;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.field.ReefPoleOffset;
 import frc.robot.field.TagReefPole;
-import frc.robot.field.align.ReefAlignConstants.ReefAlignmentConstants.PoleSide;
-import frc.robot.field.align.ReefAlignConstants.ReefAlignmentConstants.ReefPoleLabel;
+import frc.robot.field.align.ReefAlignmentConstants.PoleSide;
+import frc.robot.field.align.ReefAlignmentConstants.ReefPoleLabel;
 import java.util.Optional;
 
 public class Reef {
-  public static Pose2d getReefPolePose(int targetTagId, Pose3d targetTagPose3d, PoleSide poleSide) {
-    Pose2d targetTagPose = targetTagPose3d.toPose2d();
+  public static Pose2d getReefPolePose(
+      int targetTagId, Pose2d targetTagPose, Pose2d robotPose, PoleSide poleSide) {
 
-    // robot offset from tag robot width / 2 basically
-    double outwardOffset = ReefAlignConstants.ReefAlignmentConstants.outwardOffsetFromTag;
+    // pole offsets from tag
+    double poleOffsetFromTag = getTagToPoleOffset(targetTagId, poleSide);
 
-    // rotation
-    double rotationTargetDegrees =
-        ReefAlignConstants.ReefAlignmentConstants.tagToRotationTarget.get(targetTagId);
-    double targetRotation = Units.degreesToRadians(rotationTargetDegrees);
+    // determine robot location from tag
+    Pose2d tagRelativeToRobot = targetTagPose.relativeTo(robotPose);
+    Transform2d offsetFromTag =
+        new Transform2d(
+            new Translation2d(ReefAlignmentConstants.outwardOffsetFromTag, poleOffsetFromTag),
+            new Rotation2d());
+    Pose2d targetRelativeToRobot = tagRelativeToRobot.plus(offsetFromTag);
+    Pose2d targetInField = robotPose.plus(new Transform2d(new Pose2d(), targetRelativeToRobot));
 
-    Alliance tagAlliance =
-        ReefAlignConstants.ReefAlignmentConstants.tagToAlliance.getOrDefault(
-            targetTagId, Alliance.Blue);
+    // predefined rotation
+    Rotation2d targetRotation =
+        Rotation2d.fromDegrees(ReefAlignmentConstants.tagToRotationTarget.get(targetTagId));
 
-    // center of the reef based on alliance
-    Translation2d reefCenter = ReefAlignConstants.ReefAlignmentConstants.blueReefCenter;
-    if (tagAlliance == Alliance.Red) {
-      reefCenter = ReefAlignConstants.ReefAlignmentConstants.redReefCenter;
-    }
-
-    // translation based on outward direction from reef center
-    Translation2d tagTranslation = targetTagPose.getTranslation();
-    Translation2d outwardDirection = tagTranslation.minus(reefCenter);
-    outwardDirection = outwardDirection.div(outwardDirection.getNorm());
-
-    // rotate outwardDirection by pi/2 radians to get the perpendicular direction
-    Translation2d perpendicularDirection =
-        outwardDirection.rotateBy(Rotation2d.fromRadians(Math.PI / 2));
-
-    // Adjust offsets based on branch side
-    double poleOffset = getTagToPoleOffset(targetTagId, poleSide);
-    Translation2d baseOffset = outwardDirection.times(outwardOffset);
-    Translation2d poleSpecificOffset =
-        perpendicularDirection.times(poleOffset * (poleSide == PoleSide.LEFT ? -1 : 1));
-
-    Translation2d totalOffset = baseOffset.plus(poleSpecificOffset);
-    Translation2d desiredTranslation = tagTranslation.plus(totalOffset);
-    return new Pose2d(desiredTranslation, new Rotation2d(targetRotation));
+    return new Pose2d(targetInField.getTranslation(), targetRotation);
   }
 
   public static double getTagToPoleOffset(int tagId, PoleSide poleSide) {
-    ReefPoleOffset offsets = ReefAlignConstants.ReefAlignmentConstants.tagToPoleOffset.get(tagId);
+    ReefPoleOffset offsets = ReefAlignmentConstants.tagToPoleOffset.get(tagId);
     if (offsets == null) return 0.0;
-    return poleSide == PoleSide.LEFT ? offsets.left : offsets.right;
+    return poleSide == PoleSide.LEFT ? -offsets.left : offsets.right;
   }
 
   public static TagReefPole getPoleFromLabel(ReefPoleLabel poleLabel, Optional<Alliance> alliance) {
