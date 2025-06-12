@@ -255,6 +255,7 @@ public class RobotContainer {
         "AlignTag17Left", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.C));
     SmartDashboard.putData(
         "AlignTag17Right", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.D));
+    SmartDashboard.putData("AlignHP12", AutoCommands.AlignToCoralStation12(drive, vision));
 
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));
@@ -470,6 +471,9 @@ public class RobotContainer {
         "ReefAlign_K", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.K));
     NamedCommands.registerCommand(
         "ReefAlign_L", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.L));
+
+    NamedCommands.registerCommand(
+        "CoralStationAlign_12", AutoCommands.AlignToCoralStation12(drive, vision));
   }
 
   /**

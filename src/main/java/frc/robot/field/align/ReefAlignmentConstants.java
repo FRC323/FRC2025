@@ -53,6 +53,9 @@ public final class ReefAlignmentConstants {
 
   public static final double tagScanTimeoutInSeconds = 2.0;
 
+  public static final double xyScalingFactor = 1.0;
+  public static final double rotationScalingFactor = 1.0;
+
   // robot width / 2
   public static final double outwardOffsetFromTag = 0.42;
 
@@ -62,6 +65,7 @@ public final class ReefAlignmentConstants {
   public static final Translation2d redReefCenter = new Translation2d(13.03, 4.05);
 
   public static final boolean moveRobot = true;
+  public static final boolean smartDashboardLogging = true;
 
   public static final HashMap<Integer, Alliance> tagToAlliance =
       new HashMap<>() {

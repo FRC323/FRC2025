@@ -8,92 +8,66 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.field.TagReefPole;
-import frc.robot.field.align.Reef;
-import frc.robot.field.align.ReefAlignmentConstants;
-import frc.robot.field.align.ReefAlignmentConstants.PoleSide;
-import frc.robot.field.align.ReefAlignmentConstants.ReefPoleLabel;
+import frc.robot.field.align.CoralStation;
+import frc.robot.field.align.CoralStationAlignmentConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 
-public class AlignToReefBranch extends Command {
+public class AlignToCoralStation extends Command {
   private final Drive drive;
   private final Vision vision;
-  private final ReefPoleLabel pole;
 
-  private final String logPrefix = ReefAlignmentConstants.smartDashboardLogPrefix;
+  private final String logPrefix = CoralStationAlignmentConstants.smartDashboardLogPrefix;
 
-  private int targetTagId = 0;
-  private PoleSide poleSide;
+  private int targetTagId;
   private Pose2d targetTagPose;
   private Pose2d desiredRobotPose;
-  private double tagScanStartTime = 0.0;
 
   private HolonomicDriveController hdcontroller;
   private PIDController depthController;
   private PIDController lateralController;
   private ProfiledPIDController rotationController;
 
-  public AlignToReefBranch(Drive drive, Vision vision, ReefPoleLabel pole) {
+  public AlignToCoralStation(Drive drive, Vision vision, int targetTagId) {
     this.drive = drive;
     this.vision = vision;
-    this.pole = pole;
+    this.targetTagId = targetTagId;
 
     depthController =
         new PIDController(
-            ReefAlignmentConstants.depthP,
-            ReefAlignmentConstants.depthI,
-            ReefAlignmentConstants.depthD);
+            CoralStationAlignmentConstants.depthP,
+            CoralStationAlignmentConstants.depthI,
+            CoralStationAlignmentConstants.depthD);
 
     lateralController =
         new PIDController(
-            ReefAlignmentConstants.lateralP,
-            ReefAlignmentConstants.lateralI,
-            ReefAlignmentConstants.lateralD);
+            CoralStationAlignmentConstants.lateralP,
+            CoralStationAlignmentConstants.lateralI,
+            CoralStationAlignmentConstants.lateralD);
 
     rotationController =
         new ProfiledPIDController(
-            ReefAlignmentConstants.rotationP,
-            ReefAlignmentConstants.rotationI,
-            ReefAlignmentConstants.rotationD,
+            CoralStationAlignmentConstants.rotationP,
+            CoralStationAlignmentConstants.rotationI,
+            CoralStationAlignmentConstants.rotationD,
             new Constraints(
-                ReefAlignmentConstants.rotationMaxVelocity,
-                ReefAlignmentConstants.rotationMaxAcceleration));
+                CoralStationAlignmentConstants.rotationMaxVelocity,
+                CoralStationAlignmentConstants.rotationMaxAcceleration));
 
     hdcontroller =
         new HolonomicDriveController(depthController, lateralController, rotationController);
     hdcontroller.setTolerance(
         new Pose2d(
-            ReefAlignmentConstants.xTolerance,
-            ReefAlignmentConstants.yTolerance,
-            Rotation2d.fromDegrees(ReefAlignmentConstants.rotationTolerance)));
+            CoralStationAlignmentConstants.xTolerance,
+            CoralStationAlignmentConstants.yTolerance,
+            Rotation2d.fromDegrees(CoralStationAlignmentConstants.rotationTolerance)));
   }
 
   @Override
   public void initialize() {
-    this.tagScanStartTime = Timer.getFPGATimestamp();
-
-    TagReefPole reefPole = Reef.getPoleFromLabel(pole, DriverStation.getAlliance());
-
-    this.targetTagId = reefPole.tagId;
-    this.poleSide = reefPole.poleSide;
-
-    System.out.println(
-        "AlignToReefBranch initialized with pole: "
-            + pole
-            + ", tag ID: "
-            + reefPole.tagId
-            + ", side: "
-            + reefPole.poleSide);
-  }
-
-  @Override
-  public void execute() {
-    double currentTime = Timer.getFPGATimestamp();
+    System.out.println("AlignToCoralStation initialized with tagId: " + this.targetTagId);
 
     Pose3d targetTagPose3d = null;
     targetTagPose3d = vision.getAprilTagPose(targetTagId, 2);
@@ -102,20 +76,26 @@ public class AlignToReefBranch extends Command {
     }
     if (targetTagPose3d == null) {
       targetTagPose3d = vision.getAprilTagPose(targetTagId, 0);
-    }
-    if (targetTagPose3d != null) {
-      this.targetTagPose = targetTagPose3d.toPose2d();
-      this.desiredRobotPose =
-          Reef.getReefPolePose(targetTagId, targetTagPose3d.toPose2d(), drive.getPose(), poleSide);
-    } else if (desiredRobotPose == null) {
-      if (currentTime - tagScanStartTime > ReefAlignmentConstants.tagScanTimeoutInSeconds) {
-        writeMsgToSmartDashboard("Failed to get desired pose within 2 seconds. Ending command.");
-        drive.runVelocity(new ChassisSpeeds(0, 0, 0));
-        return;
-      }
-      writeMsgToSmartDashboard("Target tag pose not found for tag ID: " + targetTagId);
-    }
 
+      if (targetTagPose3d != null) {
+        this.targetTagPose = targetTagPose3d.toPose2d();
+        this.desiredRobotPose =
+            CoralStation.getStationPose(targetTagId, targetTagPose, drive.getPose());
+        writeMsgToSmartDashboard(
+            "Found tag "
+                + targetTagId
+                + " at pose x: "
+                + targetTagPose.getX()
+                + ", y: "
+                + targetTagPose.getY()
+                + ", rotation: "
+                + targetTagPose.getRotation().getDegrees());
+      }
+    }
+  }
+
+  @Override
+  public void execute() {
     if (desiredRobotPose != null) {
       writeMsgToSmartDashboard(
           "Desired pose calculated: x: "
@@ -131,14 +111,14 @@ public class AlignToReefBranch extends Command {
 
       ChassisSpeeds scaledSpeeds =
           new ChassisSpeeds(
-              speeds.vxMetersPerSecond * ReefAlignmentConstants.xyScalingFactor,
-              speeds.vyMetersPerSecond * ReefAlignmentConstants.xyScalingFactor,
-              speeds.omegaRadiansPerSecond * ReefAlignmentConstants.rotationScalingFactor);
+              speeds.vxMetersPerSecond * CoralStationAlignmentConstants.xyScalingFactor,
+              speeds.vyMetersPerSecond * CoralStationAlignmentConstants.xyScalingFactor,
+              speeds.omegaRadiansPerSecond * CoralStationAlignmentConstants.rotationScalingFactor);
 
-      if (ReefAlignmentConstants.moveRobot) drive.runVelocity(scaledSpeeds);
+      if (CoralStationAlignmentConstants.moveRobot) drive.runVelocity(scaledSpeeds);
 
       // Logging ...
-      if (ReefAlignmentConstants.smartDashboardLogging) {
+      if (CoralStationAlignmentConstants.smartDashboardLogging) {
         SmartDashboard.putNumber(logPrefix + "DesiredPoseX", desiredRobotPose.getX());
         SmartDashboard.putNumber(logPrefix + "DesiredPoseY", desiredRobotPose.getY());
         SmartDashboard.putNumber(
@@ -192,7 +172,7 @@ public class AlignToReefBranch extends Command {
   }
 
   private void writeMsgToSmartDashboard(String message) {
-    if (!ReefAlignmentConstants.smartDashboardLogging) {
+    if (!CoralStationAlignmentConstants.smartDashboardLogging) {
       return;
     }
     SmartDashboard.putString(logPrefix + "Message", message);

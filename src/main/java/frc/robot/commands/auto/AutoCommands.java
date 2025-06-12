@@ -30,4 +30,8 @@ public class AutoCommands {
   public static Command AlignToReef(Drive drive, Vision vision, ReefPoleLabel pole) {
     return new AlignToReefBranch(drive, vision, pole).withTimeout(5);
   }
+
+  public static Command AlignToCoralStation12(Drive drive, Vision vision) {
+    return new AlignToCoralStation(drive, vision, 12).withTimeout(5);
+  }
 }
