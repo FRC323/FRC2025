@@ -343,8 +343,9 @@ public class Drive extends SubsystemBase {
 
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
-    SmartDashboard.putNumber("Drive.GetRotation", getPose().getRotation().getDegrees());
-    return getPose().getRotation();
+    SmartDashboard.putNumber("Drive.GetRotation", rawGyroRotation.getDegrees());
+    // return getPose().getRotation();
+    return rawGyroRotation;
   }
 
   /** Resets the current odometry pose. */

@@ -39,7 +39,7 @@ public final class ReefAlignmentConstants {
   public static final double lateralI = 0.0;
   public static final double lateralD = 0.0;
 
-  public static final double rotationP = 10;
+  public static final double rotationP = 8.0;
   public static final double rotationI = 0.0;
   public static final double rotationD = 0.0;
   public static final double rotationFF = 0.0;

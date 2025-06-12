@@ -45,10 +45,10 @@ public class VisionConstants {
   public static final String elevatorCameraName = "elevator";
   public static final Transform3d elevatorCameraToRobotTransform =
       new Transform3d(
-          -0.233,
+          -0.255,
           0.184,
-          0.415,
-          new Rotation3d(0.0, Units.degreesToRadians(20.0), Units.degreesToRadians(75)));
+          0.361,
+          new Rotation3d(0.0, Units.degreesToRadians(20.0), Units.degreesToRadians(65)));
 
   // Basic filtering thresholds
   public static double maxAmbiguity = 0.3;

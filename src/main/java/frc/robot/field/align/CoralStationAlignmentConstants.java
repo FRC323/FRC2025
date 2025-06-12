@@ -13,14 +13,14 @@ public class CoralStationAlignmentConstants {
   public static final double lateralI = 0.0;
   public static final double lateralD = 0.0;
 
-  public static final double rotationP = 10;
+  public static final double rotationP = 8.0;
   public static final double rotationI = 0.0;
   public static final double rotationD = 0.0;
   public static final double rotationFF = 0.0;
 
   public static final double xTolerance = 0.05;
   public static final double yTolerance = 0.05;
-  public static final double rotationTolerance = 2.0;
+  public static final double rotationTolerance = 1.0;
 
   public static final double rotationMaxVelocity = 3.0; // m/s
   public static final double rotationMaxAcceleration = 3.0; // m/s^2
@@ -28,7 +28,7 @@ public class CoralStationAlignmentConstants {
   public static final double xyScalingFactor = 1.0;
   public static final double rotationScalingFactor = 1.0;
 
-  public static final double outwardOffsetFromTag = 0.42;
+  public static final double outwardOffsetFromTag = 0.1;
   public static final double lateralOffsetFromTag = 0.0;
 
   public static final boolean moveRobot = true;

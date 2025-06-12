@@ -252,9 +252,9 @@ public class RobotContainer {
     SmartDashboard.putData(
         "AlignTag22Right", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.F));
     SmartDashboard.putData(
-        "AlignTag17Left", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.C));
+        "AlignTag21Left", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.G));
     SmartDashboard.putData(
-        "AlignTag17Right", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.D));
+        "AlignTag21Right", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.H));
     SmartDashboard.putData("AlignHP12", AutoCommands.AlignToCoralStation12(drive, vision));
 
     // reset gyro
