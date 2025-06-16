@@ -1,6 +1,7 @@
 package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.intake.RunCoralIntake;
 import frc.robot.commands.intake.RunCoralOuttake;
 import frc.robot.field.align.ReefAlignmentConstants.ReefPoleLabel;
@@ -29,6 +30,13 @@ public class AutoCommands {
 
   public static Command AlignToReef(Drive drive, Vision vision, ReefPoleLabel pole) {
     return new AlignToReefBranch(drive, vision, pole).withTimeout(5);
+  }
+
+  public static Command AlignToReef2(Drive drive, Vision vision, double side) {
+    System.out.println("AlignToReef2: " + side);
+    if (side <= -0.2) return new AlignToReefBranch(drive, vision, ReefPoleLabel.E).withTimeout(5);
+    if (side >= 0.2) return new AlignToReefBranch(drive, vision, ReefPoleLabel.F).withTimeout(5);
+    return new InstantCommand();
   }
 
   public static Command AlignToCoralStation12(Drive drive, Vision vision) {

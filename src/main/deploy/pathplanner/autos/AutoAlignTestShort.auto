@@ -23,18 +23,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Coral HP Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "22ToHP"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
@@ -43,25 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "HPTo17"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ReefAlign_D"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "17ToSafe"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Coral HP Intake"
+            "pathName": "22ToSafe"
           }
         }
       ]

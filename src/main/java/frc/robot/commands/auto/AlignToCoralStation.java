@@ -76,21 +76,21 @@ public class AlignToCoralStation extends Command {
     }
     if (targetTagPose3d == null) {
       targetTagPose3d = vision.getAprilTagPose(targetTagId, 0);
+    }
 
-      if (targetTagPose3d != null) {
-        this.targetTagPose = targetTagPose3d.toPose2d();
-        this.desiredRobotPose =
-            CoralStation.getStationPose(targetTagId, targetTagPose, drive.getPose());
-        writeMsgToSmartDashboard(
-            "Found tag "
-                + targetTagId
-                + " at pose x: "
-                + targetTagPose.getX()
-                + ", y: "
-                + targetTagPose.getY()
-                + ", rotation: "
-                + targetTagPose.getRotation().getDegrees());
-      }
+    if (targetTagPose3d != null) {
+      this.targetTagPose = targetTagPose3d.toPose2d();
+      this.desiredRobotPose =
+          CoralStation.getStationPose(targetTagId, targetTagPose, drive.getPose());
+      writeMsgToSmartDashboard(
+          "Found tag "
+              + targetTagId
+              + " at pose x: "
+              + targetTagPose.getX()
+              + ", y: "
+              + targetTagPose.getY()
+              + ", rotation: "
+              + targetTagPose.getRotation().getDegrees());
     }
   }
 

@@ -260,6 +260,13 @@ public class RobotContainer {
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));
 
+    steerJoystick
+        .button(SteerStick.LEFT)
+        .and(() -> Math.abs(driveJoystick.getX()) >= 0.2)
+        .onTrue(AutoCommands.AlignToReef2(drive, vision, driveJoystick.getX()));
+
+    System.out.println("driveStick X: " + driveJoystick.getX());
+
     // pose to reef algae intake level 1
     gamePad
         .povDown()

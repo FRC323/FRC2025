@@ -45,10 +45,10 @@ public class AlgaeIntakeIOReal implements AlgaeIntakeIO {
         .inverted(AlgaeIntakeConstants.spark2Inverted);
 
     tryUntilOk(
-        spark1,
+        spark2,
         5,
         () ->
-            spark1.configure(
+            spark2.configure(
                 config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
   }
 

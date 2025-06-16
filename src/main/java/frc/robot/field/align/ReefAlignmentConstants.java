@@ -39,14 +39,14 @@ public final class ReefAlignmentConstants {
   public static final double lateralI = 0.0;
   public static final double lateralD = 0.0;
 
-  public static final double rotationP = 8.0;
+  public static final double rotationP = 7.0;
   public static final double rotationI = 0.0;
   public static final double rotationD = 0.0;
   public static final double rotationFF = 0.0;
 
   public static final double xTolerance = 0.05;
   public static final double yTolerance = 0.05;
-  public static final double rotationTolerance = 2.0;
+  public static final double rotationTolerance = .5;
 
   public static final double rotationMaxVelocity = 3.0; // m/s
   public static final double rotationMaxAcceleration = 3.0; // m/s^2
@@ -57,7 +57,7 @@ public final class ReefAlignmentConstants {
   public static final double rotationScalingFactor = 1.0;
 
   // robot width / 2
-  public static final double outwardOffsetFromTag = 0.42;
+  public static final double outwardOffsetFromTag = 0.40;
 
   // center of the reef translation - blue
   public static final Translation2d blueReefCenter = new Translation2d(4.49, 4.02);
@@ -95,7 +95,7 @@ public final class ReefAlignmentConstants {
           put(19, new ReefPoleOffset(.165, .165));
           put(20, new ReefPoleOffset(.165, .165));
           put(21, new ReefPoleOffset(.165, .165));
-          put(22, new ReefPoleOffset(.165, .165));
+          put(22, new ReefPoleOffset(.250, .300));
 
           put(6, new ReefPoleOffset(.165, .165)); // red
           put(7, new ReefPoleOffset(.165, .165));

@@ -5,7 +5,7 @@ public class AlgaeIntakeConstants {
   public static int spark2CanId = 62;
 
   public static boolean spark1Inverted = false;
-  public static boolean spark2Inverted = true;
+  public static boolean spark2Inverted = false;
 
   public static int currentLimit = 12;
 

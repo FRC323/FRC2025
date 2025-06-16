@@ -43,6 +43,8 @@ public class AlignToReefBranch extends Command {
     this.vision = vision;
     this.pole = pole;
 
+    addRequirements(drive, vision);
+
     depthController =
         new PIDController(
             ReefAlignmentConstants.depthP,
