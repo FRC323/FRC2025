@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.field.align.CoralStation;
 import frc.robot.field.align.CoralStationAlignmentConstants;
+import frc.robot.field.align.Reef;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 
@@ -70,18 +71,16 @@ public class AlignToCoralStation extends Command {
     System.out.println("AlignToCoralStation initialized with tagId: " + this.targetTagId);
 
     Pose3d targetTagPose3d = null;
-    targetTagPose3d = vision.getAprilTagPose(targetTagId, 2);
-    if (targetTagPose3d == null) {
-      targetTagPose3d = vision.getAprilTagPose(targetTagId, 1);
-    }
-    if (targetTagPose3d == null) {
-      targetTagPose3d = vision.getAprilTagPose(targetTagId, 0);
-    }
+
+    targetTagPose3d = vision.getAprilTagPose(targetTagId, 1);
 
     if (targetTagPose3d != null) {
       this.targetTagPose = targetTagPose3d.toPose2d();
       this.desiredRobotPose =
           CoralStation.getStationPose(targetTagId, targetTagPose, drive.getPose());
+
+      double distance = Reef.estimatedDistance(drive.getPose(), targetTagPose);
+
       writeMsgToSmartDashboard(
           "Found tag "
               + targetTagId
@@ -90,7 +89,9 @@ public class AlignToCoralStation extends Command {
               + ", y: "
               + targetTagPose.getY()
               + ", rotation: "
-              + targetTagPose.getRotation().getDegrees());
+              + targetTagPose.getRotation().getDegrees()
+              + ". Estimated distance: "
+              + distance);
     }
   }
 

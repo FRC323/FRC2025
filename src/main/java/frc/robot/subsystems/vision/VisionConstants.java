@@ -24,7 +24,16 @@ public class VisionConstants {
   public static AprilTagFieldLayout aprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-  public static final boolean show2dField = true;
+  public static final boolean show2dField = false;
+
+  /*
+   * FYI AND TODO - FIX ALL THIS
+   * The locations of the cameras on the robot have changed
+   * since the ON season:
+   * - The front camera is on the elevator, intaking side
+   * - The rear camera is on the front, score side of the robot
+   * - The elevator camera is on the elevator, score side
+   */
 
   public static final String frontCameraName = "front";
   public static final Transform3d frontCameraToRobotTransform =
@@ -35,12 +44,19 @@ public class VisionConstants {
           new Rotation3d(0.0, Units.degreesToRadians(-20.0), Units.degreesToRadians(245)));
 
   public static final String rearCameraName = "rear";
+  // public static final Transform3d rearCameraToRobotTransform =
+  // new Transform3d(
+  // -0.281,
+  // 0.281,
+  // 0.212,
+  // new Rotation3d(0.0, Units.degreesToRadians(-15.0),
+  // Units.degreesToRadians(135)));
   public static final Transform3d rearCameraToRobotTransform =
       new Transform3d(
-          -0.281,
+          0.281,
           0.281,
           0.212,
-          new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(135)));
+          new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(110)));
 
   public static final String elevatorCameraName = "elevator";
   public static final Transform3d elevatorCameraToRobotTransform =

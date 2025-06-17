@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.field.TagReefPole;
@@ -31,7 +30,6 @@ public class AlignToReefBranch extends Command {
   private PoleSide poleSide;
   private Pose2d targetTagPose;
   private Pose2d desiredRobotPose;
-  private double tagScanStartTime = 0.0;
 
   private HolonomicDriveController hdcontroller;
   private PIDController depthController;
@@ -77,12 +75,29 @@ public class AlignToReefBranch extends Command {
 
   @Override
   public void initialize() {
-    this.tagScanStartTime = Timer.getFPGATimestamp();
-
     TagReefPole reefPole = Reef.getPoleFromLabel(pole, DriverStation.getAlliance());
 
     this.targetTagId = reefPole.tagId;
     this.poleSide = reefPole.poleSide;
+
+    Pose3d elevator_targetTagPose3d = null;
+    elevator_targetTagPose3d = vision.getAprilTagPose(targetTagId, 2); // elevator camera
+    Pose3d front_targetTagPose3d = null;
+    front_targetTagPose3d = vision.getAprilTagPose(targetTagId, 0); // front
+    Pose2d tagPose = null;
+
+    if (elevator_targetTagPose3d != null && front_targetTagPose3d != null) {
+      tagPose = averagePoses(elevator_targetTagPose3d, front_targetTagPose3d);
+    } else if (elevator_targetTagPose3d != null) {
+      tagPose = elevator_targetTagPose3d.toPose2d();
+    } else if (front_targetTagPose3d != null) {
+      tagPose = front_targetTagPose3d.toPose2d();
+    }
+
+    if (tagPose != null) {
+      this.targetTagPose = tagPose;
+      this.desiredRobotPose = Reef.getReefPolePose(targetTagId, tagPose, drive.getPose(), poleSide);
+    }
 
     System.out.println(
         "AlignToReefBranch initialized with pole: "
@@ -93,32 +108,20 @@ public class AlignToReefBranch extends Command {
             + reefPole.poleSide);
   }
 
+  private Pose2d averagePoses(Pose3d pose1, Pose3d pose2) {
+    double avgX = (pose1.getX() + pose2.getX()) / 2.0;
+    double avgY = (pose1.getY() + pose2.getY()) / 2.0;
+    Rotation2d avgRotation =
+        new Rotation2d(
+            (pose1.getRotation().toRotation2d().getRadians()
+                    + pose2.getRotation().toRotation2d().getRadians())
+                / 2.0);
+    return new Pose2d(avgX, avgY, avgRotation);
+  }
+
   @Override
   public void execute() {
-    double currentTime = Timer.getFPGATimestamp();
-
-    Pose3d targetTagPose3d = null;
-    targetTagPose3d = vision.getAprilTagPose(targetTagId, 2);
-    if (targetTagPose3d == null) {
-      targetTagPose3d = vision.getAprilTagPose(targetTagId, 1);
-    }
-    if (targetTagPose3d == null) {
-      targetTagPose3d = vision.getAprilTagPose(targetTagId, 0);
-    }
-    if (targetTagPose3d != null) {
-      this.targetTagPose = targetTagPose3d.toPose2d();
-      this.desiredRobotPose =
-          Reef.getReefPolePose(targetTagId, targetTagPose3d.toPose2d(), drive.getPose(), poleSide);
-    } else if (desiredRobotPose == null) {
-      if (currentTime - tagScanStartTime > ReefAlignmentConstants.tagScanTimeoutInSeconds) {
-        writeMsgToSmartDashboard("Failed to get desired pose within 2 seconds. Ending command.");
-        drive.runVelocity(new ChassisSpeeds(0, 0, 0));
-        return;
-      }
-      writeMsgToSmartDashboard("Target tag pose not found for tag ID: " + targetTagId);
-    }
-
-    if (desiredRobotPose != null) {
+    if (this.desiredRobotPose != null) {
       writeMsgToSmartDashboard(
           "Desired pose calculated: x: "
               + desiredRobotPose.getX()

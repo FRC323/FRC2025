@@ -150,12 +150,12 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.frontCameraName,
-                    VisionConstants.frontCameraToRobotTransform,
-                    drive::getPose),
-                new VisionIOPhotonVisionSim(
                     VisionConstants.rearCameraName,
                     VisionConstants.rearCameraToRobotTransform,
+                    drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.frontCameraName,
+                    VisionConstants.frontCameraToRobotTransform,
                     drive::getPose),
                 new VisionIOPhotonVisionSim(
                     VisionConstants.elevatorCameraName,

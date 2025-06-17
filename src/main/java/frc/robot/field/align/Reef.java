@@ -34,6 +34,10 @@ public class Reef {
     return new Pose2d(targetInField.getTranslation(), targetRotation);
   }
 
+  public static double estimatedDistance(Pose2d drivePose, Pose2d targetTagPose) {
+    return drivePose.getTranslation().getDistance(targetTagPose.getTranslation());
+  }
+
   public static double getTagToPoleOffset(int tagId, PoleSide poleSide) {
     ReefPoleOffset offsets = ReefAlignmentConstants.tagToPoleOffset.get(tagId);
     if (offsets == null) return 0.0;
