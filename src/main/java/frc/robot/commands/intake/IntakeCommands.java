@@ -103,4 +103,24 @@ public class IntakeCommands {
       AlgaeIntake algaeIntake) {
     return new IntakeAlgae(elevator, elevatorPosition, arm, armPosition, algaeIntake);
   }
+
+  // public Command createIntakeAlgaeAndAlign(
+  //     Drive drive,
+  //     Vision vision,
+  //     Elevator elevator,
+  //     ElevatorPosition elevatorPosition,
+  //     Arm arm,
+  //     ArmPosition armPosition,
+  //     AlgaeIntake algaeIntake) {
+  //   return new SequentialCommandGroup(
+  //       IntakeCommands.AlgaeIntake(
+  //           elevator,
+  //           ElevatorPosition.REEF_LEVEL_1_ALGAE,
+  //           arm,
+  //           ArmPosition.REEF_LEVEL_1_ALGAE,
+  //           algaeIntake),
+  //       new ParallelCommandGroup(
+  //           AutoCommands.AlignToReefBestTag(drive, vision),
+  //           new RunAlgaeIntake(algaeIntake, () -> AlgaeIntakeConstants.intakeOutput)));
+  // }
 }

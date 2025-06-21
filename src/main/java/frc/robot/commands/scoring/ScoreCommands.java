@@ -17,10 +17,6 @@ public class ScoreCommands {
     return new ScoreCoral(elevator, elevatorPosition, arm, armPosition, groundIntake);
   }
 
-  public static Command ScoreCoral(Elevator elevator, Arm arm) {
-    return new ScoreCoralOp(elevator, arm);
-  }
-
   public static Command ScoreAlgae(
       Elevator elevator, ElevatorPosition elevatorPosition, Arm arm, ArmPosition armPosition) {
     return new ScoreAlgae(elevator, elevatorPosition, arm, armPosition);

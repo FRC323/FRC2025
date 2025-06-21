@@ -64,6 +64,10 @@ public class Vision extends SubsystemBase {
     return inputs[cameraIndex].latestTargetObservation.tx();
   }
 
+  public int getBestTargetId(int cameraIndex) {
+    return inputs[cameraIndex].latestTargetObservation.tagId();
+  }
+
   public Pose3d getAprilTagPose(int id, int cameraIndex) {
     if (cameraIndex >= 0 && cameraIndex < inputs.length) {
       for (int i = 0; i < inputs[cameraIndex].tagIds.length; i++) {

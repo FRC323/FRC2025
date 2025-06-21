@@ -12,19 +12,18 @@ import frc.robot.field.align.ReefAlignmentConstants.ReefPoleLabel;
 import java.util.Optional;
 
 public class Reef {
-  public static Pose2d getReefPolePose(
-      int targetTagId, Pose2d targetTagPose, Pose2d robotPose, PoleSide poleSide) {
 
-    // pole offsets from tag
-    double poleOffsetFromTag = getTagToPoleOffset(targetTagId, poleSide);
+  private static Pose2d getReefTagPoseWithOffset(
+      int targetTagId, Pose2d targetTagPose, Pose2d robotPose, double offset) {
 
     // determine robot location from tag
     Pose2d tagRelativeToRobot = targetTagPose.relativeTo(robotPose);
     Transform2d offsetFromTag =
         new Transform2d(
-            new Translation2d(ReefAlignmentConstants.outwardOffsetFromTag, poleOffsetFromTag),
+            new Translation2d(ReefAlignmentConstants.outwardOffsetFromTag, offset),
             new Rotation2d());
     Pose2d targetRelativeToRobot = tagRelativeToRobot.plus(offsetFromTag);
+
     Pose2d targetInField = robotPose.plus(new Transform2d(new Pose2d(), targetRelativeToRobot));
 
     // predefined rotation
@@ -32,6 +31,13 @@ public class Reef {
         Rotation2d.fromDegrees(ReefAlignmentConstants.tagToRotationTarget.get(targetTagId));
 
     return new Pose2d(targetInField.getTranslation(), targetRotation);
+  }
+
+  public static Pose2d getReefPolePose(
+      int targetTagId, Pose2d tagetTagPose, Pose2d robotPose, PoleSide poleSide) {
+    // pole offsets from tag
+    double poleOffsetFromTag = getTagToPoleOffset(targetTagId, poleSide);
+    return getReefTagPoseWithOffset(targetTagId, tagetTagPose, robotPose, poleOffsetFromTag);
   }
 
   public static double estimatedDistance(Pose2d drivePose, Pose2d targetTagPose) {
@@ -42,6 +48,17 @@ public class Reef {
     ReefPoleOffset offsets = ReefAlignmentConstants.tagToPoleOffset.get(tagId);
     if (offsets == null) return 0.0;
     return poleSide == PoleSide.LEFT ? -offsets.left : offsets.right;
+  }
+
+  public static ReefPoleLabel getPoleLabelFromTagId(int tagId, PoleSide poleSide) {
+    for (ReefPoleLabel label : ReefPoleLabel.values()) {
+      TagReefPole pole = getPoleFromLabel(label, Optional.empty());
+      if (pole.tagId == tagId && pole.poleSide == poleSide) {
+        return label;
+      }
+    }
+    throw new IllegalArgumentException(
+        "No ReefPoleLabel found for tagId: " + tagId + " and poleSide: " + poleSide);
   }
 
   public static TagReefPole getPoleFromLabel(ReefPoleLabel poleLabel, Optional<Alliance> alliance) {

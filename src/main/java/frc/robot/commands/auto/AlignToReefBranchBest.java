@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.field.TagReefPole;
@@ -16,10 +17,9 @@ import frc.robot.field.align.ReefAlignmentConstants.ReefPoleLabel;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 
-public class AlignToReefBranch extends Command {
+public class AlignToReefBranchBest extends Command {
   private final Drive drive;
   private final Vision vision;
-  private final ReefPoleLabel pole;
   private final AlignmentController controller = new AlignmentController();
   private final String logPrefix = ReefAlignmentConstants.smartDashboardLogPrefix;
 
@@ -27,11 +27,11 @@ public class AlignToReefBranch extends Command {
   private PoleSide poleSide;
   private Pose2d targetTagPose;
   private Pose2d desiredRobotPose;
+  private ReefPoleLabel pole;
 
-  public AlignToReefBranch(Drive drive, Vision vision, ReefPoleLabel pole) {
+  public AlignToReefBranchBest(Drive drive, Vision vision) {
     this.drive = drive;
     this.vision = vision;
-    this.pole = pole;
 
     addRequirements(drive, vision);
   }
@@ -39,6 +39,48 @@ public class AlignToReefBranch extends Command {
   @Override
   public void initialize() {
     this.desiredRobotPose = null;
+    int elevatorBestTagId = vision.getBestTargetId(2); // Elevator camera
+    int frontBestTagId = vision.getBestTargetId(0); // Front camera
+
+    System.out.println("AlignToReefBranch: Elevator best tag ID: " + elevatorBestTagId);
+    System.out.println("AlignToReefBranch: Front best tag ID: " + frontBestTagId);
+
+    int bestTagId = 0;
+    if (elevatorBestTagId == frontBestTagId && elevatorBestTagId > 0) {
+      bestTagId = elevatorBestTagId;
+    } else if (elevatorBestTagId > 0) {
+      bestTagId = elevatorBestTagId;
+    } else if (frontBestTagId > 0) {
+      bestTagId = frontBestTagId;
+    }
+
+    if (bestTagId == 0) {
+      System.out.println("AlignToReefBranch: No valid tag found.");
+      return;
+    }
+
+    System.out.println("AlignToReefBranch: bestTagId = " + bestTagId);
+
+    Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+
+    if (alliance == Alliance.Blue && !ReefAlignmentConstants.blueReefTags.contains(bestTagId)) {
+      System.out.println("AlignToReefBranch: Tag ID not in blue reef tags.");
+      return;
+    } else if (alliance == Alliance.Red
+        && !ReefAlignmentConstants.redReefTags.contains(bestTagId)) {
+      System.out.println("AlignToReefBranch: Tag ID not in red reef tags.");
+      return;
+    }
+
+    ReefPoleLabel pole =
+        Reef.getPoleLabelFromTagId(bestTagId, ReefAlignmentConstants.PoleSide.LEFT);
+    if (pole == null) {
+      System.out.println("AlignToReefBranch: Failed to map tag ID to pole label.");
+      return;
+    }
+
+    // --------------------------------
+
     TagReefPole reefPole = Reef.getPoleFromLabel(pole, DriverStation.getAlliance());
 
     this.targetTagId = reefPole.tagId;
@@ -51,7 +93,9 @@ public class AlignToReefBranch extends Command {
     Pose2d tagPose = null;
 
     if (elevator_targetTagPose3d != null && front_targetTagPose3d != null) {
-      tagPose = averagePoses(elevator_targetTagPose3d, front_targetTagPose3d);
+      tagPose =
+          elevator_targetTagPose3d
+              .toPose2d(); // averagePoses(elevator_targetTagPose3d, front_targetTagPose3d);
     } else if (elevator_targetTagPose3d != null) {
       tagPose = elevator_targetTagPose3d.toPose2d();
     } else if (front_targetTagPose3d != null) {

@@ -32,6 +32,11 @@ public class AutoCommands {
     return new AlignToReefBranch(drive, vision, pole).withTimeout(5);
   }
 
+  public static Command AlignToReefBestTag(Drive drive, Vision vision) {
+    return new AlignToReefBranchBest(drive, vision);
+  }
+
+  // testing with auto align in tele-op to go to reef branch by drive stick left/right -
   public static Command AlignToReef2(Drive drive, Vision vision, double side) {
     System.out.println("AlignToReef2: " + side);
     if (side <= -0.2) return new AlignToReefBranch(drive, vision, ReefPoleLabel.E).withTimeout(5);

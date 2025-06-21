@@ -1,15 +1,11 @@
 package frc.robot.commands.auto;
 
-import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.field.align.AlignmentController;
 import frc.robot.field.align.CoralStation;
 import frc.robot.field.align.CoralStationAlignmentConstants;
 import frc.robot.field.align.Reef;
@@ -19,59 +15,30 @@ import frc.robot.subsystems.vision.Vision;
 public class AlignToCoralStation extends Command {
   private final Drive drive;
   private final Vision vision;
-
+  private final AlignmentController controller = new AlignmentController();
   private final String logPrefix = CoralStationAlignmentConstants.smartDashboardLogPrefix;
 
   private int targetTagId;
   private Pose2d targetTagPose;
   private Pose2d desiredRobotPose;
-
-  private HolonomicDriveController hdcontroller;
-  private PIDController depthController;
-  private PIDController lateralController;
-  private ProfiledPIDController rotationController;
+  private Pose2d initialRobotPose;
+  private double calculatedDistance;
 
   public AlignToCoralStation(Drive drive, Vision vision, int targetTagId) {
     this.drive = drive;
     this.vision = vision;
     this.targetTagId = targetTagId;
 
-    depthController =
-        new PIDController(
-            CoralStationAlignmentConstants.depthP,
-            CoralStationAlignmentConstants.depthI,
-            CoralStationAlignmentConstants.depthD);
-
-    lateralController =
-        new PIDController(
-            CoralStationAlignmentConstants.lateralP,
-            CoralStationAlignmentConstants.lateralI,
-            CoralStationAlignmentConstants.lateralD);
-
-    rotationController =
-        new ProfiledPIDController(
-            CoralStationAlignmentConstants.rotationP,
-            CoralStationAlignmentConstants.rotationI,
-            CoralStationAlignmentConstants.rotationD,
-            new Constraints(
-                CoralStationAlignmentConstants.rotationMaxVelocity,
-                CoralStationAlignmentConstants.rotationMaxAcceleration));
-
-    hdcontroller =
-        new HolonomicDriveController(depthController, lateralController, rotationController);
-    hdcontroller.setTolerance(
-        new Pose2d(
-            CoralStationAlignmentConstants.xTolerance,
-            CoralStationAlignmentConstants.yTolerance,
-            Rotation2d.fromDegrees(CoralStationAlignmentConstants.rotationTolerance)));
+    addRequirements(drive, vision);
   }
 
   @Override
   public void initialize() {
+    this.desiredRobotPose = null;
+    this.initialRobotPose = drive.getPose();
     System.out.println("AlignToCoralStation initialized with tagId: " + this.targetTagId);
 
     Pose3d targetTagPose3d = null;
-
     targetTagPose3d = vision.getAprilTagPose(targetTagId, 1);
 
     if (targetTagPose3d != null) {
@@ -79,7 +46,7 @@ public class AlignToCoralStation extends Command {
       this.desiredRobotPose =
           CoralStation.getStationPose(targetTagId, targetTagPose, drive.getPose());
 
-      double distance = Reef.estimatedDistance(drive.getPose(), targetTagPose);
+      this.calculatedDistance = Reef.estimatedDistance(drive.getPose(), targetTagPose);
 
       writeMsgToSmartDashboard(
           "Found tag "
@@ -91,7 +58,7 @@ public class AlignToCoralStation extends Command {
               + ", rotation: "
               + targetTagPose.getRotation().getDegrees()
               + ". Estimated distance: "
-              + distance);
+              + this.calculatedDistance);
     }
   }
 
@@ -108,7 +75,9 @@ public class AlignToCoralStation extends Command {
       Pose2d drivePose = drive.getPose();
 
       ChassisSpeeds speeds =
-          hdcontroller.calculate(drivePose, desiredRobotPose, 0.0, desiredRobotPose.getRotation());
+          controller
+              .get()
+              .calculate(drivePose, desiredRobotPose, 0.0, desiredRobotPose.getRotation());
 
       ChassisSpeeds scaledSpeeds =
           new ChassisSpeeds(
@@ -153,21 +122,24 @@ public class AlignToCoralStation extends Command {
       return false;
     }
 
-    boolean inPosition = hdcontroller.atReference();
+    boolean inPosition = controller.get().atReference();
 
     if (inPosition) {
-      writeMsgToSmartDashboard("Alignment complete. Ending command.");
+      double traveledDistance =
+          initialRobotPose.getTranslation().getDistance(this.drive.getPose().getTranslation());
+      writeMsgToSmartDashboard(
+          "Alignment complete. Ending command. Traveled distance: " + traveledDistance);
       return true;
     } else {
 
       writeMsgToSmartDashboard(
           "Alignment not complete. Continuing execution. "
               + "Depth: "
-              + hdcontroller.getXController().atSetpoint()
+              + controller.get().getXController().atSetpoint()
               + ", Lateral: "
-              + hdcontroller.getYController().atSetpoint()
+              + controller.get().getYController().atSetpoint()
               + ", Rotation: "
-              + hdcontroller.getThetaController().atSetpoint());
+              + controller.get().getThetaController().atSetpoint());
       return false;
     }
   }

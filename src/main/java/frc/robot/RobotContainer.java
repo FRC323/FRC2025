@@ -256,6 +256,7 @@ public class RobotContainer {
     SmartDashboard.putData(
         "AlignTag21Right", AutoCommands.AlignToReef(drive, vision, ReefPoleLabel.H));
     SmartDashboard.putData("AlignHP12", AutoCommands.AlignToCoralStation12(drive, vision));
+    SmartDashboard.putData("AlignBestTag", AutoCommands.AlignToReefBestTag(drive, vision));
 
     // reset gyro
     driveJoystick.button(DriveStick.RIGHT_SIDE_BUTTON).onTrue(new ZeroGryo(drive));
@@ -264,8 +265,6 @@ public class RobotContainer {
         .button(SteerStick.LEFT)
         .and(() -> Math.abs(driveJoystick.getX()) >= 0.2)
         .onTrue(AutoCommands.AlignToReef2(drive, vision, driveJoystick.getX()));
-
-    System.out.println("driveStick X: " + driveJoystick.getX());
 
     // pose to reef algae intake level 1
     gamePad
