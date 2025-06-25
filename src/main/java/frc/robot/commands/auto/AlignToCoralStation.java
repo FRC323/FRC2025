@@ -122,9 +122,7 @@ public class AlignToCoralStation extends Command {
       return false;
     }
 
-    boolean inPosition = controller.get().atReference();
-
-    if (inPosition) {
+    if (controller.isAligned()) {
       double traveledDistance =
           initialRobotPose.getTranslation().getDistance(this.drive.getPose().getTranslation());
       writeMsgToSmartDashboard(

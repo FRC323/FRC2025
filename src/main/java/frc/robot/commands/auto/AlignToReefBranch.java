@@ -143,9 +143,7 @@ public class AlignToReefBranch extends Command {
       return false;
     }
 
-    boolean inPosition = controller.get().atReference();
-
-    if (inPosition) {
+    if (controller.isAligned()) {
       writeMsgToSmartDashboard("Alignment complete. Ending command.");
       return true;
     } else {

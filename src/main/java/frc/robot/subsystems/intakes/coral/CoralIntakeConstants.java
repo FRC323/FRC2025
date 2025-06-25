@@ -7,7 +7,7 @@ public class CoralIntakeConstants {
   public static boolean spark1Inverted = true;
   public static boolean spark2Inverted = false;
 
-  public static int currentLimit = 8;
+  public static int currentLimit = 12;
 
   public static double normalOutput = .5;
   public static double coralArmInvertedOutput = .75;
@@ -16,8 +16,8 @@ public class CoralIntakeConstants {
   public static int laserCanId = 60;
   // reef branch min - end of coral in intake
   // reef branch max - from end of coral intake to branch
-  public static double reefBranchDistanceMin = 250.0;
-  public static double reefBranchDistanceMax = 550.0;
+  public static double reefBranchDistanceMin = 200.0;
+  public static double reefBranchDistanceMax = 380.0;
   public static double reefBranchDistanceTolerance = 0.05;
 
   public static double capturedCurrentOutput = 15;

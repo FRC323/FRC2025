@@ -93,9 +93,7 @@ public class AlignToReefBranchBest extends Command {
     Pose2d tagPose = null;
 
     if (elevator_targetTagPose3d != null && front_targetTagPose3d != null) {
-      tagPose =
-          elevator_targetTagPose3d
-              .toPose2d(); // averagePoses(elevator_targetTagPose3d, front_targetTagPose3d);
+      tagPose = averagePoses(elevator_targetTagPose3d, front_targetTagPose3d);
     } else if (elevator_targetTagPose3d != null) {
       tagPose = elevator_targetTagPose3d.toPose2d();
     } else if (front_targetTagPose3d != null) {
@@ -187,9 +185,7 @@ public class AlignToReefBranchBest extends Command {
       return false;
     }
 
-    boolean inPosition = controller.get().atReference();
-
-    if (inPosition) {
+    if (controller.isAligned()) {
       writeMsgToSmartDashboard("Alignment complete. Ending command.");
       return true;
     } else {

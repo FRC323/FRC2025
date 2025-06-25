@@ -95,6 +95,11 @@ public class IntakeCommands {
     return new RunCoralIntake(coralIntake, () -> CoralIntakeConstants.normalOutput);
   }
 
+  //TODO: RENAME AND REFACTOR
+  public static Command RunCoralIntake2(CoralIntake coralIntake) {
+    return new RunCoralIntake(coralIntake, () -> -CoralIntakeConstants.normalOutput);
+  }
+
   public static Command AlgaeIntake(
       Elevator elevator,
       ElevatorPosition elevatorPosition,

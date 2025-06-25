@@ -47,4 +47,16 @@ public class AutoCommands {
   public static Command AlignToCoralStation12(Drive drive, Vision vision) {
     return new AlignToCoralStation(drive, vision, 12).withTimeout(5);
   }
+
+  public static Command AlignToCoralStation13(Drive drive, Vision vision) {
+    return new AlignToCoralStation(drive, vision, 13).withTimeout(5);
+  }
+
+  public static Command AlignToCoralStation1(Drive drive, Vision vision) {
+    return new AlignToCoralStation(drive, vision, 1).withTimeout(5);
+  }
+
+  public static Command AlignToCoralStation2(Drive drive, Vision vision) {
+    return new AlignToCoralStation(drive, vision, 2).withTimeout(5);
+  }
 }

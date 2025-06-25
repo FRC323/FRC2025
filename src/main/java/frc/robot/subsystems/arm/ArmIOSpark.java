@@ -16,7 +16,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ArmIOSpark implements ArmIO {
   private final SparkMax leadSpark;
@@ -38,10 +37,6 @@ public class ArmIOSpark implements ArmIO {
   private double openLoopVoltage = 0.0;
   private double targetPosition = 0.0;
   // private boolean armCanMove = false;
-
-  private final LoggedNetworkNumber p = new LoggedNetworkNumber("armP", ArmConstants.kP);
-  private final LoggedNetworkNumber i = new LoggedNetworkNumber("armI", ArmConstants.kI);
-  private final LoggedNetworkNumber d = new LoggedNetworkNumber("armD", ArmConstants.kD);
 
   public ArmIOSpark() {
     leadSpark = new SparkMax(ArmConstants.leadCanId, MotorType.kBrushless);
@@ -87,7 +82,7 @@ public class ArmIOSpark implements ArmIO {
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    controller.setPID(p.get(), i.get(), d.get());
+    controller.setPID(ArmConstants.kP, ArmConstants.kI, ArmConstants.kD);
 
     sparkStickyFault = false;
     ifOk(

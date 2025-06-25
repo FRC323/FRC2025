@@ -33,7 +33,7 @@ public final class ReefAlignmentConstants {
   public static final double rotationScalingFactor = 1.0;
 
   // robot width / 2
-  public static final double outwardOffsetFromTag = 0.40;
+  public static final double outwardOffsetFromTag = 0.4;
 
   // center of the reef translation - blue
   public static final Translation2d blueReefCenter = new Translation2d(4.49, 4.02);
@@ -70,21 +70,22 @@ public final class ReefAlignmentConstants {
 
   // offset from the tag to the pole in meters
   public static final HashMap<Integer, ReefPoleOffset> tagToPoleOffset =
+      //.205 = right branch at home
       new HashMap<>() {
         {
-          put(17, new ReefPoleOffset(.165, .165)); // blue
-          put(18, new ReefPoleOffset(.165, .165));
-          put(19, new ReefPoleOffset(.165, .165));
-          put(20, new ReefPoleOffset(.165, .165));
-          put(21, new ReefPoleOffset(.165, .165));
-          put(22, new ReefPoleOffset(.250, .300));
+          put(17, new ReefPoleOffset(.175, .205)); // blue
+          put(18, new ReefPoleOffset(.175, .205));
+          put(19, new ReefPoleOffset(.175, .205));
+          put(20, new ReefPoleOffset(.175, .205));
+          put(21, new ReefPoleOffset(.175, .205));
+          put(22, new ReefPoleOffset(.175, .205));
 
-          put(6, new ReefPoleOffset(.165, .165)); // red
-          put(7, new ReefPoleOffset(.165, .165));
-          put(8, new ReefPoleOffset(.165, .165));
-          put(9, new ReefPoleOffset(.165, .165));
-          put(10, new ReefPoleOffset(.165, .165));
-          put(11, new ReefPoleOffset(.165, .165));
+          put(6, new ReefPoleOffset(.175, .205)); // red
+          put(7, new ReefPoleOffset(.175, .205));
+          put(8, new ReefPoleOffset(.175, .205));
+          put(9, new ReefPoleOffset(.175, .205));
+          put(10, new ReefPoleOffset(.175, .205));
+          put(11, new ReefPoleOffset(.175, .205));
         }
       };
 

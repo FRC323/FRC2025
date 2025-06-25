@@ -9,12 +9,12 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 public class AlignmentController {
   public static class Constants {
-    public static final double depthP = 2;
+    public static final double depthP = 5;
     public static final double depthI = 0.0;
     public static final double depthD = 0.0;
     public static final double depthFF = 0.0;
 
-    public static final double lateralP = 2;
+    public static final double lateralP = 6.0;
     public static final double lateralI = 0.0;
     public static final double lateralD = 0.0;
 
@@ -28,7 +28,7 @@ public class AlignmentController {
 
     public static final double xTolerance = 0.05;
     public static final double yTolerance = 0.05;
-    public static final double rotationTolerance = 0.05;
+    public static final double rotationTolerance = 0.5;
   }
 
   private final HolonomicDriveController hdcontroller;
@@ -52,6 +52,12 @@ public class AlignmentController {
             Constants.xTolerance,
             Constants.yTolerance,
             Rotation2d.fromDegrees(Constants.rotationTolerance)));
+  }
+
+  public boolean isAligned() {
+    return hdcontroller.getXController().atSetpoint()
+    && hdcontroller.getYController().atSetpoint()
+    && hdcontroller.getThetaController().atSetpoint();
   }
 
   public HolonomicDriveController get() {

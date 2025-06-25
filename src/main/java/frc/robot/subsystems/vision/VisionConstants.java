@@ -56,7 +56,7 @@ public class VisionConstants {
           0.281,
           0.281,
           0.212,
-          new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(110)));
+          new Rotation3d(0.0, Units.degreesToRadians(-15.0), Units.degreesToRadians(135)));
 
   public static final String elevatorCameraName = "elevator";
   public static final Transform3d elevatorCameraToRobotTransform =

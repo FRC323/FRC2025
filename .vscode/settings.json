@@ -68,5 +68,7 @@
   },
   "[java]": {
     "editor.defaultFormatter": "redhat.java"
-  }
+  },
+  "diffEditor.codeLens": false,
+  "java.debug.settings.enableRunDebugCodeLens": true
 }

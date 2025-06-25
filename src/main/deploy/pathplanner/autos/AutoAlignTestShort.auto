@@ -13,7 +13,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Coral L3 Score"
+            "name": "Coral L4 Score"
           }
         },
         {
@@ -25,13 +25,32 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 1.0
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "22ToSafe"
+            "name": "Run Coral Outtake"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Coral HP Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "22ToSafe"
+                }
+              }
+            ]
           }
         }
       ]

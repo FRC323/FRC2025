@@ -73,9 +73,12 @@ import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -89,29 +92,28 @@ public class RobotContainer {
   private final GroundIntake groundIntake;
   private final Climber climber;
 
-  private final CommandJoystick driveJoystick =
-      new CommandJoystick(DriveConstants.DRIVE_STICK_PORT);
-  private final CommandJoystick steerJoystick =
-      new CommandJoystick(DriveConstants.STEER_STICK_PORT);
+  private final CommandJoystick driveJoystick = new CommandJoystick(DriveConstants.DRIVE_STICK_PORT);
+  private final CommandJoystick steerJoystick = new CommandJoystick(DriveConstants.STEER_STICK_PORT);
   private final CommandGenericHID gamePad = new CommandGenericHID(DriveConstants.GAME_PAD_PORT);
 
   // Dashboard inputs
   private final SendableChooser<Command> autoChooser;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     CanBridge.runTCP();
 
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIONavX(),
-                new ModuleIOSpark(0),
-                new ModuleIOSpark(1),
-                new ModuleIOSpark(2),
-                new ModuleIOSpark(3));
+        drive = new Drive(
+            new GyroIONavX(),
+            new ModuleIOSpark(0),
+            new ModuleIOSpark(1),
+            new ModuleIOSpark(2),
+            new ModuleIOSpark(3));
 
         elevator = new Elevator(new ElevatorIOSpark());
         arm = new Arm(new ArmIOSpark());
@@ -119,48 +121,47 @@ public class RobotContainer {
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal());
         groundIntake = new GroundIntake(new GroundIntakeIOReal());
         climber = new Climber(new ClimberIOSpark());
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVision(
-                    VisionConstants.rearCameraName, VisionConstants.rearCameraToRobotTransform),
-                new VisionIOPhotonVision(
-                    VisionConstants.frontCameraName, VisionConstants.frontCameraToRobotTransform),
-                new VisionIOPhotonVision(
-                    VisionConstants.elevatorCameraName,
-                    VisionConstants.elevatorCameraToRobotTransform));
+        vision = new Vision(
+            drive::addVisionMeasurement,
+            new VisionIOPhotonVision(
+                VisionConstants.rearCameraName, VisionConstants.rearCameraToRobotTransform),
+            new VisionIOPhotonVision(
+                VisionConstants.frontCameraName, VisionConstants.frontCameraToRobotTransform),
+            new VisionIOPhotonVision(
+                VisionConstants.elevatorCameraName,
+                VisionConstants.elevatorCameraToRobotTransform));
 
-        if (VisionConstants.show2dField) SmartDashboard.putData("Field", drive.getField());
+        if (VisionConstants.show2dField)
+          SmartDashboard.putData("Field", drive.getField());
 
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim());
 
         elevator = new Elevator(new ElevatorIOSim());
         arm = new Arm(new ArmIOSim());
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.rearCameraName,
-                    VisionConstants.rearCameraToRobotTransform,
-                    drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.frontCameraName,
-                    VisionConstants.frontCameraToRobotTransform,
-                    drive::getPose),
-                new VisionIOPhotonVisionSim(
-                    VisionConstants.elevatorCameraName,
-                    VisionConstants.elevatorCameraToRobotTransform,
-                    drive::getPose));
+        vision = new Vision(
+            drive::addVisionMeasurement,
+            new VisionIOPhotonVisionSim(
+                VisionConstants.rearCameraName,
+                VisionConstants.rearCameraToRobotTransform,
+                drive::getPose),
+            new VisionIOPhotonVisionSim(
+                VisionConstants.frontCameraName,
+                VisionConstants.frontCameraToRobotTransform,
+                drive::getPose),
+            new VisionIOPhotonVisionSim(
+                VisionConstants.elevatorCameraName,
+                VisionConstants.elevatorCameraToRobotTransform,
+                drive::getPose));
 
         coralIntake = new CoralIntake(new CoralIntakeIOSim());
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSim());
@@ -172,21 +173,33 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
 
-        elevator = new Elevator(new ElevatorIO() {});
-        arm = new Arm(new ArmIO() {});
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        coralIntake = new CoralIntake(new CoralIntakeIO() {});
-        algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal() {});
-        groundIntake = new GroundIntake(new GroundIntakeIO() {});
-        climber = new Climber(new ClimberIOSpark() {});
+        elevator = new Elevator(new ElevatorIO() {
+        });
+        arm = new Arm(new ArmIO() {
+        });
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {
+        }, new VisionIO() {
+        });
+        coralIntake = new CoralIntake(new CoralIntakeIO() {
+        });
+        algaeIntake = new AlgaeIntake(new AlgaeIntakeIOReal() {
+        });
+        groundIntake = new GroundIntake(new GroundIntakeIO() {
+        });
+        climber = new Climber(new ClimberIOSpark() {
+        });
 
         break;
     }
@@ -229,9 +242,11 @@ public class RobotContainer {
   // }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
@@ -421,7 +436,8 @@ public class RobotContainer {
             ElevatorPosition.REEF_LEVEL_2_CORAL,
             arm,
             ArmPosition.REEF_LEVEL_2_CORAL,
-            groundIntake));
+            groundIntake)
+            .alongWith(IntakeCommands.RunCoralIntake2(coralIntake).withTimeout(1.5)));
     NamedCommands.registerCommand(
         "Coral L2 Score",
         ScoreCommands.ScoreCoral(
@@ -429,7 +445,8 @@ public class RobotContainer {
             ElevatorPosition.REEF_LEVEL_2_CORAL,
             arm,
             ArmPosition.REEF_LEVEL_2_CORAL,
-            groundIntake));
+            groundIntake)
+            .alongWith(IntakeCommands.RunCoralIntake2(coralIntake).withTimeout(1.5)));
     NamedCommands.registerCommand(
         "Coral L3 Score",
         ScoreCommands.ScoreCoral(
@@ -437,7 +454,8 @@ public class RobotContainer {
             ElevatorPosition.REEF_LEVEL_3_CORAL,
             arm,
             ArmPosition.REEF_LEVEL_3_CORAL,
-            groundIntake));
+            groundIntake)
+            .alongWith(IntakeCommands.RunCoralIntake2(coralIntake).withTimeout(1.5)));
     NamedCommands.registerCommand(
         "Coral L4 Score",
         ScoreCommands.ScoreCoral(
@@ -445,10 +463,15 @@ public class RobotContainer {
             ElevatorPosition.REEF_LEVEL_4_CORAL,
             arm,
             ArmPosition.REEF_LEVEL_4_CORAL,
-            groundIntake));
+            groundIntake)
+            .alongWith(IntakeCommands.RunCoralIntake2(coralIntake).withTimeout(1.5)));
     NamedCommands.registerCommand(
         "Coral HP Intake",
         AutoCommands.MoveToCoralIntakeAuto(elevator, arm, coralIntake, groundIntake));
+    NamedCommands.registerCommand(
+        "Travel",
+        CommonCommands.moveToTravelPosition(
+            elevator, arm, coralIntake, algaeIntake, groundIntake));
 
     NamedCommands.registerCommand("Run Coral Outtake", AutoCommands.CoralOuttakeAuto(coralIntake));
     NamedCommands.registerCommand("Run Coral Intake", AutoCommands.CoralIntakeAuto(coralIntake));
@@ -480,6 +503,12 @@ public class RobotContainer {
 
     NamedCommands.registerCommand(
         "CoralStationAlign_12", AutoCommands.AlignToCoralStation12(drive, vision));
+    NamedCommands.registerCommand(
+        "CoralStationAlign_13", AutoCommands.AlignToCoralStation13(drive, vision));
+    NamedCommands.registerCommand(
+        "CoralStationAlign_1", AutoCommands.AlignToCoralStation1(drive, vision));
+    NamedCommands.registerCommand(
+        "CoralStationAlign_2", AutoCommands.AlignToCoralStation2(drive, vision));
   }
 
   /**

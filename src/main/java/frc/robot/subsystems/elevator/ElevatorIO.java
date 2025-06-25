@@ -1,6 +1,5 @@
 package frc.robot.subsystems.elevator;
 
-import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ElevatorIO {
@@ -19,11 +18,6 @@ public interface ElevatorIO {
     public double followerEncoderVelocity = 0.0;
   }
 
-  public default void setOpMode(ElevatorPosition elevatorPosition) {}
-
-  public default ElevatorPosition getOpModePosition() {
-    return ElevatorPosition.Home;
-  }
 
   public default void setPercent(double percent) {}
 
