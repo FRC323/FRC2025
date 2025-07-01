@@ -7,7 +7,7 @@ public class AlgaeIntakeConstants {
   public static boolean spark1Inverted = false;
   public static boolean spark2Inverted = false;
 
-  public static int currentLimit = 12;
+  public static int currentLimit = 15;
 
   public static double intakeOutput = .8;
   public static double normalOutput = .6;

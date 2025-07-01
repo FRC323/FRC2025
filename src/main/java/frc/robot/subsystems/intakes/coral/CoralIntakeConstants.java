@@ -7,7 +7,7 @@ public class CoralIntakeConstants {
   public static boolean spark1Inverted = true;
   public static boolean spark2Inverted = false;
 
-  public static int currentLimit = 12;
+  public static int currentLimit = 15;
 
   public static double normalOutput = .5;
   public static double coralArmInvertedOutput = .75;

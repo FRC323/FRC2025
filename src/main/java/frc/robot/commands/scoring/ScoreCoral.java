@@ -30,16 +30,9 @@ public class ScoreCoral extends SequentialCommandGroup {
             () -> elevator.getPosition() <= ElevatorPosition.TRAVEL.val),
 
         // deploy ground intake if needed to get out of the way
-        new ConditionalCommand(
-            new SequentialCommandGroup(
-                new MoveGroundIntakeToPosition(groundIntake, GroundIntakePosition.DEPLOY),
-                new WaitUntilCommand(() -> groundIntake.reachedDesiredPosition())),
-            new InstantCommand(),
-            () ->
-                (elevatorPosition == ElevatorPosition.REEF_LEVEL_1_CORAL
-                        && armPosition == ArmPosition.REEF_LEVEL_1_CORAL)
-                    || (elevatorPosition == ElevatorPosition.REEF_LEVEL_2_CORAL
-                        && armPosition == ArmPosition.REEF_LEVEL_2_CORAL)),
+        new SequentialCommandGroup(
+            new MoveGroundIntakeToPosition(groundIntake, GroundIntakePosition.DEPLOY),
+            new WaitUntilCommand(groundIntake::reachedDesiredPosition)),
 
         // Move elevator and arm to scoring position
         new ParallelCommandGroup(

@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.intakes.coral.CoralIntake;
-import frc.robot.subsystems.intakes.coral.CoralIntakeConstants;
 import java.util.function.DoubleSupplier;
 
 public class HoldCoralAndDetectScore extends Command {
@@ -24,14 +23,14 @@ public class HoldCoralAndDetectScore extends Command {
 
   @Override
   public void execute() {
-    if (elevator.isInReefScoringPosition()
-        && arm.isInReefScoringPosition()
-        && intake.isReefBranchDetected()) {
-      intake.runPercentOutput(-CoralIntakeConstants.IntakeOutput);
-    } else {
-      double percent = percentSupplier.getAsDouble();
-      intake.runPercentOutput(percent);
-    }
+    // if (elevator.isInReefScoringPosition()
+    //    && arm.isInReefScoringPosition()
+    //    && intake.isReefBranchDetected()) {
+    //  intake.runPercentOutput(-CoralIntakeConstants.IntakeOutput);
+    // } else {
+    double percent = percentSupplier.getAsDouble();
+    intake.runPercentOutput(percent);
+    // }
   }
 
   @Override

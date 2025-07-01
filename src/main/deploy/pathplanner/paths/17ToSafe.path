@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.944243421052631,
-        "y": 1.5041118421052635
+        "x": 3.6253855519480513,
+        "y": 2.6289772727272727
       },
       "prevControl": {
-        "x": 3.165542763157894,
-        "y": 1.9467105263157896
+        "x": 3.8466848940533143,
+        "y": 3.0715759569377976
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "17Safe"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -29.3577535427913
+    "rotation": -29.999999999999996
   },
   "reversed": false,
   "folder": null,

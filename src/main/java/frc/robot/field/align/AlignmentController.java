@@ -56,8 +56,8 @@ public class AlignmentController {
 
   public boolean isAligned() {
     return hdcontroller.getXController().atSetpoint()
-    && hdcontroller.getYController().atSetpoint()
-    && hdcontroller.getThetaController().atSetpoint();
+        && hdcontroller.getYController().atSetpoint()
+        && hdcontroller.getThetaController().atSetpoint();
   }
 
   public HolonomicDriveController get() {

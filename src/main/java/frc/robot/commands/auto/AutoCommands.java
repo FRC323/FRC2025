@@ -1,9 +1,9 @@
 package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.intake.RunCoralIntake;
 import frc.robot.commands.intake.RunCoralOuttake;
+import frc.robot.field.align.ReefAlignmentConstants.PoleSide;
 import frc.robot.field.align.ReefAlignmentConstants.ReefPoleLabel;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drive.Drive;
@@ -25,23 +25,15 @@ public class AutoCommands {
   }
 
   public static Command CoralOuttakeAuto(CoralIntake coralIntake) {
-    return new RunCoralOuttake(coralIntake, () -> CoralIntakeConstants.IntakeOutput).withTimeout(2);
+    return new RunCoralOuttake(coralIntake, () -> CoralIntakeConstants.IntakeOutput).withTimeout(1);
   }
 
   public static Command AlignToReef(Drive drive, Vision vision, ReefPoleLabel pole) {
     return new AlignToReefBranch(drive, vision, pole).withTimeout(5);
   }
 
-  public static Command AlignToReefBestTag(Drive drive, Vision vision) {
-    return new AlignToReefBranchBest(drive, vision);
-  }
-
-  // testing with auto align in tele-op to go to reef branch by drive stick left/right -
-  public static Command AlignToReef2(Drive drive, Vision vision, double side) {
-    System.out.println("AlignToReef2: " + side);
-    if (side <= -0.2) return new AlignToReefBranch(drive, vision, ReefPoleLabel.E).withTimeout(5);
-    if (side >= 0.2) return new AlignToReefBranch(drive, vision, ReefPoleLabel.F).withTimeout(5);
-    return new InstantCommand();
+  public static Command AlignToReefBestTag(Drive drive, Vision vision, PoleSide poleSide) {
+    return new AlignToReefBranchBest(drive, vision, poleSide);
   }
 
   public static Command AlignToCoralStation12(Drive drive, Vision vision) {

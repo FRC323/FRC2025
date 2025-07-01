@@ -19,14 +19,14 @@ public class ArmConstants {
   public static double ReefLevel1CoralPosition = .75;
   public static double ReefLevel2CoralPosition = .67; // .67
   public static double ReefLevel3CoralPosition = .67; // .67
-  public static double ReefLevel4CoralPosition = .69; // .68
+  public static double ReefLevel4CoralPosition = .68; // .68
 
-  public static double HumanPlayerPosition = 0.154;
+  public static double HumanPlayerPosition = 0.144;
 
   public static double ReefLevel1AlgaePosition = .175;
   public static double ReefLevel2AlgaePosition = .175;
   public static double AlgaeOnCoralPosition = .25;
-  public static double BargePosition = .68;
+  public static double BargePosition = .69;
   public static double ProcessorPosition = .25;
 
   public static double GroundPickupPosition = .374;

@@ -27,11 +27,11 @@ public class AlignToReefBranchBest extends Command {
   private PoleSide poleSide;
   private Pose2d targetTagPose;
   private Pose2d desiredRobotPose;
-  private ReefPoleLabel pole;
 
-  public AlignToReefBranchBest(Drive drive, Vision vision) {
+  public AlignToReefBranchBest(Drive drive, Vision vision, PoleSide poleSide) {
     this.drive = drive;
     this.vision = vision;
+    this.poleSide = poleSide;
 
     addRequirements(drive, vision);
   }
@@ -72,8 +72,7 @@ public class AlignToReefBranchBest extends Command {
       return;
     }
 
-    ReefPoleLabel pole =
-        Reef.getPoleLabelFromTagId(bestTagId, ReefAlignmentConstants.PoleSide.LEFT);
+    ReefPoleLabel pole = Reef.getPoleLabelFromTagId(bestTagId, poleSide);
     if (pole == null) {
       System.out.println("AlignToReefBranch: Failed to map tag ID to pole label.");
       return;

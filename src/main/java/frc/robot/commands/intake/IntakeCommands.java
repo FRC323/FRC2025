@@ -95,7 +95,7 @@ public class IntakeCommands {
     return new RunCoralIntake(coralIntake, () -> CoralIntakeConstants.normalOutput);
   }
 
-  //TODO: RENAME AND REFACTOR
+  // TODO: RENAME AND REFACTOR
   public static Command RunCoralIntake2(CoralIntake coralIntake) {
     return new RunCoralIntake(coralIntake, () -> -CoralIntakeConstants.normalOutput);
   }
@@ -109,7 +109,7 @@ public class IntakeCommands {
     return new IntakeAlgae(elevator, elevatorPosition, arm, armPosition, algaeIntake);
   }
 
-  // public Command createIntakeAlgaeAndAlign(
+  // public static Command IntakeAlgaeAndAlign(
   //     Drive drive,
   //     Vision vision,
   //     Elevator elevator,
@@ -118,14 +118,19 @@ public class IntakeCommands {
   //     ArmPosition armPosition,
   //     AlgaeIntake algaeIntake) {
   //   return new SequentialCommandGroup(
-  //       IntakeCommands.AlgaeIntake(
-  //           elevator,
-  //           ElevatorPosition.REEF_LEVEL_1_ALGAE,
-  //           arm,
-  //           ArmPosition.REEF_LEVEL_1_ALGAE,
-  //           algaeIntake),
+  //       // Move elevator to travel position if needed
+  //       new ConditionalCommand(
+  //           new MoveElevatorToPosition(elevator, Elevator.ElevatorPosition.TRAVEL),
+  //           new InstantCommand(),
+  //           () -> elevator.getPosition() <= ElevatorPosition.TRAVEL.val),
+  //       // Move elevator and arm to specified positions
   //       new ParallelCommandGroup(
-  //           AutoCommands.AlignToReefBestTag(drive, vision),
-  //           new RunAlgaeIntake(algaeIntake, () -> AlgaeIntakeConstants.intakeOutput)));
+  //           new MoveElevatorToPosition(elevator, elevatorPosition),
+  //           new MoveArmToPosition(arm, armPosition)),
+  //       // Align to reef and run algae intake in parallel
+  //       new ParallelCommandGroup(
+  //           AutoCommands.AlignToReefBestTag(drive, vision, PoleSide.LEFT),
+  //           new RunAlgaeIntake(algaeIntake, () -> AlgaeIntakeConstants.intakeOutput)
+  //               .withTimeout(1.5)));
   // }
 }

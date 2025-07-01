@@ -36,14 +36,7 @@ public class AlignToReefBranch extends Command {
     addRequirements(drive, vision);
   }
 
-  @Override
-  public void initialize() {
-    this.desiredRobotPose = null;
-    TagReefPole reefPole = Reef.getPoleFromLabel(pole, DriverStation.getAlliance());
-
-    this.targetTagId = reefPole.tagId;
-    this.poleSide = reefPole.poleSide;
-
+  private void getDesiredPose() {
     Pose3d elevator_targetTagPose3d = null;
     elevator_targetTagPose3d = vision.getAprilTagPose(targetTagId, 2); // elevator camera
     Pose3d front_targetTagPose3d = null;
@@ -62,6 +55,17 @@ public class AlignToReefBranch extends Command {
       this.targetTagPose = tagPose;
       this.desiredRobotPose = Reef.getReefPolePose(targetTagId, tagPose, drive.getPose(), poleSide);
     }
+  }
+
+  @Override
+  public void initialize() {
+    this.desiredRobotPose = null;
+
+    TagReefPole reefPole = Reef.getPoleFromLabel(pole, DriverStation.getAlliance());
+    this.targetTagId = reefPole.tagId;
+    this.poleSide = reefPole.poleSide;
+
+    getDesiredPose();
 
     System.out.println(
         "AlignToReefBranch initialized with pole: "
@@ -85,6 +89,9 @@ public class AlignToReefBranch extends Command {
 
   @Override
   public void execute() {
+    if (this.desiredRobotPose == null) {
+      getDesiredPose();
+    }
     if (this.desiredRobotPose != null) {
       writeMsgToSmartDashboard(
           "Desired pose calculated: x: "

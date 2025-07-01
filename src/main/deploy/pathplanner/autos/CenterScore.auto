@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightCenterToE"
+            "pathName": "CenterTo21"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 2.0
+            "name": "Coral L4 Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ReefAlign_H"
           }
         },
         {
@@ -25,31 +31,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BranchFToCoralStation"
+            "pathName": "21ToSafe"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Run Coral Intake"
+            "name": "Travel"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CoralStationToBranchE"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Coral Outtake"
+            "pathName": "21End"
           }
         }
       ]

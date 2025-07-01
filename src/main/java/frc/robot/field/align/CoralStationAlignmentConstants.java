@@ -12,7 +12,7 @@ public class CoralStationAlignmentConstants {
   public static final double lateralOffsetFromTag = 0.0;
 
   public static final boolean moveRobot = true;
-  public static final boolean smartDashboardLogging = true;
+  public static final boolean smartDashboardLogging = false;
 
   public static final HashMap<Integer, Double> tagToRotationTarget =
       new HashMap<Integer, Double>() {

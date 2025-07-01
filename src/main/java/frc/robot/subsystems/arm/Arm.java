@@ -59,9 +59,34 @@ public class Arm extends SubsystemBase {
     return MathUtil.isNear(ArmConstants.GroundPickupPosition, inputs.currentAbsolutePosition, .1);
   }
 
+  public boolean armInReefScoringPosition1() {
+    return inputs.targetPosition == ArmConstants.ReefLevel1CoralPosition
+        && MathUtil.isNear(
+            ArmConstants.ReefLevel1CoralPosition, inputs.currentAbsolutePosition, 0.1);
+  }
+
+  public boolean armInReefScoringPosition2() {
+    return inputs.targetPosition == ArmConstants.ReefLevel2CoralPosition
+        && MathUtil.isNear(
+            ArmConstants.ReefLevel2CoralPosition, inputs.currentAbsolutePosition, 0.1);
+  }
+
+  public boolean armInReefScoringPosition3() {
+    return inputs.targetPosition == ArmConstants.ReefLevel3CoralPosition
+        && MathUtil.isNear(
+            ArmConstants.ReefLevel3CoralPosition, inputs.currentAbsolutePosition, 0.1);
+  }
+
+  public boolean armInReefScoringPosition4() {
+    return inputs.targetPosition == ArmConstants.ReefLevel4CoralPosition
+        && MathUtil.isNear(
+            ArmConstants.ReefLevel4CoralPosition, inputs.currentAbsolutePosition, 0.1);
+  }
+
   // public boolean isArmMoving() {
-  //   return MathUtil.isNear(
-  //       inputs.currentAbsolutePosition, inputs.targetPosition, ArmConstants.SetpointTolerance);
+  // return MathUtil.isNear(
+  // inputs.currentAbsolutePosition, inputs.targetPosition,
+  // ArmConstants.SetpointTolerance);
   // }
 
   public void setArmPosition(ArmPosition position) {
@@ -134,13 +159,9 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean isInReefScoringPosition() {
-    return MathUtil.isNear(
-            ArmConstants.ReefLevel1CoralPosition, inputs.currentAbsolutePosition, 0.1)
-        || MathUtil.isNear(
-            ArmConstants.ReefLevel2CoralPosition, inputs.currentAbsolutePosition, 0.1)
-        || MathUtil.isNear(
-            ArmConstants.ReefLevel3CoralPosition, inputs.currentAbsolutePosition, 0.1)
-        || MathUtil.isNear(
-            ArmConstants.ReefLevel4CoralPosition, inputs.currentAbsolutePosition, 0.1);
+    return armInReefScoringPosition1()
+        || armInReefScoringPosition2()
+        || armInReefScoringPosition3()
+        || armInReefScoringPosition4();
   }
 }

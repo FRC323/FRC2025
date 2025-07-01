@@ -52,14 +52,34 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean isInReefScoringPosition() {
-    return MathUtil.isNear(
-            ElevatorConstants.ReefLevel1CoralPosition, inputs.leadEncoderPosition, 0.5)
-        || MathUtil.isNear(
-            ElevatorConstants.ReefLevel2CoralPosition, inputs.leadEncoderPosition, 0.5)
-        || MathUtil.isNear(
-            ElevatorConstants.ReefLevel3CoralPosition, inputs.leadEncoderPosition, 0.5)
-        || MathUtil.isNear(
-            ElevatorConstants.ReefLevel4CoralPosition, inputs.leadEncoderPosition, 0.5);
+    return IsInReefScoringPosition1()
+        || IsInReefScoringPosition2()
+        || IsInReefScoringPosition3()
+        || IsInReefScoringPosition4();
+  }
+
+  public boolean IsInReefScoringPosition1() {
+    return this.targetPosition == ElevatorPosition.REEF_LEVEL_1_CORAL.val
+        && MathUtil.isNear(
+            ElevatorConstants.ReefLevel1CoralPosition, inputs.leadEncoderPosition, 0.1);
+  }
+
+  public boolean IsInReefScoringPosition2() {
+    return this.targetPosition == ElevatorPosition.REEF_LEVEL_2_CORAL.val
+        && MathUtil.isNear(
+            ElevatorConstants.ReefLevel2CoralPosition, inputs.leadEncoderPosition, 0.1);
+  }
+
+  public boolean IsInReefScoringPosition3() {
+    return this.targetPosition == ElevatorPosition.REEF_LEVEL_3_CORAL.val
+        && MathUtil.isNear(
+            ElevatorConstants.ReefLevel3CoralPosition, inputs.leadEncoderPosition, 0.1);
+  }
+
+  public boolean IsInReefScoringPosition4() {
+    return this.targetPosition == ElevatorPosition.REEF_LEVEL_4_CORAL.val
+        && MathUtil.isNear(
+            ElevatorConstants.ReefLevel4CoralPosition, inputs.leadEncoderPosition, 0.1);
   }
 
   public boolean isAtBottom() {

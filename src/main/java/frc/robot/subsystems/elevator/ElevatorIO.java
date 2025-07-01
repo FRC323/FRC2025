@@ -18,7 +18,6 @@ public interface ElevatorIO {
     public double followerEncoderVelocity = 0.0;
   }
 
-
   public default void setPercent(double percent) {}
 
   public default void setVoltage(double voltage) {}

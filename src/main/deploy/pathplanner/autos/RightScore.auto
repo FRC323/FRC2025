@@ -1,0 +1,148 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrimeElevator"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrimeGroundIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightTo22"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral L4 Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ReefAlign_F"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Outtake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "22ToSafe"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "22ToHP"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Coral HP Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.75
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrimeElevator"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HPTo17"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral L4 Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ReefAlign_D"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Coral Outtake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "17ToSafe"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Travel"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "17End"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
